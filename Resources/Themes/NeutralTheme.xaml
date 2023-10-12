@@ -1,0 +1,35 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="ThemeName">NuetralTheme</sys:String>
+
+    <Color x:Key="neutralTheme.Background">#FFf9f4ef</Color>
+    <Color x:Key="neutralTheme.Secondary">#FFeaddcf</Color>
+    <Color x:Key="neutralTheme.Secondary.Hover">#FFf0e5d8</Color>
+    <Color x:Key="neutralTheme.Tertiary">#FFf25042</Color>
+    <Color x:Key="neutralTheme.Highlight">#FF8c7851</Color>
+    <Color x:Key="neutralTheme.Foreground">#FF716040</Color>
+    <Color x:Key="neutralTheme.ButtonForeground">#FFfffffe</Color>
+    <Color x:Key="neutralTheme.ButtonBackground">#FF8c7851</Color>
+    <Color x:Key="neutralTheme.Headline">#FF020826</Color>
+    <Color x:Key="neutralTheme.Stroke">#FF020826</Color>
+    <Color x:Key="neutralTheme.ButtonBackground.Hover">#FFA9866B</Color>
+    <Color x:Key="neutralTheme.ButtonBackground.Active">#FFC1A080</Color>
+    <Color x:Key="neutralTheme.ButtonBackground.Disabled">#FF76644B</Color>
+
+    <SolidColorBrush x:Key="baseTheme.Background" Color="{DynamicResource neutralTheme.Background}"/>
+    <SolidColorBrush x:Key="baseTheme.Secondary" Color="{DynamicResource neutralTheme.Secondary}"/>
+    <SolidColorBrush x:Key="baseTheme.Secondary.Hover" Color="{DynamicResource neutralTheme.Secondary.Hover}"/>
+    <SolidColorBrush x:Key="baseTheme.Tertiary" Color="{DynamicResource neutralTheme.Tertiary}"/>
+    <SolidColorBrush x:Key="baseTheme.Highlight" Color="{DynamicResource neutralTheme.Highlight}"/>
+    <SolidColorBrush x:Key="baseTheme.Foreground" Color="{DynamicResource neutralTheme.Foreground}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonForeground" Color="{DynamicResource neutralTheme.ButtonForeground}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground" Color="{DynamicResource neutralTheme.ButtonBackground}"/>
+    <SolidColorBrush x:Key="baseTheme.Headline" Color="{DynamicResource neutralTheme.Headline}"/>
+    <SolidColorBrush x:Key="baseTheme.Stroke" Color="{DynamicResource neutralTheme.Stroke}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Hover" Color="{DynamicResource neutralTheme.ButtonBackground.Hover}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Active" Color="{DynamicResource neutralTheme.ButtonBackground.Active}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Disabled" Color="{DynamicResource neutralTheme.ButtonBackground.Disabled}"/>
+
+</ResourceDictionary>

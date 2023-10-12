@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="ThemeName">LightTheme</sys:String>
+
+    <Color x:Key="lightTheme.Background" >#fffffe</Color>
+    <Color x:Key="lightTheme.Foreground">#2b2c34</Color>
+    <Color x:Key="lightTheme.Secondary">#d1d1e9</Color>
+    <Color x:Key="lightTheme.Secondary.Hover">#bcbcd2</Color>
+    <Color x:Key="lightTheme.Tertiary">#e45858</Color>
+    <Color x:Key="lightTheme.Highlight">#6246ea</Color>
+    <Color x:Key="lightTheme.ButtonBackground">#6246ea</Color>
+    <Color x:Key="lightTheme.ButtonForeground">#ffffee</Color>
+    <Color x:Key="lightTheme.Headline">#2b2c34</Color>
+    <Color x:Key="lightTheme.Stroke">#2b2c34</Color>
+    <Color x:Key="lightTheme.ButtonBackground.Hover">#7259ec</Color>
+    <Color x:Key="lightTheme.ButtonBackground.Active">#8b82ff</Color>
+    <Color x:Key="lightTheme.ButtonBackground.Disabled">#b1a3f5</Color>
+
+    <SolidColorBrush x:Key="baseTheme.Background" Color="{DynamicResource lightTheme.Background}"/>
+    <SolidColorBrush x:Key="baseTheme.Secondary" Color="{DynamicResource lightTheme.Secondary}"/>
+    <SolidColorBrush x:Key="baseTheme.Secondary.Hover" Color="{DynamicResource lightTheme.Secondary.Hover}"/>
+    <SolidColorBrush x:Key="baseTheme.Tertiary" Color="{DynamicResource lightTheme.Tertiary}"/>
+    <SolidColorBrush x:Key="baseTheme.Highlight" Color="{DynamicResource lightTheme.Highlight}"/>
+    <SolidColorBrush x:Key="baseTheme.Foreground" Color="{DynamicResource lightTheme.Foreground}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonForeground" Color="{DynamicResource lightTheme.ButtonForeground}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground" Color="{DynamicResource lightTheme.ButtonBackground}"/>
+    <SolidColorBrush x:Key="baseTheme.Headline" Color="{DynamicResource lightTheme.Headline}"/>
+    <SolidColorBrush x:Key="baseTheme.Stroke" Color="{DynamicResource lightTheme.Stroke}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Hover" Color="{DynamicResource lightTheme.ButtonBackground.Hover}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Active" Color="{DynamicResource lightTheme.ButtonBackground.Active}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Disabled" Color="{DynamicResource lightTheme.ButtonBackground.Disabled}"/>
+</ResourceDictionary>

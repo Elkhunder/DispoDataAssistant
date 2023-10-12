@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="ThemeName">DarkTheme</sys:String>
+    
+    <Color x:Key="darkTheme.Background">#FF16161a</Color>
+    <Color x:Key="darkTheme.Secondary">#FF72757e</Color>
+    <Color x:Key="darkTheme.Secondary.Hover">#FF8C8F99</Color>
+    <Color x:Key="darkTheme.Tertiary">#FF2cb67d</Color>
+    <Color x:Key="darkTheme.Highlight">#FF7f5af0</Color>
+    <Color x:Key="darkTheme.Foreground">#FFfffffe</Color>
+    <Color x:Key="darkTheme.ButtonForeground">#FFfffffe</Color>
+    <Color x:Key="darkTheme.ButtonBackground">#FF7f5af0</Color>
+    <Color x:Key="darkTheme.Headline">#FFfffffe</Color>
+    <Color x:Key="darkTheme.Stroke">#FF010101</Color>
+    <Color x:Key="darkTheme.ButtonBackground.Hover">#FF936FFF</Color>
+    <Color x:Key="darkTheme.ButtonBackground.Active">#FFB491FF</Color>
+    <Color x:Key="darkTheme.ButtonBackground.Disabled">#FF58408F</Color>
+    <Color x:Key="darkTheme.UserInput.Hover"></Color>
+    <Color x:Key="darkTheme.UserInput.Active"></Color>
+    <Color x:Key="darkTheme.UserInput.Disabled"></Color>
+
+    <SolidColorBrush x:Key="baseTheme.Background" Color="{DynamicResource darkTheme.Background}"/>
+    <SolidColorBrush x:Key="baseTheme.Secondary" Color="{DynamicResource darkTheme.Secondary}"/>
+    <SolidColorBrush x:Key="baseTheme.Secondary.Hover" Color="{DynamicResource darkTheme.Secondary.Hover}"/>
+    <SolidColorBrush x:Key="baseTheme.Tertiary" Color="{DynamicResource darkTheme.Tertiary}"/>
+    <SolidColorBrush x:Key="baseTheme.Highlight" Color="{DynamicResource darkTheme.Highlight}"/>
+    <SolidColorBrush x:Key="baseTheme.Foreground" Color="{DynamicResource darkTheme.Foreground}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonForeground" Color="{DynamicResource darkTheme.ButtonForeground}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground" Color="{DynamicResource darkTheme.ButtonBackground}"/>
+    <SolidColorBrush x:Key="baseTheme.Headline" Color="{DynamicResource darkTheme.Headline}"/>
+    <SolidColorBrush x:Key="baseTheme.Stroke" Color="{DynamicResource darkTheme.Stroke}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Hover" Color="{DynamicResource darkTheme.ButtonBackground.Hover}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Active" Color="{DynamicResource darkTheme.ButtonBackground.Active}"/>
+    <SolidColorBrush x:Key="baseTheme.ButtonBackground.Disabled" Color="{DynamicResource darkTheme.ButtonBackground.Disabled}"/>
+
+</ResourceDictionary>
