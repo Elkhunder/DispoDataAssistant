@@ -18,7 +18,7 @@ namespace DispoDataAssistant.ViewModels
     
     public class DataActionsViewModel : BaseViewModel
     {
-        private string _csvFilePath = "output.csv";
+        private string _tabFilePath = "output.csv";
         private readonly List<DeviceDetails> _devices;
         private DataInputViewModel _dataInputViewModel;
         private readonly CsvHandler _csvHandler;
@@ -133,9 +133,10 @@ namespace DispoDataAssistant.ViewModels
 
         private void SaveFile()
         {
-            string filename = $"{PickupLocation}-Dispo-{PickupDate!.Value:MMdyyyy}";
+            string tabFilename = $"{PickupLocation}-Dispo-{PickupDate!.Value:MMddyyyy}";
+            string commaFileName = $"{PickupDate!.Value:MM dd yyyy} {PickupLocation}";
 
-            if(!string.IsNullOrWhiteSpace(AssetTag))
+            if (!string.IsNullOrWhiteSpace(AssetTag))
             {
                 _devices.Add(CollectDeviceDetails());
 
@@ -146,61 +147,82 @@ namespace DispoDataAssistant.ViewModels
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Filter = "TXT files (*.txt)|*.txt",
-                FileName = filename,
+                FileName = tabFilename,
                 DefaultExt = ".txt"
+                
             };
-            
+
             saveFileDialog.OverwritePrompt = false;
             bool? result = saveFileDialog.ShowDialog();
 
             if (result == false) { return; }
-            if(!result.HasValue && !result.Value) { return; }
+            if (!result.HasValue && !result.Value) { return; }
 
-            _csvFilePath = saveFileDialog.FileName;
+            _tabFilePath = saveFileDialog.FileName;
 
-            if (!File.Exists(saveFileDialog.FileName))
+            VerifyCsvHeaderAndWriteIfNotPresent(_tabFilePath, "\t");
+
+            string? directory = Path.GetDirectoryName(_tabFilePath);
+            string csvFileName = $"{commaFileName}.csv";
+            string? csvFilePath = string.Empty;
+            if(!string.IsNullOrEmpty(directory))
             {
-                WriteCsvHeader();
+                csvFilePath = Path.Combine(directory, csvFileName);
+                VerifyCsvHeaderAndWriteIfNotPresent(csvFilePath, ",");
             }
-            else
-            {
-                string headerLine;
-                using (StreamReader sr = new StreamReader(saveFileDialog.FileName))
-                {
-                    headerLine = sr.ReadLine()!;
-                }
-                var csvHeader = _csvHandler.BuildCsvHeader();
-                csvHeader = csvHeader.TrimEnd('\r', '\n');
-                if (headerLine != csvHeader)
-                {
-                    WriteCsvHeader();
-                }
-            }
+
             foreach (DeviceDetails device in _devices)
             {
-                string csvLine = _csvHandler.ConvertDeviceDetailsToCsvLine(device);
-                AppendCsvLine(csvLine);
+                
+                AppendCsvLine(device, _tabFilePath, "\t");
+                if(!string.IsNullOrEmpty(csvFilePath))
+                {
+                    AppendCsvLine(device, csvFilePath, ",");
+                }
             }
             MessageBox.Show("Devices saved to file successfully");
             _devices.Clear();
             _dataInputViewModel.AssetTagTextBox.Focus();
         }
 
-        private void WriteCsvHeader()
+        private void VerifyCsvHeaderAndWriteIfNotPresent(string file, string delimiter)
         {
-            string csvHeader = _csvHandler.BuildCsvHeader();
-
-            using (StreamWriter file = new StreamWriter(_csvFilePath))
+            if (!File.Exists(file))
             {
-                file.Write(csvHeader);
+                WriteCsvHeader(file, delimiter);
+            }
+            else
+            {
+                string headerLine;
+                using (StreamReader sr = new StreamReader(file))
+                {
+                    headerLine = sr.ReadLine()!;
+                }
+                var csvHeader = _csvHandler.BuildCsvHeader(delimiter);
+                csvHeader = csvHeader.TrimEnd('\r', '\n');
+                if (headerLine != csvHeader)
+                {
+                    WriteCsvHeader(file, delimiter);
+                }
             }
         }
 
-        private void AppendCsvLine(string csvLine)
+        private void WriteCsvHeader(string file, string delimiter)
         {
-            using (StreamWriter file = new StreamWriter(_csvFilePath, append: true))
+            string csvHeader = _csvHandler.BuildCsvHeader(delimiter);
+
+            using (StreamWriter newFile = new StreamWriter(file))
             {
-                file.WriteLine(csvLine);
+                newFile.Write(csvHeader);
+            }
+        }
+
+        private void AppendCsvLine(DeviceDetails device, string file, string delimiter)
+        {
+            string csvLine = _csvHandler.ConvertDeviceDetailsToCsvLine(device, delimiter);
+            using (StreamWriter newFile = new StreamWriter(file, append: true))
+            {
+                newFile.WriteLine(csvLine);
             };
         }
     }

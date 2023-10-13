@@ -22,12 +22,12 @@ namespace DispoDataAssistant.Handlers
             "Unit Cost"
         };
 
-        public string BuildCsvHeader()
+        public string BuildCsvHeader(string delimiter)
         {
-            return string.Join("\t", _csvHeader) + Environment.NewLine;
+            return string.Join(delimiter, _csvHeader) + Environment.NewLine;
         }
 
-        public string ConvertDeviceDetailsToCsvLine(DeviceDetails deviceDetails)
+        public string ConvertDeviceDetailsToCsvLine(DeviceDetails deviceDetails, string delimiter)
         {
             int numberOfProperties = deviceDetails.Length;
             List<string> _details = new List<string>
@@ -43,7 +43,7 @@ namespace DispoDataAssistant.Handlers
                 "Not Sanitized",
                 "s"
             };
-            string csvLine = string.Join("\t", _details);
+            string csvLine = string.Join(delimiter, _details);
 
             return csvLine;
         }
