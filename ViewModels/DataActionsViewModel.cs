@@ -133,7 +133,7 @@ namespace DispoDataAssistant.ViewModels
 
         private void SaveFile()
         {
-            string tabFilename = $"{PickupLocation}-Dispo-{PickupDate!.Value:MMddyyyy}";
+            string tabFilename = $"{PickupDate!.Value:MM dd yyyy} {PickupLocation}";
             string commaFileName = $"{PickupDate!.Value:MM dd yyyy} {PickupLocation}";
 
             if (!string.IsNullOrWhiteSpace(AssetTag))
