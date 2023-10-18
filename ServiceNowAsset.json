@@ -1,0 +1,105 @@
+"result": [
+    {
+        "parent": "",
+        "skip_sync": "false",
+        "residual_date": "",
+        "residual": "0",
+        "sys_updated_on": "2023-04-30 07:07:08",
+        "request_line": "",
+        "resold_value": "0",
+        "sys_updated_by": "admin",
+        "due_in": "",
+        "model_category": {
+            "link": "https://ummeddev.service-now.com/api/now/table/cmdb_model_category/81feb9c137101000deeabfc8bcbe5dc4",
+            "value": "81feb9c137101000deeabfc8bcbe5dc4"
+        },
+        "sys_created_on": "2018-03-09 13:15:33",
+        "sys_domain": {
+            "link": "https://ummeddev.service-now.com/api/now/table/sys_user_group/global",
+            "value": "global"
+        },
+        "disposal_reason": "",
+        "model": {
+            "link": "https://ummeddev.service-now.com/api/now/table/cmdb_model/e9af2dbcdb6665901f58816813961941",
+            "value": "e9af2dbcdb6665901f58816813961941"
+        },
+        "install_date": "",
+        "gl_account": "",
+        "invoice_number": "",
+        "sys_created_by": "ngross-admin",
+        "u_room_ref": "",
+        "warranty_expiration": "",
+        "asset_tag": "1006959",
+        "depreciated_amount": "0",
+        "substatus": "",
+        "pre_allocated": "false",
+        "owned_by": "",
+        "checked_out": "",
+        "display_name": "1006959 - Dell Inc. Latitude 5420",
+        "sys_domain_path": "/",
+        "u_floor_ref": "",
+        "asset_function": "",
+        "delivery_date": "",
+        "retirement_date": "",
+        "beneficiary": "",
+        "install_status": "1",
+        "cost_center": "",
+        "supported_by": "",
+        "assigned": "2022-11-11 20:11:50",
+        "life_cycle_stage": {
+            "link": "https://ummeddev.service-now.com/api/now/table/life_cycle_stage?name=Operational",
+            "value": "Operational"
+        },
+        "purchase_date": "",
+        "work_notes": "",
+        "model_component": "",
+        "managed_by": "",
+        "sys_class_name": "alm_hardware",
+        "sys_id": "e1d14438db38db44e7efd7795e9619f8",
+        "po_number": "",
+        "stockroom": "",
+        "checked_in": "",
+        "life_cycle_stage_status": {
+            "link": "https://ummeddev.service-now.com/api/now/table/life_cycle_stage_status?name=In+Use",
+            "value": "In Use"
+        },
+        "resale_price": "0",
+        "vendor": "",
+        "company": "",
+        "retired": "",
+        "justification": "",
+        "department": {
+            "link": "https://ummeddev.service-now.com/api/now/table/cmn_department/983e7d281bfe0110f03097d58d4bcbd1",
+            "value": "983e7d281bfe0110f03097d58d4bcbd1"
+        },
+        "expenditure_type": "",
+        "assigned_to": "",
+        "depreciation_date": "",
+        "eligible_for_refresh": "true",
+        "old_status": "",
+        "u_building_ref": "",
+        "comments": "",
+        "cost": "0",
+        "quantity": "1",
+        "acquisition_method": "",
+        "ci": {
+            "link": "https://ummeddev.service-now.com/api/now/table/cmdb_ci/2dd14438db38db44e7efd7795e9619f7",
+            "value": "2dd14438db38db44e7efd7795e9619f7"
+        },
+        "purchase_line": "",
+        "sys_mod_count": "10",
+        "old_substatus": "",
+        "serial_number": "2XH3DK3",
+        "sys_tags": "",
+        "order_date": "",
+        "support_group": {
+            "link": "https://ummeddev.service-now.com/api/now/table/sys_user_group/e7dc4268db50c7406431572e5e961923",
+            "value": "e7dc4268db50c7406431572e5e961923"
+        },
+        "reserved_for": "",
+        "due": "",
+        "location": "",
+        "lease_id": "",
+        "salvage_value": "0"
+    }
+]

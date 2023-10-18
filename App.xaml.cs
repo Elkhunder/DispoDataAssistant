@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Handlers;
 using DispoDataAssistant.Models;
 using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
@@ -38,7 +39,7 @@ namespace DispoDataAssistant
 
         private static IServiceProvider ConfigureServices()
         {
-            var services = new ServiceCollection();
+            IServiceCollection services = new ServiceCollection();
 
             services.AddSingleton<DeviceDetails>();
             services.AddSingleton<DeviceInformation>();
@@ -54,6 +55,8 @@ namespace DispoDataAssistant
             services.AddSingleton<DataInputViewModel>();
             services.AddSingleton<DataActionsViewModel>();
             services.AddSingleton<ViewModelLocator>();
+            services.AddSingleton<ServiceNowHandler>();
+            
 
             return services.BuildServiceProvider();
         }

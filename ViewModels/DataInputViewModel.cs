@@ -1,18 +1,16 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Handlers;
 using DispoDataAssistant.Models;
-using DispoDataAssistant.Services;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace DispoDataAssistant.ViewModels
 {
-    public class DataInputViewModel : BaseViewModel
+    public partial class DataInputViewModel : BaseViewModel
     {
+        private ServiceNowHandler _serviceNowHandler;
         private TextBox _assetTagTextBox;
         public TextBox AssetTagTextBox
         {
@@ -25,12 +23,9 @@ namespace DispoDataAssistant.ViewModels
             get => _focusTextBox;
             set => SetProperty(ref _focusTextBox, value);
         }
-        private string? _assetTag;
-        public string AssetTag
-        {
-            get => _assetTag!;
-            set => SetProperty(ref _assetTag, value);
-        }
+        [ObservableProperty]
+        string assetTag;
+        
         private string? _serialNumber;
         public string SerialNumber
         {
@@ -103,13 +98,12 @@ namespace DispoDataAssistant.ViewModels
         public DataInputViewModel()
         {
             _deviceInformation = Ioc.Default.GetService<DeviceInformation>()!;
+            _serviceNowHandler = Ioc.Default.GetService<ServiceNowHandler>()!;
 
             DeviceTypeOptions = _deviceInformation.DeviceTypes!;
             DeviceModelOptions = _deviceInformation.DeviceModels!;
             DeviceManufacturerOptions = _deviceInformation.DeviceManufacturers!;
             PickupLocationOptions = _deviceInformation.PickupLocations!;
-
-
         }
 
         public void ClearInputControls()
@@ -121,6 +115,35 @@ namespace DispoDataAssistant.ViewModels
         public void ClearPickupDate()
         {
             PickupDate = null;
+        }
+
+        async partial void OnAssetTagChanged(string value)
+        {
+            ServiceNowAsset asset = await _serviceNowHandler.GetServiceNowAssetAsync(AssetTag);
+
+            if ( asset is not null)
+            {
+                if (asset.SerialNumber is not null)
+                {
+                    SerialNumber = asset.SerialNumber;
+                }
+                if ( asset.Manufacturer is not null)
+                {
+                    DeviceManufacturer = asset.Manufacturer;
+                }
+                if (asset.Model is not null)
+                {
+                    DeviceModel = asset.Model;
+                }
+                if (asset.Category is not null)
+                {
+                    DeviceType = asset.Category;
+                }
+            }
+            else
+            {
+                return;
+            }
         }
     }
 }
