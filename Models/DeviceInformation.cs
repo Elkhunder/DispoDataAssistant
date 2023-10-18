@@ -52,12 +52,13 @@ namespace DispoDataAssistant.Models
 
             PickupLocations = new List<string>
             {
-                "ArborLakes",
                 "777",
-                "UHSDepot",
+                "AL",
+                "NCRC",
+                "NIB",
+                "UHS",
                 "TC",
                 "THSL",
-                "NCRC"
             };
         }
     }
