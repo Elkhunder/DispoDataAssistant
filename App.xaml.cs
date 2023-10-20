@@ -31,6 +31,7 @@ namespace DispoDataAssistant
             this.InitializeComponent();
 
             _userSettingsSerivce.ApplyUserSettings(userSettings);
+            
         }
 
         public new static App Current => (App)Application.Current;
