@@ -365,4 +365,4 @@ ServiceNowAsset.json
 
 # Config Files
 .config
-/App.config
+*.config
