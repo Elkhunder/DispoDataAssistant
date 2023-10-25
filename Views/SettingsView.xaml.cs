@@ -1,20 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using DispoDataAssistant.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DispoDataAssistant.Views
 {
@@ -23,13 +11,16 @@ namespace DispoDataAssistant.Views
     /// </summary>
     public partial class SettingsView : UserControl
     {
-        private readonly SettingsViewModel _settingsViewModel = Ioc.Default.GetService<SettingsViewModel>()!;
+        private readonly SettingsViewModel _settingsViewModel;
         public SettingsView()
         {
             InitializeComponent();
-           
-            this.DataContext = _settingsViewModel;
-            
+
+            var serviceProvider = Ioc.Default;
+            _settingsViewModel = serviceProvider.GetRequiredService<SettingsViewModel>();
+
+            DataContext = _settingsViewModel;
+
             _settingsViewModel.ToggleSettingsMenuRequested += OnToggleSettingsMenuRequested;
         }
 

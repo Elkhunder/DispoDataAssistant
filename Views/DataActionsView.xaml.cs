@@ -22,11 +22,13 @@ namespace DispoDataAssistant.Views
     /// </summary>
     public partial class DataActionsView : UserControl
     {
-        DataActionsViewModel _dataActionsViewModel;
+        private readonly DataActionsViewModel _dataActionsViewModel;
         public DataActionsView()
         {
-            _dataActionsViewModel = Ioc.Default.GetService<DataActionsViewModel>()!;
+            var serviceProvider = Ioc.Default;
+            _dataActionsViewModel = serviceProvider.GetRequiredService<DataActionsViewModel>();
             InitializeComponent();
+
             DataContext = _dataActionsViewModel;
         }
     }

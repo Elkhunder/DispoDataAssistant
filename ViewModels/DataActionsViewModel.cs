@@ -63,9 +63,9 @@ namespace DispoDataAssistant.ViewModels
         public RelayCommand RemoveDeviceCommand { get; private set; }
         public RelayCommand SaveFileCommand { get; private set; }
 
-        public DataActionsViewModel()
+        public DataActionsViewModel(DataInputViewModel dataInputViewModel)
         {
-            _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>()!;
+            _dataInputViewModel = dataInputViewModel;
             _devices = new List<DeviceDetails>();
             _csvHandler = new CsvHandler();
 

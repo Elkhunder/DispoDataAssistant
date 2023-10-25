@@ -364,5 +364,4 @@ FodyWeavers.xsd
 ServiceNowAsset.json
 
 # Config Files
-.config
 *.config

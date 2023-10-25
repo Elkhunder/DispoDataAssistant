@@ -17,7 +17,7 @@ namespace DispoDataAssistant.ViewModels
     [ObservableRecipient]
     public partial class WindowControlViewModel : BaseViewModel
     {
-        private IWindowService _windowManager;
+        private readonly IWindowService _windowManager;
         public RelayCommand ToggleSettingsMenuCommand { get; set; }
         public RelayCommand CloseWindowCommand { get; set; }
         public RelayCommand MaximizeWindowCommand { get; set; }
@@ -39,7 +39,8 @@ namespace DispoDataAssistant.ViewModels
         public WindowControlViewModel()
         {
             Console.WriteLine("WindowsControl: Instance Created");
-            _windowManager = Ioc.Default.GetService<IWindowService>()!;
+            var serviceProvider = Ioc.Default;
+            _windowManager = serviceProvider.GetRequiredService<IWindowService>();
             ToggleSettingsMenuCommand = new RelayCommand(ToggleSettingsMenu);
             CloseWindowCommand = new RelayCommand(CloseWindow);
             MaximizeWindowCommand = new RelayCommand(MaximizeWindow);

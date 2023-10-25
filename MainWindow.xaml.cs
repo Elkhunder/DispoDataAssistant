@@ -22,10 +22,13 @@ namespace DispoDataAssistant
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DataInputViewModel _dataInputViewModel;
         public MainWindow()
         {
-            DataInputViewModel _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>() ?? throw new InvalidOperationException("Data Input View Model not initialized");
             InitializeComponent();
+
+            var serviceProvider = Ioc.Default;
+            _dataInputViewModel = serviceProvider.GetRequiredService<DataInputViewModel>();
             _dataInputViewModel.AssetTagTextBox.Focus();
         }
 

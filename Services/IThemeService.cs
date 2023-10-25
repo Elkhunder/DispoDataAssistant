@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace DispoDataAssistant.Services
 {
-    public interface IThemesService
+    public interface IThemeService
     {
         string UserTheme { get; }
         void SetTheme(string themeName);

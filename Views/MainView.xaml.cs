@@ -27,7 +27,9 @@ namespace DispoDataAssistant.Views
         {
             InitializeComponent();
 
-            _mainViewModel = Ioc.Default.GetService<MainViewModel>();
+            var serviceProvider = Ioc.Default;
+
+            _mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
             
             DataContext = _mainViewModel;
         }

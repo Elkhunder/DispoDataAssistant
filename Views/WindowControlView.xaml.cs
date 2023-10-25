@@ -22,12 +22,14 @@ namespace DispoDataAssistant.Views
     /// </summary>
     public partial class WindowControlView : UserControl
     {
-        WindowControlViewModel _windowContolViewModel;
+        private readonly WindowControlViewModel _windowContolViewModel;
         public WindowControlView()
         {
-            _windowContolViewModel = Ioc.Default.GetService<WindowControlViewModel>()!;
             InitializeComponent();
-            this.DataContext = _windowContolViewModel;
+
+            var serviceProvider = Ioc.Default;
+            _windowContolViewModel = serviceProvider.GetRequiredService<WindowControlViewModel>();
+            DataContext = _windowContolViewModel;
         }
     }
 }

@@ -22,11 +22,15 @@ namespace DispoDataAssistant.Views
     /// </summary>
     public partial class DataInputView : UserControl
     {
-        private readonly DataInputViewModel _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>()!;
+        private readonly DataInputViewModel _dataInputViewModel;
         public DataInputView()
         {
+            var serviceProvider = Ioc.Default;
+            _dataInputViewModel = serviceProvider.GetRequiredService<DataInputViewModel>();
+
             InitializeComponent();
-            this.DataContext = _dataInputViewModel;
+
+            DataContext = _dataInputViewModel;
             _dataInputViewModel.AssetTagTextBox = AssetTagTextBox;
         }
     }

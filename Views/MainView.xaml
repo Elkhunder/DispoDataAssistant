@@ -29,8 +29,8 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <views:DataInputView x:Name="DataInputView" />
-                    <views:DataActionsView x:Name="DataActionsView" Grid.Row="1"/>
+                    <views:DataInputView/>
+                    <views:DataActionsView Grid.Row="1"/>
                 </Grid>
             </Border>
             <Grid x:Name="SettingsMenuContianer" Panel.ZIndex="10" Grid.Row="1" Grid.RowSpan="2">

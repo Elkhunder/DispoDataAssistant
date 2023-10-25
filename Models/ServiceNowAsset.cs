@@ -1,6 +1,12 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 namespace DispoDataAssistant.Models
 {
+    public class ServiceNowResponse
+    {
+        [JsonPropertyName("result")]
+        public List<ServiceNowAsset> Assets { get; set; }
+    }
     public class ServiceNowAsset
     {
         [JsonPropertyName("asset_tag")]

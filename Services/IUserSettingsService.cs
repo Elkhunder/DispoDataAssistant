@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DispoDataAssistant.Services
 {
-    public interface IUserSettingsSerivce
+    public interface IUserSettingsService
     {
         void ApplyUserSettings(Dictionary<string, object> userSettings);
         void ApplyDeviceModel(string deviceModel);

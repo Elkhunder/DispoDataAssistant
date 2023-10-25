@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using DispoDataAssistant.Handlers;
+using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
 using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
@@ -7,6 +8,7 @@ using DispoDataAssistant.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Windows;
 
 namespace DispoDataAssistant
@@ -16,22 +18,20 @@ namespace DispoDataAssistant
     /// </summary>
     public partial class App : Application
     {
-        public ViewModelLocator Locator => Ioc.Default.GetService<ViewModelLocator>();
+        private readonly ISettingsService _settingsService;
+        private readonly IUserSettingsService _userSettingsSerivce;
         public App()
         {
             IServiceProvider serviceProvider = ConfigureServices();
             Ioc.Default.ConfigureServices(serviceProvider);
 
-            IUserSettingsSerivce _userSettingsSerivce = Ioc.Default.GetService<IUserSettingsSerivce>() ?? throw new InvalidOperationException("IUserSettingsService not registered.");
-            ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>() ?? throw new InvalidOperationException("ISettingsService not registered.");
-            DataInputViewModel _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>() ?? throw new InvalidOperationException("DataInputViewModel not registered");
-            Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
-
-
             this.InitializeComponent();
 
+            IUserSettingsService _userSettingsSerivce = Ioc.Default.GetRequiredService<IUserSettingsService>();
+            ISettingsService _settingsService = Ioc.Default.GetRequiredService<ISettingsService>();
+
+            Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
             _userSettingsSerivce.ApplyUserSettings(userSettings);
-            
         }
 
         public new static App Current => (App)Application.Current;
@@ -42,22 +42,35 @@ namespace DispoDataAssistant
         {
             IServiceCollection services = new ServiceCollection();
 
+            // Add the ServiceNowApiClient as a scoped service
+            services.AddScoped<IServiceNowApiClient>(provider =>
+            {
+                var baseUrl = ConfigurationManager.AppSettings["ServiceNowBaseUrl"]; // Read the base URL from configuration
+
+                if (baseUrl != null)
+                {
+                    return new ServiceNowApiClient(baseUrl);
+                }
+                else
+                {
+                    return new ServiceNowApiClient("https://ummeddev.service-now.com/api/now/");
+                }
+            });
+
             services.AddSingleton<DeviceDetails>();
             services.AddSingleton<DeviceInformation>();
             services.AddSingleton<Themes>();
             services.AddSingleton<ISettingsService, SettingsManager>();
-            services.AddSingleton<IThemesService, ThemesManager>();
-            services.AddSingleton<IUserSettingsSerivce, UserSettingsManager>();
+            services.AddSingleton<IThemeService, ThemeManager>();
+            services.AddSingleton<IUserSettingsService, UserSettingsManager>();
             services.AddSingleton<IDataInputService, DataInputManager>();
             services.AddSingleton<IWindowService, WindowManager>();
+            services.AddSingleton<MainViewModel>();
             services.AddSingleton<SettingsViewModel>();
             services.AddSingleton<WindowControlViewModel>();
-            services.AddSingleton<MainViewModel>();
             services.AddSingleton<DataInputViewModel>();
             services.AddSingleton<DataActionsViewModel>();
-            services.AddSingleton<ViewModelLocator>();
-            services.AddSingleton<ServiceNowHandler>();
-            
+            //services.AddSingleton<ViewModelLocator>();
 
             return services.BuildServiceProvider();
         }

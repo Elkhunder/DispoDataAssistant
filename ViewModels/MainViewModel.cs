@@ -22,10 +22,10 @@ namespace DispoDataAssistant.ViewModels
             get => _isSettingsMenuVisible;
             set => SetProperty(ref _isSettingsMenuVisible, value);
         }
-        public MainViewModel()
+        public MainViewModel(SettingsViewModel settingsViewModel)
         {
             Console.WriteLine("MainViewModel: Instance Created");
-            SettingsViewModel = Ioc.Default.GetService<SettingsViewModel>();
+            SettingsViewModel = settingsViewModel;
             SettingsViewModel.ToggleSettingsMenuRequested += OnToggleSettingsMenuRequested;
 
             this.PropertyChanged += MainViewModel_PropertyChanged;

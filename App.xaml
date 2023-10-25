@@ -28,9 +28,9 @@
                 <ResourceDictionary Source="Resources/Styles/SettingsMenuButton.xaml"/>
                 
                 <!--View Model Locator-->
-                <ResourceDictionary>
+                <!--<ResourceDictionary>
                     <viewModels:ViewModelLocator x:Key="Locator"/>
-                </ResourceDictionary>
+                </ResourceDictionary>-->
                 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DispoDataAssistant.Handlers;
+using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ namespace DispoDataAssistant.ViewModels
 {
     public partial class DataInputViewModel : BaseViewModel
     {
-        private ServiceNowHandler _serviceNowHandler;
         private TextBox _assetTagTextBox;
         public TextBox AssetTagTextBox
         {
@@ -95,10 +95,12 @@ namespace DispoDataAssistant.ViewModels
         }
 
         private DeviceInformation _deviceInformation;
-        public DataInputViewModel()
+        private readonly IServiceNowApiClient _serviceNowApiClient;
+
+        public DataInputViewModel(IServiceNowApiClient serviceNowApiClient, DeviceInformation deviceInformation)
         {
-            _deviceInformation = Ioc.Default.GetService<DeviceInformation>()!;
-            _serviceNowHandler = Ioc.Default.GetService<ServiceNowHandler>()!;
+            _serviceNowApiClient = serviceNowApiClient;
+            _deviceInformation = deviceInformation;
 
             DeviceTypeOptions = _deviceInformation.DeviceTypes!;
             DeviceModelOptions = _deviceInformation.DeviceModels!;
@@ -119,7 +121,9 @@ namespace DispoDataAssistant.ViewModels
 
         async partial void OnAssetTagChanged(string value)
         {
-            ServiceNowAsset asset = await _serviceNowHandler.GetServiceNowAssetAsync(AssetTag);
+            //ServiceNowAsset asset = await _serviceNowHandler.GetServiceNowAssetAsync(AssetTag);
+
+            ServiceNowAsset? asset = await _serviceNowApiClient.GetServiceNowAssetAsync(AssetTag);
 
             if ( asset is not null)
             {
@@ -129,7 +133,14 @@ namespace DispoDataAssistant.ViewModels
                 }
                 if ( asset.Manufacturer is not null)
                 {
-                    DeviceManufacturer = asset.Manufacturer;
+                    if (asset.Manufacturer is "Hewlett-Packard")
+                    {
+                        DeviceManufacturer = "HP";
+                    }
+                    else
+                    {
+                        DeviceManufacturer = asset.Manufacturer;
+                    }
                 }
                 if (asset.Model is not null)
                 {
