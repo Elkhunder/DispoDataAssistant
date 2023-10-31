@@ -4,8 +4,10 @@ using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
 using DispoDataAssistant.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 
 namespace DispoDataAssistant
@@ -18,18 +20,30 @@ namespace DispoDataAssistant
         public ViewModelLocator Locator => Ioc.Default.GetService<ViewModelLocator>();
         public App()
         {
+            ConfigureSerilog();
             IServiceProvider serviceProvider = ConfigureServices();
             Ioc.Default.ConfigureServices(serviceProvider);
 
-            IUserSettingsSerivce _userSettingsSerivce = Ioc.Default.GetService<IUserSettingsSerivce>() ?? throw new InvalidOperationException("IUserSettingsService not registered.");
-            ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>() ?? throw new InvalidOperationException("ISettingsService not registered.");
-            DataInputViewModel _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>() ?? throw new InvalidOperationException("DataInputViewModel not registered");
+            IUserSettingsSerivce _userSettingsSerivce = Ioc.Default.GetRequiredService<IUserSettingsSerivce>();
+            ISettingsService _settingsService = Ioc.Default.GetRequiredService<ISettingsService>();
+            DataInputViewModel _dataInputViewModel = Ioc.Default.GetRequiredService<DataInputViewModel>();
             Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
 
 
             this.InitializeComponent();
 
             _userSettingsSerivce.ApplyUserSettings(userSettings);
+        }
+
+        private void ConfigureSerilog()
+        {
+            var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DispoDataAssistant", "log.txt");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .Enrich.FromLogContext()
+                .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day)
+                .CreateLogger();
         }
 
         public new static App Current => (App)Application.Current;
@@ -40,6 +54,7 @@ namespace DispoDataAssistant
         {
             var services = new ServiceCollection();
 
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
             services.AddSingleton<DeviceDetails>();
             services.AddSingleton<DeviceInformation>();
             services.AddSingleton<Themes>();

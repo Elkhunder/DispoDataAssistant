@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DispoDataAssistant", "DispoDataAssistant.csproj", "{23F13705-AFE6-40A1-9DE5-69FBEE89C5A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DispoDataAssistant", "DispoDataAssistant.csproj", "{23F13705-AFE6-40A1-9DE5-69FBEE89C5A4}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DispoDataAssistant.Setup", "DispoDataAssistant.Setup\DispoDataAssistant.Setup.vdproj", "{E3F97D6B-EABE-4EC3-BDDC-8EC253C61922}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,8 @@ Global
 		{23F13705-AFE6-40A1-9DE5-69FBEE89C5A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23F13705-AFE6-40A1-9DE5-69FBEE89C5A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23F13705-AFE6-40A1-9DE5-69FBEE89C5A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3F97D6B-EABE-4EC3-BDDC-8EC253C61922}.Debug|Any CPU.ActiveCfg = Debug
+		{E3F97D6B-EABE-4EC3-BDDC-8EC253C61922}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
