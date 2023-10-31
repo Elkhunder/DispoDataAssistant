@@ -1,16 +1,10 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Models;
 using DispoDataAssistant.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace DispoDataAssistant.ViewModels
@@ -21,7 +15,7 @@ namespace DispoDataAssistant.ViewModels
         private readonly Themes _themes;
 
         private readonly ISettingsService? _settingsManager;
-        private readonly IUserSettingsSerivce? _userSettingsManager;
+        private readonly IUserSettingsService? _userSettingsManager;
 
         private string? _selectedTheme;
         private string? _selectedDeviceType;
@@ -39,14 +33,19 @@ namespace DispoDataAssistant.ViewModels
         public RelayCommand<SelectionChangedEventArgs> DeviceManufacturerChangedCommand { get; private set; }
         public RelayCommand<SelectionChangedEventArgs> PickupLocationChangedCommand { get; private set; }
 
-    public SettingsViewModel()
+    public SettingsViewModel(ISettingsService settingsService, IUserSettingsService userSettingsService, DeviceInformation deviceInformation, Themes themes)
         {
             Console.WriteLine("SettingsViewModel: Instance Created");
 
-            _userSettingsManager = Ioc.Default.GetService<IUserSettingsSerivce>() ?? throw new NullReferenceException();
-            _settingsManager = Ioc.Default.GetService<ISettingsService>() ?? throw new NullReferenceException();
-            _deviceInformation = Ioc.Default.GetService<DeviceInformation>() ?? throw new NullReferenceException();
-            _themes = Ioc.Default.GetService<Themes>() ?? throw new NullReferenceException();
+            //_userSettingsManager = Ioc.Default.GetService<IUserSettingsService>() ?? throw new NullReferenceException();
+            //_settingsManager = Ioc.Default.GetService<ISettingsService>() ?? throw new NullReferenceException();
+            //_deviceInformation = Ioc.Default.GetService<DeviceInformation>() ?? throw new NullReferenceException();
+            //_themes = Ioc.Default.GetService<Themes>() ?? throw new NullReferenceException();
+
+            _settingsManager = settingsService;
+            _userSettingsManager = userSettingsService;
+            _deviceInformation = deviceInformation;
+            _themes = themes;
 
             WeakReferenceMessenger.Default.Register<ToggleSettingsMenuMessage>(this, OnToggleSettingsMenuMessageReceived);
             OpenSettingsMenuCommand = new RelayCommand<string>(OpenSettingsMenu);

@@ -10,12 +10,17 @@ namespace DispoDataAssistant.Services
     
     public class DataInputManager : IDataInputService
     {
-        ISettingsService _settingsManager = Ioc.Default.GetService<ISettingsService>()!;
+        ISettingsService _settingsManager;
 
         private string? _deviceModel;
         private string? _deviceType;
         private string? _deviceManufacturer;
         private string? _pickupLocation;
+
+        public DataInputManager(ISettingsService settingsManager)
+        {
+            _settingsManager = settingsManager;
+        }
 
         public string DeviceType
         {

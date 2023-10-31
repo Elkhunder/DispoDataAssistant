@@ -8,10 +8,16 @@ using System.Windows;
 
 namespace DispoDataAssistant.Services
 {
-    public class ThemesManager : IThemesService
+    public class ThemeManager : IThemeService
     {
         private ResourceDictionary? _loadedThemeResource;
-        ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>();
+        //ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>();
+        private readonly ISettingsService _settingsService;
+        public ThemeManager(ISettingsService settingsService)
+        {
+            _settingsService = settingsService;
+        }
+
         public string UserTheme => _settingsService.GetTheme();
 
         public ResourceDictionary GetLoadedTheme()

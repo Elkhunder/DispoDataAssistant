@@ -8,12 +8,22 @@ using System.Threading.Tasks;
 
 namespace DispoDataAssistant.Services
 {
-    public class UserSettingsManager : IUserSettingsSerivce
+    public class UserSettingsManager : IUserSettingsService
     {
-        ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>() ?? throw new InvalidOperationException("ISettingsService not registered.");
-        IThemesService _themeService = Ioc.Default.GetService<IThemesService>() ?? throw new InvalidOperationException("IThemeService not registered.");
-        DataInputViewModel _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>() ?? throw new InvalidOperationException("View Model Locator not registered");
+        //ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>() ?? throw new InvalidOperationException("ISettingsService not registered.");
+        //IThemesService _themeService = Ioc.Default.GetService<IThemesService>() ?? throw new InvalidOperationException("IThemeService not registered.");
+        //DataInputViewModel _dataInputViewModel = Ioc.Default.GetService<DataInputViewModel>() ?? throw new InvalidOperationException("View Model Locator not registered");
 
+        private readonly ISettingsService _settingsService;
+        private readonly IThemeService _themeService;
+        private readonly DataInputViewModel _dataInputViewModel;
+
+        public UserSettingsManager(ISettingsService settingsService, IThemeService themesService, DataInputViewModel dataInputViewModel)
+        {
+            _settingsService = settingsService;
+            _themeService = themesService;
+            _dataInputViewModel = dataInputViewModel;
+        }
 
         public void ApplyDeviceManufacturer(string manufacturer)
         {
