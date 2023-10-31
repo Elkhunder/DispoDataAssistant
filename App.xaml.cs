@@ -6,8 +6,10 @@ using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
 using DispoDataAssistant.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Configuration;
 using System.Windows;
 
@@ -22,6 +24,7 @@ namespace DispoDataAssistant
         private readonly IUserSettingsService _userSettingsSerivce;
         public App()
         {
+            ConfigureSerilog();
             IServiceProvider serviceProvider = ConfigureServices();
             Ioc.Default.ConfigureServices(serviceProvider);
 
@@ -32,6 +35,17 @@ namespace DispoDataAssistant
 
             Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
             _userSettingsSerivce.ApplyUserSettings(userSettings);
+        }
+
+        private void ConfigureSerilog()
+        {
+            var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DispoDataAssistant", "log.txt");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .Enrich.FromLogContext()
+                .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day)
+                .CreateLogger();
         }
 
         public new static App Current => (App)Application.Current;
@@ -57,6 +71,7 @@ namespace DispoDataAssistant
                 }
             });
 
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
             services.AddSingleton<DeviceDetails>();
             services.AddSingleton<DeviceInformation>();
             services.AddSingleton<Themes>();
