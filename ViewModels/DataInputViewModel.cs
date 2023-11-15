@@ -133,6 +133,7 @@ namespace DispoDataAssistant.ViewModels
                 Enum.TryParse<ServiceNowInstallStatus>(existingAsset.InstallStatus, out ServiceNowInstallStatus installStatus);
                 if (installStatus is ServiceNowInstallStatus.Retired)
                 {
+
                     AssignAssetValuesToFields(existingAsset);
                     return;
                 }
