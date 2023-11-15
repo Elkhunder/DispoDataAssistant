@@ -2,8 +2,8 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Messages;
-using DispoDataAssistant.Services;
 using System;
 using System.Windows;
 

@@ -1,9 +1,12 @@
-﻿using DispoDataAssistant.Helpers;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Helpers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,33 +15,32 @@ namespace DispoDataAssistant.Services
 {
     public class EncryptionService
     {
-        private readonly string sharedDrivePath;
-        private readonly string encryptionKeyFileName;
-        private readonly string ivFileName;
+        private string _sharedDrivePath;
+        private string _encryptionKeyFileName;
+        private string _ivFileName;
+        private readonly ILogger<EncryptionService> _logger;
 
         public EncryptionService(string sharedDrivePath, string encryptionKeyFileName, string ivFileName)
         {
-            this.sharedDrivePath = sharedDrivePath;
-            this.encryptionKeyFileName = encryptionKeyFileName;
-            this.ivFileName = ivFileName;
+            this._sharedDrivePath = sharedDrivePath;
+            this._encryptionKeyFileName = encryptionKeyFileName;
+            this._ivFileName = ivFileName;
+            _logger = Ioc.Default.GetRequiredService<ILogger<EncryptionService>>();
         }
 
-        public (string Username, string Password) GetDecryptedServiceNowCredentials(string usernameKey, string passwordKey)
+        public (string? Username, string? Password) GetDecryptedServiceNowCredentials(string usernameKey, string passwordKey)
         {
-            string serviceNowUsername = GetSecretKey(usernameKey);
-            string serviceNowPassword = GetSecretKey(passwordKey);
-
             // Read the base64-encoded encryption key and initialization vector (IV) from the shared drive
-            string base64EncryptionKey = FileHelper.ReadText(Path.Combine(sharedDrivePath, encryptionKeyFileName));
-            string base64Iv = FileHelper.ReadText(Path.Combine(sharedDrivePath, ivFileName));
+            string base64EncryptionKey = FileHelper.ReadText(Path.Combine(_sharedDrivePath, _encryptionKeyFileName));
+            string base64Iv = FileHelper.ReadText(Path.Combine(_sharedDrivePath, _ivFileName));
 
             // Convert the base64-encoded encryption key and IV to byte arrays
             byte[] encryptionKey = Convert.FromBase64String(base64EncryptionKey);
             byte[] iv = Convert.FromBase64String(base64Iv);
 
             // Decrypt username and password
-            serviceNowUsername = Decrypt(serviceNowUsername, encryptionKey, iv);
-            serviceNowPassword = Decrypt(serviceNowPassword, encryptionKey, iv);
+            string? serviceNowUsername = Decrypt(GetSecretKeyFromFile(usernameKey), encryptionKey, iv);
+            string? serviceNowPassword = Decrypt(GetSecretKeyFromFile(passwordKey), encryptionKey, iv);
 
             return (serviceNowUsername, serviceNowPassword);
         }
@@ -60,7 +62,13 @@ namespace DispoDataAssistant.Services
             }
         }
 
-        private string Decrypt(string secret, byte[] encryptionKey, byte[] iv)
+        private string GetSecretKeyFromFile(string path)
+        {
+            path = Path.Combine(_sharedDrivePath, $"{path}.txt");
+            return FileHelper.ReadText(Path.Combine(path));
+        }
+
+        private string? Decrypt(string secret, byte[] encryptionKey, byte[] iv)
         {
             using (Aes aes = Aes.Create())
             {
@@ -72,7 +80,17 @@ namespace DispoDataAssistant.Services
                 using (ICryptoTransform decryptor = aes.CreateDecryptor())
                 {
                     byte[] encryptedBytes = Convert.FromBase64String(secret);
-                    byte[] decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+                    byte[] decryptedBytes;
+                    try
+                    {
+                        decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex.Message);
+                        return null;
+                    }
+
                     return Encoding.UTF8.GetString(decryptedBytes);
                 }
             }

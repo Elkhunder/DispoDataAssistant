@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DispoDataAssistant.Services
+namespace DispoDataAssistant.Interfaces
 {
     public interface ISettingsService
     {
@@ -23,6 +23,6 @@ namespace DispoDataAssistant.Services
         string GetDeviceType();
         void SetDeviceType(string deviceType);
 
-        Dictionary<string, Object> GetAllUserSettings();
+        Dictionary<string, object> GetAllUserSettings();
     }
 }

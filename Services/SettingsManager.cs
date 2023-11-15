@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Properties;
 
 namespace DispoDataAssistant.Services

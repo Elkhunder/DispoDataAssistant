@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.Handlers;
+using DispoDataAssistant.Enums;
 using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
+using DispoDataAssistant.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
@@ -11,8 +12,8 @@ namespace DispoDataAssistant.ViewModels
 {
     public partial class DataInputViewModel : BaseViewModel
     {
-        private TextBox _assetTagTextBox;
-        public TextBox AssetTagTextBox
+        private TextBox? _assetTagTextBox;
+        public TextBox? AssetTagTextBox
         {
             get => _assetTagTextBox;
             set => SetProperty(ref _assetTagTextBox, value);
@@ -27,36 +28,36 @@ namespace DispoDataAssistant.ViewModels
         string assetTag;
         
         private string? _serialNumber;
-        public string SerialNumber
+        public string? SerialNumber
         {
-            get => _serialNumber!;
+            get => _serialNumber;
             set => SetProperty(ref _serialNumber, value);
         }
         private string? _deviceType;
-        public string DeviceType
+        public string? DeviceType
         {
-            get => _deviceType!;
+            get => _deviceType;
             set => SetProperty(ref _deviceType, value);
         }
 
         private string? _deviceManufacturer;
-        public string DeviceManufacturer
+        public string? DeviceManufacturer
         {
-            get => _deviceManufacturer!;
+            get => _deviceManufacturer;
             set => SetProperty(ref _deviceManufacturer, value);
         }
 
         private string? _deviceModel;
-        public string DeviceModel
+        public string? DeviceModel
         {
-            get => _deviceModel!;
+            get => _deviceModel;
             set => SetProperty(ref _deviceModel, value);
         }
 
         private string? _pickupLocation;
-        public string PickupLocation
+        public string? PickupLocation
         {
-            get => _pickupLocation!;
+            get => _pickupLocation;
             set => SetProperty(ref _pickupLocation, value);
         }
         private DateTime? _pickupDate;
@@ -66,29 +67,29 @@ namespace DispoDataAssistant.ViewModels
             set => SetProperty(ref _pickupDate, value);
         }
 
-        private List<string> _deviceTypeOptions;
-        public List<string> DeviceTypeOptions
+        private List<string>? _deviceTypeOptions;
+        public List<string>? DeviceTypeOptions
         {
             get => _deviceTypeOptions;
             set => SetProperty(ref _deviceTypeOptions, value);
         }
 
-        private List<string> _deviceManufacturerOptions;
-        public List<string> DeviceManufacturerOptions
+        private List<string>? _deviceManufacturerOptions;
+        public List<string>? DeviceManufacturerOptions
         {
             get => _deviceManufacturerOptions;
             set => SetProperty(ref _deviceManufacturerOptions, value);
         }
 
-        private List<string> _deviceModelOptions;
-        public List<string> DeviceModelOptions
+        private List<string>? _deviceModelOptions;
+        public List<string>? DeviceModelOptions
         {
             get => _deviceModelOptions;
             set => SetProperty(ref _deviceModelOptions, value);
         }
 
-        private List<string> _pickupLocationOptions;
-        public List<string> PickupLocationOptions
+        private List<string>? _pickupLocationOptions;
+        public List<string>? PickupLocationOptions
         {
             get => _pickupLocationOptions;
             set => SetProperty(ref _pickupLocationOptions, value);
@@ -96,16 +97,20 @@ namespace DispoDataAssistant.ViewModels
 
         private DeviceInformation _deviceInformation;
         private readonly IServiceNowApiClient _serviceNowApiClient;
+        private readonly ILogger<DataInputViewModel> _logger;
 
-        public DataInputViewModel(IServiceNowApiClient serviceNowApiClient, DeviceInformation deviceInformation)
+        public DataInputViewModel(IServiceNowApiClient serviceNowApiClient, DeviceInformation deviceInformation, ILogger<DataInputViewModel> logger)
         {
             _serviceNowApiClient = serviceNowApiClient;
             _deviceInformation = deviceInformation;
+            _logger = logger;
 
-            DeviceTypeOptions = _deviceInformation.DeviceTypes!;
-            DeviceModelOptions = _deviceInformation.DeviceModels!;
-            DeviceManufacturerOptions = _deviceInformation.DeviceManufacturers!;
-            PickupLocationOptions = _deviceInformation.PickupLocations!;
+            DeviceTypeOptions = _deviceInformation.DeviceTypes;
+            DeviceModelOptions = _deviceInformation.DeviceModels;
+            DeviceManufacturerOptions = _deviceInformation.DeviceManufacturers;
+            PickupLocationOptions = _deviceInformation.PickupLocations;
+
+            assetTag = string.Empty;
         }
 
         public void ClearInputControls()
@@ -121,18 +126,29 @@ namespace DispoDataAssistant.ViewModels
 
         async partial void OnAssetTagChanged(string value)
         {
-            //ServiceNowAsset asset = await _serviceNowHandler.GetServiceNowAssetAsync(AssetTag);
+            ServiceNowAsset? existingAsset = DbService.GetServiceNowAssetByProperty("AssetTag", value);
+
+            if (existingAsset is not null)
+            {
+                Enum.TryParse<ServiceNowInstallStatus>(existingAsset.InstallStatus, out ServiceNowInstallStatus installStatus);
+                if (installStatus is ServiceNowInstallStatus.Retired)
+                {
+                    AssignAssetValuesToFields(existingAsset);
+                    return;
+                }
+            }
 
             ServiceNowAsset? asset = await _serviceNowApiClient.GetServiceNowAssetAsync(AssetTag);
 
+            
+
             if ( asset is not null)
             {
-                if (asset.SerialNumber is not null)
+                ServiceNowAsset? serviceNowAsset = DbService.SaveAsset(asset, true);
+                if ( serviceNowAsset is not null )
                 {
-                    SerialNumber = asset.SerialNumber;
-                }
-                if ( asset.Manufacturer is not null)
-                {
+                    SerialNumber = serviceNowAsset.SerialNumber;
+
                     if (asset.Manufacturer is "Hewlett-Packard")
                     {
                         DeviceManufacturer = "HP";
@@ -141,20 +157,25 @@ namespace DispoDataAssistant.ViewModels
                     {
                         DeviceManufacturer = asset.Manufacturer;
                     }
-                }
-                if (asset.Model is not null)
-                {
+
                     DeviceModel = asset.Model;
-                }
-                if (asset.Category is not null)
-                {
                     DeviceType = asset.Category;
                 }
             }
             else
             {
+                _logger.LogInformation($"Asset {value} was not found in service now");
                 return;
             }
+        }
+
+        private void AssignAssetValuesToFields(ServiceNowAsset asset)
+        {
+            SerialNumber = asset.SerialNumber;
+            DeviceManufacturer = asset.Manufacturer;
+            DeviceModel = asset.Model;
+            DeviceType = asset.Category;
+
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.ViewModels;
 using System;
 using System.Collections.Generic;

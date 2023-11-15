@@ -20,8 +20,6 @@ namespace DispoDataAssistant
     /// </summary>
     public partial class App : Application
     {
-        private readonly ISettingsService _settingsService;
-        private readonly IUserSettingsService _userSettingsSerivce;
         public App()
         {
             ConfigureSerilog();

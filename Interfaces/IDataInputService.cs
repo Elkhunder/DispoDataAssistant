@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DispoDataAssistant.Services
+namespace DispoDataAssistant.Interfaces
 {
     internal interface IDataInputService
     {

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DispoDataAssistant.Services
 {
-    
+
     public class DataInputManager : IDataInputService
     {
         ISettingsService _settingsManager;

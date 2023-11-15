@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace DispoDataAssistant.Services
+namespace DispoDataAssistant.Interfaces
 {
     public interface IThemeService
     {
         string UserTheme { get; }
         void SetTheme(string themeName);
         void UpdateTheme(ResourceDictionary userThemeResource);
-        ResourceDictionary GetLoadedTheme();
+        ResourceDictionary? GetLoadedTheme();
         void RemoveLoadedTheme(ResourceDictionary loadedThemeResource);
         ResourceDictionary GetThemeResource(string themeName);
     }

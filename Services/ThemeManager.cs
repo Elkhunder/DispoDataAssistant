@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,6 @@ namespace DispoDataAssistant.Services
 {
     public class ThemeManager : IThemeService
     {
-        private ResourceDictionary? _loadedThemeResource;
         //ISettingsService _settingsService = Ioc.Default.GetService<ISettingsService>();
         private readonly ISettingsService _settingsService;
         public ThemeManager(ISettingsService settingsService)
@@ -20,7 +20,7 @@ namespace DispoDataAssistant.Services
 
         public string UserTheme => _settingsService.GetTheme();
 
-        public ResourceDictionary GetLoadedTheme()
+        public ResourceDictionary? GetLoadedTheme()
         {
             var mergedDictionaries = Application.Current.Resources.MergedDictionaries;
 

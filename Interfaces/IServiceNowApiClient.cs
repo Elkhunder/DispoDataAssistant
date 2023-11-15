@@ -10,5 +10,6 @@ namespace DispoDataAssistant.Interfaces
     public interface IServiceNowApiClient
     {
         Task<ServiceNowAsset?> GetServiceNowAssetAsync(string assetTag);
+        Task<ServiceNowAsset?> RetireServiceNowAssetAsync(string sys_id);
     }
 }
