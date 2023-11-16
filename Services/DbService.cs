@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 namespace DispoDataAssistant.Services
 {
@@ -13,28 +14,60 @@ namespace DispoDataAssistant.Services
     {
         public static ServiceNowAsset? GetServiceNowAssetById(string Id)
         {
-            using (IDbConnection conn = new SQLiteConnection(LoadConnectionString()))
+            using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
             {
-                ServiceNowAsset? serviceNowAsset = conn.QuerySingleOrDefault<ServiceNowAsset?>($"SELECT * FROM Asset WHERE Id = @Id", new { Id });
+                if (dbConnection.State != ConnectionState.Open)
+                {
+                    dbConnection.Open();
+                }
+
+                ServiceNowAsset? serviceNowAsset = dbConnection.QuerySingleOrDefault<ServiceNowAsset?>($"SELECT * FROM Asset WHERE Id = @Id", new { Id });
+
+                if (dbConnection.State != ConnectionState.Closed)
+                {
+                    dbConnection.Close();
+                }
+
                 return serviceNowAsset;
             }
         }
 
         public static ServiceNowAsset? GetServiceNowAssetByProperty(string propertyName, string propertyValue)
         {
-            using (IDbConnection conn = new SQLiteConnection(LoadConnectionString()))
+            using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
             {
-                ServiceNowAsset? serviceNowAsset = conn.QuerySingleOrDefault<ServiceNowAsset?>($"SELECT * FROM Asset WHERE {propertyName} = {propertyValue}");
+                if (dbConnection.State != ConnectionState.Open)
+                {
+                    dbConnection.Open();
+                }
+
+                ServiceNowAsset? serviceNowAsset = dbConnection.QuerySingleOrDefault<ServiceNowAsset?>($"SELECT * FROM Asset WHERE {propertyName} = {propertyValue}");
+
+                if (dbConnection.State != ConnectionState.Closed)
+                {
+                    dbConnection.Close();
+                }
+
                 return serviceNowAsset;
             }
         }
 
         public static void SaveAsset(ServiceNowAsset serviceNowAsset)
         {
-            using (IDbConnection conn = new SQLiteConnection(LoadConnectionString()))
+            using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
             {
-                conn.Execute("Insert into Asset (Id, AssetTag, Manufacturer, Model, Category, SerialNumber, OperationalStatus, InstallStatus, LastUpdated)" +
+                if (dbConnection.State != ConnectionState.Open)
+                {
+                    dbConnection.Open();
+                }
+
+                dbConnection.Execute("Insert into Asset (Id, AssetTag, Manufacturer, Model, Category, SerialNumber, OperationalStatus, InstallStatus, LastUpdated)" +
                     "values (@Id, @AssetTag, @Manufacturer, @Model, @Category, @SerialNumber, @OperationalStatus, @InstallStatus, @LastUpdated)", serviceNowAsset);
+
+                if (dbConnection.State != ConnectionState.Closed)
+                {
+                    dbConnection.Close();
+                }
             }
         }
 
@@ -51,9 +84,19 @@ namespace DispoDataAssistant.Services
                     {
                         var updateString = GenerateUpdateString(changedProperties);
 
-                        using (IDbConnection connection = new SQLiteConnection(LoadConnectionString()))
+                        using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
                         {
-                            connection.Execute(updateString, serviceNowAsset);
+                            if (dbConnection.State != ConnectionState.Open)
+                            {
+                                dbConnection.Open();
+                            }
+
+                            dbConnection.Execute(updateString, serviceNowAsset);
+
+                            if (dbConnection.State != ConnectionState.Closed)
+                            {
+                                dbConnection.Close();
+                            }
                         }
                         return serviceNowAsset;
                     }
@@ -61,10 +104,20 @@ namespace DispoDataAssistant.Services
                 }
                 else
                 {
-                    using (IDbConnection conn = new SQLiteConnection(LoadConnectionString()))
+                    using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
                     {
-                        conn.Execute("Insert into Asset (Id, AssetTag, Manufacturer, Model, Category, SerialNumber, OperationalStatus, InstallStatus, LastUpdated)" +
+                        if (dbConnection.State != ConnectionState.Open)
+                        {
+                            dbConnection.Open();
+                        }
+
+                        dbConnection.Execute("Insert into Asset (Id, AssetTag, Manufacturer, Model, Category, SerialNumber, OperationalStatus, InstallStatus, LastUpdated)" +
                             "values (@Id, @AssetTag, @Manufacturer, @Model, @Category, @SerialNumber, @OperationalStatus, @InstallStatus, @LastUpdated)", serviceNowAsset);
+
+                        if (dbConnection.State != ConnectionState.Closed)
+                        {
+                            dbConnection.Close();
+                        }
                     }
                     return serviceNowAsset;
                 }
@@ -74,6 +127,7 @@ namespace DispoDataAssistant.Services
 
         public static ServiceNowAsset? SaveAsset(ServiceNowAsset serviceNowAsset, ServiceNowAsset existingAsset,  bool upsert)
         {
+            
             if (upsert && serviceNowAsset is not null && existingAsset is not null)
             {
                 var changedProperties = CompareExistingAssetToNewAsset(existingAsset, serviceNowAsset);
@@ -82,9 +136,19 @@ namespace DispoDataAssistant.Services
                 {
                     var updateString = GenerateUpdateString(changedProperties);
 
-                    using (IDbConnection connection = new SQLiteConnection(LoadConnectionString()))
+                    using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
                     {
-                        connection.Execute(updateString, serviceNowAsset);
+                        if (dbConnection.State != ConnectionState.Open)
+                        {
+                            dbConnection.Open();
+                        }
+
+                        dbConnection.Execute(updateString, serviceNowAsset);
+
+                        if (dbConnection.State != ConnectionState.Closed)
+                        {
+                            dbConnection.Close();
+                        }
                     }
                     return serviceNowAsset;
                 }
@@ -92,10 +156,20 @@ namespace DispoDataAssistant.Services
             }
             else
             {
-                using (IDbConnection connection = new SQLiteConnection(LoadConnectionString()))
+                using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
                 {
-                    connection.Execute("Insert into Asset (Id, AssetTag, Manufacturer, Model, Category, SerialNumber, OperationalStatus, InstallStatus, LastUpdated)" +
+                    if (dbConnection.State != ConnectionState.Open)
+                    {
+                        dbConnection.Open();
+                    }
+
+                    dbConnection.Execute("Insert into Asset (Id, AssetTag, Manufacturer, Model, Category, SerialNumber, OperationalStatus, InstallStatus, LastUpdated)" +
                             "values (@Id, @AssetTag, @Manufacturer, @Model, @Category, @SerialNumber, @OperationalStatus, @InstallStatus, @LastUpdated)", serviceNowAsset);
+
+                    if (dbConnection.State != ConnectionState.Closed)
+                    {
+                        dbConnection.Close();
+                    }
                 }
                 return serviceNowAsset;
             }
@@ -134,6 +208,54 @@ namespace DispoDataAssistant.Services
         private static string LoadConnectionString(string id = "Default")
         {
             return ConfigurationManager.ConnectionStrings[id].ConnectionString;
+        }
+
+        private static void CreateNewTable(SQLiteConnection dbConnection)
+        {
+            if (dbConnection.State != ConnectionState.Open)
+            {
+                dbConnection.Open();
+            }
+
+            var date = DateTime.Now;
+            var month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
+
+            //Check if table name alread exists before creating it
+            var tableNames = GetTableNames(dbConnection);
+            if (tableNames != null && tableNames.Contains(month)) { return;  }
+
+            string sqlCommand = $"Create Table {month} (Id TEXT PRIMARY KEY NOT NULL UNIQUE, AssetTag TEXT NOT NULL, Manufacturer TEXT NOT NULL, Model TEXT NOT NULL, Category TEXT NOT NULL, SerialNumber TEXT NOT NULL, OperationalStatus TEXT NOT NULL, InstallStatus TEXT NOT NULL, LastUpdated TEXT NOT NULL)";
+            SQLiteCommand command = new SQLiteCommand(sqlCommand, dbConnection);
+            command.ExecuteNonQuery();
+
+            if (dbConnection.State != ConnectionState.Closed)
+            {
+                dbConnection.Close();
+            }
+        }
+
+        private static List<string>? GetTableNames(SQLiteConnection dbConnection)
+        {
+            if (dbConnection.State != ConnectionState.Open)
+            {
+                dbConnection.Open();
+            }
+            var tableNames = new List<string>();
+            using (SQLiteCommand command = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%'", dbConnection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tableNames.Add(reader["name"].ToString());
+                    }
+                }
+            }
+            if (dbConnection.State != ConnectionState.Closed)
+            {
+                dbConnection.Close();
+            }
+            return tableNames;
         }
     }
 }

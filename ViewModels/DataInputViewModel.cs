@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Dapper;
 using DispoDataAssistant.Enums;
 using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
@@ -6,6 +7,7 @@ using DispoDataAssistant.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Windows.Controls;
 
 namespace DispoDataAssistant.ViewModels
@@ -178,5 +180,7 @@ namespace DispoDataAssistant.ViewModels
             DeviceType = asset.Category;
 
         }
+
+        
     }
 }
