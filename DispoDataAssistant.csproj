@@ -9,23 +9,43 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\add.png" />
+    <None Remove="Resources\Icons\download.png" />
+    <None Remove="Resources\Icons\edit.png" />
+    <None Remove="Resources\Icons\file_save.png" />
+    <None Remove="Resources\Icons\remove.png" />
+    <None Remove="Resources\Icons\upload_file.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Michigan.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Dapper" Version="2.1.21" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
-    <PackageReference Include="Serilog" Version="3.0.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.RichTextBox.Wpf" Version="1.1.0" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Styles\" />
+    <Folder Include="Interfaces\" />
     <Folder Include="Resources\Themes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\add.png" />
+    <Resource Include="Resources\Icons\download.png" />
+    <Resource Include="Resources\Icons\edit.png" />
+    <Resource Include="Resources\Icons\file_save.png" />
+    <Resource Include="Resources\Icons\remove.png" />
+    <Resource Include="Resources\Icons\upload_file.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +57,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DispoAssistant.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\UserSettings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>UserSettings.Designer.cs</LastGenOutput>

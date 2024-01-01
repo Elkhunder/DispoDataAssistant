@@ -8,13 +8,13 @@
         xmlns:viewModels="clr-namespace:DispoDataAssistant.ViewModels"
         mc:Ignorable="d"
         Title="Dispo Data Assistant"
-        Height="500"
-        Width="400"
+        Height="Auto"
+        Width="Auto"
         WindowStyle="None"
         WindowState="Normal"
         ResizeMode="NoResize"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Grid>
-        <views:MainView/>
+        <views:MainView x:Name="MainView"/>
     </Grid>
 </Window>

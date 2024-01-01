@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -22,16 +23,14 @@ namespace DispoDataAssistant.Views
     /// </summary>
     public partial class DataInputView : UserControl
     {
-        private readonly DataInputViewModel _dataInputViewModel;
+        private ITabManager _tabManager;
         public DataInputView()
         {
-            var serviceProvider = Ioc.Default;
-            _dataInputViewModel = serviceProvider.GetRequiredService<DataInputViewModel>();
-
             InitializeComponent();
 
-            DataContext = _dataInputViewModel;
-            _dataInputViewModel.AssetTagTextBox = AssetTagTextBox;
+            _tabManager = Ioc.Default.GetRequiredService<ITabManager>();
+            TabControlPanel.DataContext = _tabManager;
         }
     }
 }
+

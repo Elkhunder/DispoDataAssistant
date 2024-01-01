@@ -23,15 +23,29 @@ namespace DispoDataAssistant.Views
     public partial class MainView : UserControl
     {
         private readonly MainViewModel _mainViewModel;
+        private readonly WindowControlViewModel _windowContolViewModel;
+        private readonly SettingsViewModel _settingsViewModel;
+        private readonly DataActionsViewModel _dataActionsViewModel;
+        private readonly DataInputViewModel _dataInputViewModel;
+        private readonly Ioc _serviceProvider = Ioc.Default;
         public MainView()
         {
             InitializeComponent();
 
-            var serviceProvider = Ioc.Default;
+            _mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+            _windowContolViewModel = _serviceProvider.GetRequiredService<WindowControlViewModel>();
+            _settingsViewModel = _serviceProvider.GetRequiredService<SettingsViewModel>();
+            _dataActionsViewModel = _serviceProvider.GetRequiredService<DataActionsViewModel>();
+            _dataInputViewModel = _serviceProvider.GetRequiredService<DataInputViewModel>();
 
-            _mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
             
             DataContext = _mainViewModel;
+            WindowsControlView.DataContext = _windowContolViewModel;
+            DataActionsView.DataContext = _dataActionsViewModel;
+            DataInputView.DataContext = _dataInputViewModel;
+            SettingsView.DataContext = _settingsViewModel;
+
+            _dataInputViewModel.AssetTagTextBox = DataInputView.AssetTagTextBox;
         }
     }
 }

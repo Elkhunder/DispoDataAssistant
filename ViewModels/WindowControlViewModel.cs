@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Windows;
 
@@ -36,11 +37,11 @@ namespace DispoDataAssistant.ViewModels
             get => _restoreWindowVisible;
             set => SetProperty(ref _restoreWindowVisible, value);
         }
-        public WindowControlViewModel()
+        public WindowControlViewModel() : this(null!, null!) { }
+        public WindowControlViewModel(IWindowService windowService, ILogger<WindowControlViewModel> logger) : base(logger)
         {
-            Console.WriteLine("WindowsControl: Instance Created");
-            var serviceProvider = Ioc.Default;
-            _windowManager = serviceProvider.GetRequiredService<IWindowService>();
+            _logger?.LogInformation("Instance Created");
+            _windowManager = windowService;
             ToggleSettingsMenuCommand = new RelayCommand(ToggleSettingsMenu);
             CloseWindowCommand = new RelayCommand(CloseWindow);
             MaximizeWindowCommand = new RelayCommand(MaximizeWindow);
@@ -73,7 +74,7 @@ namespace DispoDataAssistant.ViewModels
 
         private void ToggleSettingsMenu()
         {
-            Console.WriteLine("WindowControlViewModel: Toggle Settings Menu Command Executed");
+            _logger?.LogInformation("Toggle Settings Menu Command Executed");
             WeakReferenceMessenger.Default.Send(new ToggleSettingsMenuMessage());
         }
     }

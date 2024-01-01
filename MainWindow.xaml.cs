@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using DispoDataAssistant.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,7 +31,15 @@ namespace DispoDataAssistant
 
             var serviceProvider = Ioc.Default;
             _dataInputViewModel = serviceProvider.GetRequiredService<DataInputViewModel>();
-            _dataInputViewModel.AssetTagTextBox.Focus();
+            TextBox? assetTagTextBox = _dataInputViewModel.AssetTagTextBox;
+
+            if(assetTagTextBox != null )
+            {
+                assetTagTextBox.Focus();
+            }
+
+            MainView.DataContext = serviceProvider.GetRequiredService<MainViewModel>();
+
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

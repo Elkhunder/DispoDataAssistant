@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,8 +23,10 @@ namespace DispoDataAssistant.ViewModels
             get => _isSettingsMenuVisible;
             set => SetProperty(ref _isSettingsMenuVisible, value);
         }
-        public MainViewModel(SettingsViewModel settingsViewModel)
+
+        public MainViewModel(SettingsViewModel settingsViewModel, ILogger<MainViewModel> logger) : base(logger)
         {
+            var provider = Ioc.Default;
             Console.WriteLine("MainViewModel: Instance Created");
             SettingsViewModel = settingsViewModel;
             SettingsViewModel.ToggleSettingsMenuRequested += OnToggleSettingsMenuRequested;

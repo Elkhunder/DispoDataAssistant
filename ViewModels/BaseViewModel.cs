@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace DispoDataAssistant.ViewModels
 {
     public class BaseViewModel : ObservableObject
     {
-        public BaseViewModel()
+        protected readonly ILogger? _logger;
+        public BaseViewModel(ILogger? logger)
         {
+            _logger = logger;
             PropertyChanged += (s, e) =>
             {
                 Console.WriteLine($"Property changed: {e.PropertyName}");

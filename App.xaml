@@ -26,7 +26,11 @@
                 <ResourceDictionary Source="Resources/Styles/PickupDateDatePicker.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/SettingsMenu.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/SettingsMenuButton.xaml"/>
-                
+                <ResourceDictionary Source="Resources/Styles/TextBoxInError.xaml"/>
+
+                <!--Templates-->
+                <ResourceDictionary Source="Resources/Templates/ValidationTemplate.xaml"/>
+
                 <!--View Model Locator-->
                 <!--<ResourceDictionary>
                     <viewModels:ViewModelLocator x:Key="Locator"/>

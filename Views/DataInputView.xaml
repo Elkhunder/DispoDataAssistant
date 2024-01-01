@@ -3,129 +3,155 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DispoDataAssistant.Views" xmlns:viewmodels="clr-namespace:DispoDataAssistant.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:DataInputViewModel}"
+             xmlns:local="clr-namespace:DispoDataAssistant.Views"
+             xmlns:viewmodels="clr-namespace:DispoDataAssistant.ViewModels"
+             xmlns:s="clr-namespace:DispoDataAssistant.Services"
+             d:DataContext="{d:DesignInstance Type=viewmodels:DataInputViewModel, IsDesignTimeCreatable=True}"
              xmlns:behaviors="clr-namespace:DispoDataAssistant.Behaviors"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="400">
-    <Grid Background="{DynamicResource baseTheme.Background}">
+             mc:Ignorable="d" d:DesignWidth="1000" d:Height="Auto"
+             Height="Auto" Width="Auto">
+    <UserControl.DataContext>
+        <viewmodels:DataInputViewModel/>
+    </UserControl.DataContext>
+    <Grid Background="{DynamicResource baseTheme.Background}" HorizontalAlignment="Center" Width="Auto">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="DataInputPanel"
+                    Orientation="Horizontal"
+                    FlowDirection="LeftToRight"
+                    Grid.Row="0"
+                    Grid.Column="0">
+            
+            <StackPanel x:Name="AssetTagPanel">
+
+                <Label x:Name="AssetTagLabel"
+                       HorizontalContentAlignment="Center"
+                       Style="{DynamicResource standardLabel}"
+                       Content="Asset Tag"
+                       Margin="20,0"/>
+
+                <TextBox x:Name="AssetTagTextBox"
+                         Style="{DynamicResource standardTextBoxStyle}"
+                         Text="{Binding AssetTag}"
+                         behaviors:FocusBehavior.Focus="{Binding FocusTextBox}"
+                         VerticalContentAlignment="Center"
+                         IsTabStop="True"
+                         TabIndex="0"
+                         Height="30"
+                         Margin="20,0"
+                         MinWidth="200"/>
+            </StackPanel>
+
+            <StackPanel x:Name="SerialNumberPanel">
+
+                <Label x:Name="SerialNumberLabel"
+                       HorizontalContentAlignment="Center"
+                       Style="{DynamicResource standardLabel}"
+                       Content="Serial Number"
+                       Margin="20,0"/>
+                
+                <TextBox x:Name="SerialNumberTextBox"
+                         Style="{DynamicResource standardTextBoxStyle}"
+                         Text="{Binding SerialNumber}"
+                         VerticalContentAlignment="Center"
+                         IsTabStop="True"
+                         TabIndex="1"
+                         Height="30"
+                         Margin="20,0"
+                         MinWidth="200"/>
+            </StackPanel>
+
+            <StackPanel x:Name="PickupLocationDatePanel">
+                <Label x:Name="PickupDateLabel"
+                       Width="Auto"
+                       HorizontalContentAlignment="Center"
+                       Style="{DynamicResource standardLabel}"
+                       Content="Pickup Location &amp; Date"
+                       Margin="20,0"/>
+                
+                <Grid x:Name="PickupLocationDateGrid"
+                      MinWidth="200"
+                      Margin="20,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Style="{StaticResource standardComboBox}"
+                              x:Name="pickupLocationComboBox"
+                              SelectedItem="{Binding PickupLocation}"
+                              Text="{Binding PickupLocation}"
+                              ItemsSource="{Binding PickupLocationOptions}"
+                              VerticalContentAlignment="Center"
+                              IsEditable="True"
+                              Grid.Column="0"
+                              Margin="0,0,2,0"
+                              IsTabStop="False"
+                              Height="30"
+                              Background="Transparent"/>
+                    <DatePicker Style="{DynamicResource pickupDateDatePicker}"
+                                x:Name="pickupDateDatePicker"
+                                SelectedDate="{Binding PickupDate}"
+                                Grid.Column="1"
+                                VerticalContentAlignment="Center"
+                                IsTabStop="False"
+                                Height="30"/>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+
         <StackPanel Grid.Row="0"
-                    VerticalAlignment="Center">
-            <Label x:Name="AssetTagLabel"
-                   Style="{DynamicResource standardLabel}"
-                   Content="Asset Tag"/>
-            <TextBox x:Name="AssetTagTextBox"
-                     Style="{DynamicResource standardTextBoxStyle}"
-                     Text="{Binding AssetTag}"
-                     behaviors:FocusBehavior.Focus="{Binding FocusTextBox}"
-                     VerticalContentAlignment="Center"
-                     IsTabStop="True"
-                     TabIndex="0"
-                     Height="30"/>
+                    Grid.Column="1"
+                    Width="300"/>
+
+        <StackPanel x:Name="TabControlPanel"
+                    Orientation="Horizontal"
+                    FlowDirection="RightToLeft"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    d:DataContext="{d:DesignInstance s:TabManager,IsDesignTimeCreatable=True}">
+            <Button x:Name="AddTabButton"
+                    Width="40"
+                    Style="{DynamicResource baseWindowButton}"
+                    Margin="40,0,20,0"
+                    VerticalAlignment="Bottom"
+                    Command="{Binding CreateNewTabCommand}">
+                <Image Source="/Resources/Icons/Add.png" Width="20" Height="20"/>
+            </Button>
+
+            <Button x:Name="RemoveTabButton"
+                    Style="{DynamicResource baseWindowButton}"
+                    Margin="20,0"
+                    VerticalAlignment="Bottom">
+                <Image Source="/Resources/Icons/Remove.png" Width="20"  Height="20"/>
+            </Button>
+
+            <Button x:Name="RenameTabButton"
+                    Style="{DynamicResource baseWindowButton}"
+                    Margin="20,0"
+                    VerticalAlignment="Bottom">
+                <Image Source="/Resources/Icons/Edit.png" Width="20"  Height="20"/>
+            </Button>
+
+            <Button x:Name="DownloadFileButton"
+                    Style="{DynamicResource baseWindowButton}"
+                    Margin="20,0"
+                    VerticalAlignment="Bottom">
+                <Image Source="/Resources/Icons/File_Save.png" Width="20"  Height="20"/>
+            </Button>
+
+            <Button x:Name="UploadFileButton"
+                    Style="{DynamicResource baseWindowButton}"
+                    Margin="20,0"
+                    VerticalAlignment="Bottom">
+                <Image Source="/Resources/Icons/Upload_File.png" Width="20"  Height="20"/>
+            </Button>
         </StackPanel>
-        <StackPanel Grid.Row="1"
-                    VerticalAlignment="Center">
-            <Label x:Name="SerialNumberLabel"
-                   Style="{DynamicResource standardLabel}"
-                   Content="Serial Number"/>
-            <TextBox x:Name="SerialNumberTextBox"
-                     Style="{DynamicResource standardTextBoxStyle}"
-                     Text="{Binding SerialNumber}"
-                     VerticalContentAlignment="Center"
-                     IsTabStop="True"
-                     TabIndex="1"
-                     Height="30"/>
-        </StackPanel>
-        <StackPanel Grid.Row="2"
-                    VerticalAlignment="Center">
-            <Label x:Name="DeviceTypeLabel"
-                   Style="{DynamicResource standardLabel}"
-                   Content="Device Type"/>
-            <ComboBox x:Name="DeviceTypeComboBox"
-                      SelectedItem="{Binding DeviceType}"
-                      Text="{Binding DeviceType}"
-                      ItemsSource="{Binding DeviceTypeOptions}"
-                      Style="{DynamicResource standardComboBox}"
-                      VerticalContentAlignment="Center"
-                      IsTabStop="False"
-                      Height="30"
-                      IsEditable="True"/>
-        </StackPanel>
-        <StackPanel Grid.Row="3"
-                    VerticalAlignment="Center">
-            <Label 
-                    Content="Device Manufacturer" 
-                    Style="{StaticResource standardLabel}"/>
-            <ComboBox
-                    x:Name="deviceManufacturerComboBox"
-                    SelectedItem="{Binding DeviceManufacturer}"
-                    Text="{Binding DeviceManufacturer}"
-                    ItemsSource="{Binding DeviceManufacturerOptions}"
-                    Style="{StaticResource standardComboBox}"
-                    VerticalContentAlignment="Center"
-                    IsTabStop="False"
-                    IsEditable="True"
-                    Height="30"/>
-        </StackPanel>
-        <StackPanel Grid.Row="4"
-                    VerticalAlignment="Center">
-            <Label 
-                    Content="Device Model" 
-                    Style="{StaticResource standardLabel}"/>
-            <ComboBox
-                    x:Name="deviceModelComboBox"
-                    SelectedItem="{Binding DeviceModel}"
-                    Text="{Binding DeviceModel}"
-                    ItemsSource="{Binding DeviceModelOptions}"
-                    IsEditable="True"
-                    Style="{StaticResource standardComboBox}"
-                    VerticalContentAlignment="Center"
-                    IsTabStop="False"
-                    Height="25"/>
-        </StackPanel>
-        <StackPanel Grid.Row="5"
-                    VerticalAlignment="Center">
-            <Label
-                    Content="Pickup Location &amp; Date"
-                    Grid.Column="0" Grid.Row="0"
-                    Style="{StaticResource standardLabel}"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="30"/>
-                </Grid.ColumnDefinitions>
-                <ComboBox Style="{StaticResource standardComboBox}"
-                          x:Name="pickupLocationComboBox"
-                          SelectedItem="{Binding PickupLocation}"
-                          Text="{Binding PickupLocation}"
-                          ItemsSource="{Binding PickupLocationOptions}"
-                          VerticalContentAlignment="Center"
-                          IsEditable="True"
-                          Grid.Column="0"
-                          Margin="0,0,2,0"
-                          IsTabStop="False"
-                          Height="30"
-                          Background="Transparent"/>
-                <DatePicker Style="{DynamicResource pickupDateDatePicker}"
-                            x:Name="pickupDateDatePicker"
-                            SelectedDate="{Binding PickupDate}"
-                            Grid.Column="1"
-                            Margin="2,0,0,0"
-                            VerticalContentAlignment="Center"
-                            IsTabStop="False"
-                            Height="30"/>
-                            <!--SelectedDateChanged="pickupDate_SelectedDateChanged"-->
-                                
-            </Grid>
-        </StackPanel>
-        
     </Grid>
 </UserControl>

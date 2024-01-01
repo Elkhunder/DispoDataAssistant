@@ -9,20 +9,32 @@ namespace DispoDataAssistant.Models
     }
     public class ServiceNowAsset
     {
+        [JsonPropertyName("sys_id")]
+        public string? Id { get; set; }
+
         [JsonPropertyName("asset_tag")]
-        public string AssetTag { get; set; }
+        public string? AssetTag { get; set; }
 
-        [JsonPropertyName("model.manufacturer.name")]
-        public string Manufacturer { get; set; }
+        [JsonPropertyName("manufacturer.name")]
+        public string? Manufacturer { get; set; }
 
-        [JsonPropertyName("model.name")]
-        public string Model { get; set; }
+        [JsonPropertyName("model_id.name")]
+        public string? Model { get; set; }
 
-        [JsonPropertyName("model_category.name")]
-        public string Category { get; set; }
+        [JsonPropertyName("subcategory")]
+        public string? Category { get; set; }
 
         [JsonPropertyName("serial_number")]
-        public string SerialNumber { get; set; }
+        public string? SerialNumber { get; set; }
+
+        [JsonPropertyName("operational_status")]
+        public string? OperationalStatus { get; set; }
+
+        [JsonPropertyName("install_status")]
+        public string? InstallStatus { get; set; }
+
+        [JsonPropertyName("sys_updated_on")]
+        public string? LastUpdated { get; set; }
 
     }
 }

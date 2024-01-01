@@ -1,8 +1,11 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Models;
 using DispoDataAssistant.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
@@ -33,7 +36,9 @@ namespace DispoDataAssistant.ViewModels
         public RelayCommand<SelectionChangedEventArgs> DeviceManufacturerChangedCommand { get; private set; }
         public RelayCommand<SelectionChangedEventArgs> PickupLocationChangedCommand { get; private set; }
 
-    public SettingsViewModel(ISettingsService settingsService, IUserSettingsService userSettingsService, DeviceInformation deviceInformation, Themes themes)
+        public SettingsViewModel() : this(null!, null!, null!, null!, null!) { }
+
+        public SettingsViewModel(ISettingsService settingsService, IUserSettingsService userSettingsService, DeviceInformation deviceInformation, Themes themes, ILogger<SettingsViewModel> logger) : base(logger)
         {
             Console.WriteLine("SettingsViewModel: Instance Created");
 
@@ -41,7 +46,7 @@ namespace DispoDataAssistant.ViewModels
             //_settingsManager = Ioc.Default.GetService<ISettingsService>() ?? throw new NullReferenceException();
             //_deviceInformation = Ioc.Default.GetService<DeviceInformation>() ?? throw new NullReferenceException();
             //_themes = Ioc.Default.GetService<Themes>() ?? throw new NullReferenceException();
-
+            var provider = Ioc.Default;
             _settingsManager = settingsService;
             _userSettingsManager = userSettingsService;
             _deviceInformation = deviceInformation;

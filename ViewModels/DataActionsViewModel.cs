@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using DispoDataAssistant.Handlers;
 using DispoDataAssistant.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace DispoDataAssistant.ViewModels
@@ -63,8 +64,9 @@ namespace DispoDataAssistant.ViewModels
         public RelayCommand RemoveDeviceCommand { get; private set; }
         public RelayCommand SaveFileCommand { get; private set; }
 
-        public DataActionsViewModel(DataInputViewModel dataInputViewModel)
+        public DataActionsViewModel(DataInputViewModel dataInputViewModel, ILogger<DataActionsViewModel> logger) : base(logger)
         {
+            var provider = Ioc.Default;
             _dataInputViewModel = dataInputViewModel;
             _devices = new List<DeviceDetails>();
             _csvHandler = new CsvHandler();

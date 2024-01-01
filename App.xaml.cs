@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.Handlers;
-using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
 using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
@@ -10,7 +8,6 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Configuration;
 using System.Windows;
 
 namespace DispoDataAssistant
@@ -20,8 +17,6 @@ namespace DispoDataAssistant
     /// </summary>
     public partial class App : Application
     {
-        private readonly ISettingsService _settingsService;
-        private readonly IUserSettingsService _userSettingsSerivce;
         public App()
         {
             ConfigureSerilog();
@@ -56,36 +51,31 @@ namespace DispoDataAssistant
         {
             IServiceCollection services = new ServiceCollection();
 
-            // Add the ServiceNowApiClient as a scoped service
-            services.AddScoped<IServiceNowApiClient>(provider =>
-            {
-                var baseUrl = ConfigurationManager.AppSettings["ServiceNowBaseUrl"]; // Read the base URL from configuration
-
-                if (baseUrl != null)
-                {
-                    return new ServiceNowApiClient(baseUrl);
-                }
-                else
-                {
-                    return new ServiceNowApiClient("https://ummeddev.service-now.com/api/now/");
-                }
-            });
-
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
             services.AddSingleton<DeviceDetails>();
             services.AddSingleton<DeviceInformation>();
             services.AddSingleton<Themes>();
+
+            // Services
             services.AddSingleton<ISettingsService, SettingsManager>();
             services.AddSingleton<IThemeService, ThemeManager>();
             services.AddSingleton<IUserSettingsService, UserSettingsManager>();
             services.AddSingleton<IDataInputService, DataInputManager>();
             services.AddSingleton<IWindowService, WindowManager>();
-            services.AddSingleton<MainViewModel>();
+            services.AddSingleton<ITabManager, TabManager>();
+            
+            // View Models
             services.AddSingleton<SettingsViewModel>();
             services.AddSingleton<WindowControlViewModel>();
             services.AddSingleton<DataInputViewModel>();
             services.AddSingleton<DataActionsViewModel>();
+            services.AddSingleton<ViewPaneViewModel>();
+            services.AddSingleton<MainViewModel>();
+            services.AddSingleton<TabControlEditViewModel>();
             //services.AddSingleton<ViewModelLocator>();
+
+            services.AddTransient<MainWindow>();
+            services.AddTransient<TabControlEditWindowView>();
 
             return services.BuildServiceProvider();
         }

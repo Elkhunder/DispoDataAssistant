@@ -6,13 +6,16 @@
              xmlns:views="clr-namespace:DispoDataAssistant.Views"
              xmlns:converters="clr-namespace:DispoDataAssistant.Converters"
              xmlns:viewModels="clr-namespace:DispoDataAssistant.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="400">
+             d:DesignHeight="500" d:DesignWidth="1200"
+             Width="Auto"
+             Height="Auto">
     <UserControl.Resources>
         <converters:BoolToTranslateTransformYConverter x:Key="BoolToTranslateTransformYConverter"/>
     </UserControl.Resources>
-    <Grid>
-        <Grid Background="{DynamicResource baseTheme.Background}">
+    <Grid Width="Auto">
+        <Grid Background="{DynamicResource baseTheme.Background}" Width="Auto">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -20,21 +23,27 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
             </Grid.ColumnDefinitions>
-            <views:WindowControlView Grid.Row="0" Panel.ZIndex="11"/>
+            <views:WindowControlView x:Name="WindowsControlView" Grid.Row="0" Panel.ZIndex="11"/>
 
             <Border Grid.Row="1"
-                Padding="20">
-                <Grid>
+                Padding="20" Margin="10">
+                <Grid Width="Auto">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <views:DataInputView/>
-                    <views:DataActionsView Grid.Row="1"/>
+                    <views:DataInputView x:Name="DataInputView"
+                                         Grid.Row="0"/>
+                    <views:ViewPaneView x:Name="ViewPaneView"
+                                        Grid.Row="1"
+                                        Margin="0,20"/>
+                    <views:DataActionsView x:Name="DataActionsView"
+                                           Grid.Row="2"/>
                 </Grid>
             </Border>
-            <Grid x:Name="SettingsMenuContianer" Panel.ZIndex="10" Grid.Row="1" Grid.RowSpan="2">
-                <views:SettingsView x:Name="SettingsMenu" DataContext="{Binding Path=DataContext.SettingsViewModel, ElementName=MainView}">
+            <Grid x:Name="SettingsMenuContianer" Panel.ZIndex="10" Grid.Row="1" Margin="0,0,0,10">
+                <views:SettingsView x:Name="SettingsView" Visibility="Collapsed" DataContext="{Binding Path=DataContext.SettingsViewModel, ElementName=MainView}">
                     <views:SettingsView.Style>
                         <Style TargetType="{x:Type views:SettingsView}">
                             <Setter Property="Visibility" Value="Collapsed"/>

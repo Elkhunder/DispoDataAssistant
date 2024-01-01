@@ -8,8 +8,7 @@
              xmlns:viewModels="clr-namespace:DispoDataAssistant.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type viewModels:SettingsViewModel}, IsDesignTimeCreatable=True}"
-             d:DesignHeight="450" d:DesignWidth="400"
-             Loaded="UserControl_Loaded">
+             d:DesignHeight="450" d:DesignWidth="400">
     <Border x:Name="MainBorder"
             Background="{DynamicResource baseTheme.Background}"
             Padding="40,20,40,40">
@@ -61,7 +60,6 @@
                       Grid.Row="4"
                       Style="{DynamicResource standardComboBox}"
                       ItemsSource="{Binding DeviceTypes}"
-                      Loaded="DeviceTypeComboBox_Loaded"
                       SelectedItem="{Binding SelectedDeviceType}"
                       VerticalContentAlignment="Center"
                       Height="30">

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DispoDataAssistant.Views"
              xmlns:viewModels="clr-namespace:DispoDataAssistant.ViewModels"
-             d:DataContext="{d:DesignInstance {x:Type viewModels:WindowControlViewModel}, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type = viewModels:WindowControlViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="400">
     <UserControl.DataContext>
@@ -97,6 +97,13 @@
                       Fill="{DynamicResource baseTheme.Secondary}"/>
             </Viewbox>
         </Button>
+        <Label Style="{DynamicResource standardLabel}"
+               FontWeight="Bold"
+               FontSize="16"
+               Content="Dispo Assistant"
+               Grid.Column="1"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"/>
         <Button x:Name="SetingsMenuButton"
                 Style="{DynamicResource baseWindowButton}"
                 Grid.Column="0"
