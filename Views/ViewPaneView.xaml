@@ -14,9 +14,9 @@
         <TabControl x:Name="ViewPaneTabControl"
                     Grid.Row="1"
                     SelectionChanged="ViewPaneTabControl_SelectionChanged"
-                    ItemsSource="{Binding TabItems}"
-                    SelectedIndex="{Binding SelectedTabIndex}"
-                    SelectedItem="{Binding SelectedTab}">
+                    ItemsSource="{Binding TabItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Header}"/>

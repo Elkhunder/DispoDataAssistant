@@ -136,7 +136,8 @@
             <Button x:Name="RenameTabButton"
                     Style="{DynamicResource baseWindowButton}"
                     Margin="20,0"
-                    VerticalAlignment="Bottom">
+                    VerticalAlignment="Bottom"
+                    Command="{Binding RenameTabCommand}">
                 <Image Source="/Resources/Icons/Edit.png" Width="20"  Height="20"/>
             </Button>
 

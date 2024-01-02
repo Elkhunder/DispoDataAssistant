@@ -69,7 +69,6 @@ namespace DispoDataAssistant.Services
             //Assign values from view model
             NewTabName = vm.NewTabName;
             DeviceId = vm.DeviceId;
-            CurrentTabName = vm.CurrentTabName;
 
             if(NewTabName is not null)
             {
@@ -128,7 +127,7 @@ namespace DispoDataAssistant.Services
         [RelayCommand]
         public void RemoveTab()
         {
-            if (SelectedTab.Header != null)
+            if (SelectedTab.Header is not null)
             {
                 _logger.LogInformation($"{SelectedTab.Header} was removed by user");
                 DbService.DropTable(SelectedTab.Header);
@@ -136,9 +135,44 @@ namespace DispoDataAssistant.Services
             }  
         }
 
-        public void RenameTab(string oldTabName, string newTabName)
+        [RelayCommand]
+        public void RenameTab(string newTabName)
         {
-            throw new NotImplementedException();
+            if (SelectedTab.Header is not null && SelectedTab.Assets is not null)
+            {
+                _logger.LogInformation($"Renaming {SelectedTab.Header} Tab to {NewTabName}");
+                
+
+                _tabControlEditViewModel.NewTabNamePanelVisibility = Visibility.Visible;
+                var vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
+
+
+                //Assign values from view model
+                NewTabName = vm.NewTabName;
+
+                if (NewTabName is not null)
+                {
+                    DbService.RenameTable(SelectedTab.Header, NewTabName);
+                    
+                    if (!TabItems.Any(item => item.Header == NewTabName))
+                    {
+                        var selectedTab = SelectedTab;
+                        int selectedTabIndex = SelectedTabIndex;
+
+                        var tabItem = CreateTabItem(NewTabName, selectedTab.Assets);
+                        TabItems.Remove(SelectedTab);
+                        TabItems.Insert(selectedTabIndex, tabItem);
+                        SelectedTabIndex = selectedTabIndex;
+
+                        _logger.LogInformation($"{selectedTab.Header} was successfully renamed to {tabItem.Header}");
+                    }
+                    
+                }
+            }
+            else
+            {
+                _logger.LogInformation("Selected Tab is null");
+            }
         }
 
         public void SaveTabs(List<TabItem> tabItems)
