@@ -128,7 +128,8 @@
             <Button x:Name="RemoveTabButton"
                     Style="{DynamicResource baseWindowButton}"
                     Margin="20,0"
-                    VerticalAlignment="Bottom">
+                    VerticalAlignment="Bottom"
+                    Command="{Binding RemoveTabCommand}">
                 <Image Source="/Resources/Icons/Remove.png" Width="20"  Height="20"/>
             </Button>
 

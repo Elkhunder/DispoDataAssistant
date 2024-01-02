@@ -12,7 +12,7 @@ namespace DispoDataAssistant.Services
     public interface ITabManager
     {
         void RenameTab(string oldTabName, string newTabName);
-        void RemoveTab(string tabName);
+        void RemoveTab();
         void ClearTabs();
         void CombineTabs(List<TabItem> tabItems);
         ObservableCollection<AssetTabItem> CreateTabItems(List<AssetTabItem> tabItems);

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
+using Microsoft.Extensions.Logging;
 
 namespace DispoDataAssistant.Services
 {
@@ -24,22 +25,27 @@ namespace DispoDataAssistant.Services
         private int selectedTabIndex;
 
         [ObservableProperty]
-        private string? newTabName;
+        private AssetTabItem selectedTab;
 
         [ObservableProperty]
         private string? currentTabName;
+
+        [ObservableProperty]
+        private string? newTabName;
 
         [ObservableProperty]
         private string? deviceId;
 
         private IWindowService _windowService;
         private TabControlEditViewModel _tabControlEditViewModel;
+        private readonly ILogger _logger;
 
-        public TabManager(IWindowService windowService, TabControlEditViewModel tabControlEditViewModel)
+        public TabManager(IWindowService windowService, TabControlEditViewModel tabControlEditViewModel, ILogger<TabManager> logger)
         {
             tabItems = new ObservableCollection<AssetTabItem>();
             _windowService = windowService;
             _tabControlEditViewModel = tabControlEditViewModel;
+            _logger = logger;
         }
 
         public void ClearTabs()
@@ -119,9 +125,15 @@ namespace DispoDataAssistant.Services
             };
         }
 
-        public void RemoveTab(string tabName)
+        [RelayCommand]
+        public void RemoveTab()
         {
-            throw new NotImplementedException();
+            if (SelectedTab.Header != null)
+            {
+                _logger.LogInformation($"{SelectedTab.Header} was removed by user");
+                DbService.DropTable(SelectedTab.Header);
+                TabItems.Remove(SelectedTab);
+            }  
         }
 
         public void RenameTab(string oldTabName, string newTabName)

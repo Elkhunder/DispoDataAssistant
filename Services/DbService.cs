@@ -224,6 +224,22 @@ namespace DispoDataAssistant.Services
             return ConfigurationManager.ConnectionStrings[id].ConnectionString;
         }
 
+        public static async void DropTable(string tableName)
+        {
+            using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))
+            {
+                if (dbConnection.State is not ConnectionState.Open)
+                {
+                    dbConnection.Open();
+                }
+
+                string sqlCommand = $"DROP TABLE {tableName}";
+                SQLiteCommand command = new SQLiteCommand(sqlCommand, dbConnection);
+                var result = await command.ExecuteNonQueryAsync();
+                Console.WriteLine(result);
+            }
+        }
+
         public static void CreateNewTable(string? tableName)
         {
             using (SQLiteConnection dbConnection = new SQLiteConnection(LoadConnectionString()))

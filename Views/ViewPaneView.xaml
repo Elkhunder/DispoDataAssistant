@@ -15,7 +15,8 @@
                     Grid.Row="1"
                     SelectionChanged="ViewPaneTabControl_SelectionChanged"
                     ItemsSource="{Binding TabItems}"
-                    SelectedIndex="{Binding SelectedTabIndex}">
+                    SelectedIndex="{Binding SelectedTabIndex}"
+                    SelectedItem="{Binding SelectedTab}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Header}"/>
