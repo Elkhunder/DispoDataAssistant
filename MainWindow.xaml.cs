@@ -1,21 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.ViewModels;
+using DispoDataAssistant.UIComponents.DataInput;
+using DispoDataAssistant.UIComponents.Main;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DispoDataAssistant
 {
@@ -24,21 +14,20 @@ namespace DispoDataAssistant
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DataInputViewModel _dataInputViewModel;
-        public MainWindow()
+        private readonly IServiceProvider _services;
+        public MainWindow(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _services = serviceProvider;
 
-            var serviceProvider = Ioc.Default;
-            _dataInputViewModel = serviceProvider.GetRequiredService<DataInputViewModel>();
-            TextBox? assetTagTextBox = _dataInputViewModel.AssetTagTextBox;
+            var vm = _services.GetRequiredService<MainViewModel>();
+            this.DataContext = vm;
+            
+            //var mainView = _services.GetRequiredService<MainView>();
+            //mainView.Height = this.Height;
+            //mainView.Width = this.Width;
 
-            if(assetTagTextBox != null )
-            {
-                assetTagTextBox.Focus();
-            }
-
-            MainView.DataContext = serviceProvider.GetRequiredService<MainViewModel>();
+            //this.Content = mainView;
 
         }
 

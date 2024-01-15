@@ -1,11 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.ViewModels;
-using System;
-using System.Collections.Generic;
+using DispoDataAssistant.UIComponents;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -16,9 +11,9 @@ namespace DispoDataAssistant.Validation
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             TabControlEditViewModel tabControlEditViewModel = Ioc.Default.GetRequiredService<TabControlEditViewModel>();
-            if(value is null)
+            if (value is null)
             {
-                if(tabControlEditViewModel.NewTabNamePanelVisibility == Visibility.Visible)
+                if (tabControlEditViewModel.NewTabNamePanelVisibility == Visibility.Visible)
                 {
                     return new ValidationResult(false, "Value can not be empty");
                 }
@@ -27,11 +22,11 @@ namespace DispoDataAssistant.Validation
             {
                 string? strValue = value.ToString();
 
-                if(!string.IsNullOrEmpty(strValue))
+                if (!string.IsNullOrEmpty(strValue))
                 {
                     char firstCharacter = strValue[0];
 
-                    if(char.IsDigit(firstCharacter))
+                    if (char.IsDigit(firstCharacter))
                     {
                         return new ValidationResult(false, "Value can not start with a number");
                     }

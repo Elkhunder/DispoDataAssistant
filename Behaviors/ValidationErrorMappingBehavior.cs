@@ -59,7 +59,7 @@ namespace DispoDataAssistant.Behaviors
         {
             base.OnAttached();
             System.Windows.Controls.Validation.AddErrorHandler(this.AssociatedObject, Validation_Error);
-            
+
         }
 
         protected override void OnDetaching()

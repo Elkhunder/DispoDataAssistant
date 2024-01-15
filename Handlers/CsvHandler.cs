@@ -1,4 +1,4 @@
-﻿using DispoDataAssistant.Models;
+﻿using DispoDataAssistant.Data.Models;
 using System;
 using System.Collections.Generic;
 
@@ -27,11 +27,11 @@ namespace DispoDataAssistant.Handlers
             return string.Join(delimiter, _csvHeader) + Environment.NewLine;
         }
 
-        public string ConvertDeviceDetailsToCsvLine(DeviceDetails deviceDetails, string delimiter)
+        public static string ConvertDeviceDetailsToCsvLine(DeviceDetails deviceDetails, string delimiter)
         {
-            int numberOfProperties = deviceDetails.Length;
-            List<string> _details = new List<string>
-            {
+            int numberOfProperties = DeviceDetails.Length;
+            List<string> _details =
+            [
                 "1",
                 "ECOF",
                 "0",
@@ -42,7 +42,7 @@ namespace DispoDataAssistant.Handlers
                 deviceDetails.DeviceModel?.ToUpper() ?? "",
                 "Not Sanitized",
                 "s"
-            };
+            ];
             string csvLine = string.Join(delimiter, _details);
 
             return csvLine;

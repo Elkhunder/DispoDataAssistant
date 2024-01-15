@@ -3,18 +3,213 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DispoDataAssistant"
-        xmlns:views="clr-namespace:DispoDataAssistant.Views"
-        xmlns:viewModels="clr-namespace:DispoDataAssistant.ViewModels"
+        xmlns:bc="clr-namespace:DispoDataAssistant.UIComponents.BaseComponents"
+        xmlns:vm="clr-namespace:DispoDataAssistant.UIComponents.Main"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        
         mc:Ignorable="d"
-        Title="Dispo Data Assistant"
+        Title="Dispo Assistant"
         Height="Auto"
         Width="Auto"
-        WindowStyle="None"
+        WindowStyle="SingleBorderWindow"
         WindowState="Normal"
         ResizeMode="NoResize"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        d:DataContext="{d:DesignInstance Type= vm:MainViewModel, IsDesignTimeCreatable=True}">
+    <Window.Resources>
+        
+    </Window.Resources>
     <Grid>
-        <views:MainView x:Name="MainView"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="ControlGrid"
+          Grid.Row="0"
+          VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel x:Name="TabControlPanel"
+                    Orientation="Horizontal"
+                    FlowDirection="RightToLeft"
+                    HorizontalAlignment="Right"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Height="Auto"
+                    Width="Auto"
+                    VerticalAlignment="Bottom">
+
+                <bc:IconButton x:Name="AddTabButton"
+                           Width="Auto"
+                           Height="Auto"
+                           Style="{DynamicResource IconButton}"
+                           Margin="20,0,20,0"
+                           VerticalAlignment="Center"
+                           Command="{Binding CreateNewTabCommand}"
+                           CommandParameter="{Binding ElementName=ViewPaneTabControl}"
+                           Template="{DynamicResource create_foldersvg}"
+                           IconColor="Black"/>
+
+                <bc:IconButton x:Name="RemoveTabButton"
+                           Style="{DynamicResource IconButton}"
+                           Margin="20,0"
+                           VerticalAlignment="Center"
+                           Height="Auto"
+                           Width="Auto"
+                           Command="{Binding RemoveTabCommand}"
+                           Template="{DynamicResource deletesvg}"
+                           IconColor="Black"/>
+
+                <bc:IconButton x:Name="RenameTabButton"
+                           Style="{DynamicResource IconButton}"
+                           Margin="20,0"
+                           VerticalAlignment="Center"
+                           Height="Auto"
+                           Width="Auto"
+                           Command="{Binding RenameTabCommand}"
+                           Template="{DynamicResource editsvg}"
+                           IconColor="Black"/>
+
+                <bc:IconButton x:Name="DownloadFileButton"
+                           Style="{DynamicResource IconButton}"
+                           Margin="20,0"
+                           VerticalAlignment="Center"
+                           Height="Auto"
+                           Width="Auto"
+                           Command="{Binding DownloadFileCommand}"
+                           Template="{DynamicResource file_downloadsvg}"
+                           IconColor="Black"/>
+
+                <bc:IconButton x:Name="UploadFileButton"
+                           Style="{DynamicResource IconButton}"
+                           IconColor="Black"
+                           Margin="20,0"
+                           Height="Auto"
+                           Width="Auto"
+                           VerticalAlignment="Center"
+                           Template="{DynamicResource file_uploadsvg}"/>
+                <bc:IconButton x:Name="SaveButton"
+                           Style="{DynamicResource IconButton}"
+                           IconColor="Black"
+                           Margin="20,0"
+                           Height="Auto"
+                           Width="Auto"
+                           VerticalAlignment="Center"
+                           Command="{Binding SaveChangesCommand}"
+                           Template="{DynamicResource save_changessvg}"/>
+            </StackPanel>
+            <StackPanel x:Name="ServiceNowQueryPanel"
+                    Orientation="Horizontal"
+                    FlowDirection="LeftToRight"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="120,5,20,0"
+                    Height="Auto"
+                    HorizontalAlignment="Center">
+
+                <StackPanel x:Name="SerialNumberPanel">
+
+                    <Label x:Name="SerialNumberLabel"
+                       HorizontalContentAlignment="Center"
+                       Style="{DynamicResource standardLabel}"
+                       Content="Serial Number"
+                       Margin="20,0"/>
+
+                    <TextBox x:Name="SerialNumberTextBox"
+                         Style="{DynamicResource standardTextBoxStyle}"
+                         Text="{Binding SerialNumber}"
+                         VerticalContentAlignment="Center"
+                         IsTabStop="True"
+                         TabIndex="1"
+                         Height="30"
+                         Margin="20,0"
+                         MinWidth="200"/>
+                </StackPanel>
+
+                <StackPanel x:Name="AssetTagPanel">
+
+                    <Label x:Name="AssetTagLabel"
+                       HorizontalContentAlignment="Center"
+                       Style="{DynamicResource standardLabel}"
+                       Content="Asset Tag"
+                       Margin="20,0"/>
+                    
+                    <TextBox x:Name="AssetTagTextBox"
+                         Style="{DynamicResource standardTextBoxStyle}"
+                         Text="{Binding AssetTag}"
+                         VerticalContentAlignment="Center"
+                         IsTabStop="True"
+                         TabIndex="0"
+                         Height="30"
+                         Margin="20,0"
+                         MinWidth="200"/>
+                </StackPanel>
+                <Button x:Name="QueryServiceNowButton"
+                    Style="{StaticResource standardButton}"
+                    Height="30"
+                    Width="120"
+                    VerticalAlignment="Bottom"
+                    Content="Search Service Now"
+                    Margin="20,0"/>
+            </StackPanel>
+            <bc:IconButton x:Name="SettingsButton"
+                       Width="Auto"
+                       Height="Auto"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Left"
+                       Style="{DynamicResource IconButton}"
+                       Command="{Binding ToggleSettingsMenuCommand}"
+                       Template="{DynamicResource settingssvg}"/>
+        </Grid>
+        <TabControl x:Name="ViewPaneTabControl"
+                BorderThickness="0"
+        Grid.Row="2"
+        ItemsSource="{Binding AssetsCollection, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+        SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+        SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Header}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <DataGrid x:Name="ViewPaneDataGrid" BorderThickness="0" ItemsSource="{Binding AssetsCollection}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                            <DataGridTextColumn Header="Asset Tag" Binding="{Binding AssetTag}" />
+                            <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" />
+                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" />
+                            <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
+                            <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" />
+                            <DataGridTextColumn Header="Operational Status" Binding="{Binding OperationalStatus}" />
+                            <DataGridTextColumn Header="Install Status" Binding="{Binding InstallStatus}" />
+                            <DataGridTextColumn Header="Last Updated" Binding="{Binding LastUpdated}" />
+                        </DataGrid.Columns>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChange">
+                                <i:InvokeCommandAction CommandParameter="{Binding ElementName=ViewPaneDataGrid, Path=SelectedItems}" Command="{Binding SyncSelectedAssetsCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </DataGrid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+
+        </TabControl>
+        <DataGrid BorderThickness="0" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True" EnableRowVirtualization="True" ItemsSource="{Binding AssetsCollection}" Grid.Row="2">
+
+        </DataGrid>
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Loaded">
+                <i:InvokeCommandAction Command="{Binding DataGridLoadedCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
     </Grid>
 </Window>
