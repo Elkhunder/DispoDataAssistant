@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Models;
@@ -10,7 +9,6 @@ using DispoDataAssistant.UIComponents.BaseViewModels;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace DispoDataAssistant.UIComponents
@@ -18,7 +16,7 @@ namespace DispoDataAssistant.UIComponents
     //Create new view for tab control buttons and move some of the tab functionality from the viewpane view model to here.  Specifically stuff that has to do with manipulating tabs.
     public partial class TabControlButtonsViewModel : BaseViewModel
     {
-        private ServiceNowAssetContext _context;
+        private readonly ServiceNowAssetContext _context;
 
         public TabControlButtonsViewModel() : base(null!, null!) { }
         public TabControlButtonsViewModel(ILogger<TabControlButtonsViewModel> logger, IWindowService windowService, ServiceNowAssetContext context) : base(logger, windowService)
@@ -39,8 +37,8 @@ namespace DispoDataAssistant.UIComponents
 
         public void CreateNewTab(int? selectedTabIndex)
         {
-            
-            var vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
+
+            TabControlEditViewModel vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
 
             if (vm.NewTabName is not null)
             {
@@ -85,7 +83,7 @@ namespace DispoDataAssistant.UIComponents
         [RelayCommand]
         public void RenameTab()
         {
-            var selectedTab = _messenger.Send<RequestTabMessage>().Response;
+            AssetTabItem selectedTab = _messenger.Send<RequestTabMessage>().Response;
             _messenger.Send(new RenameTabMessage(selectedTab));
             //_messenger.Send<RefreshTabsMessage>(new RefreshTabsMessage());
         }

@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.UIComponents.DataInput;
-using DispoDataAssistant.UIComponents.Main;
+﻿using DispoDataAssistant.UIComponents.Main;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
@@ -15,14 +13,18 @@ namespace DispoDataAssistant
     public partial class MainWindow : Window
     {
         private readonly IServiceProvider _services;
+        public TabControl VPTabControl
+        {
+            get { return ViewPaneTabControl; }
+        }
         public MainWindow(IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _services = serviceProvider;
 
-            var vm = _services.GetRequiredService<MainViewModel>();
+            MainViewModel vm = _services.GetRequiredService<MainViewModel>();
             this.DataContext = vm;
-            
+
             //var mainView = _services.GetRequiredService<MainView>();
             //mainView.Height = this.Height;
             //mainView.Width = this.Width;
@@ -36,6 +38,11 @@ namespace DispoDataAssistant
             // Drag the window
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //App.Current.Shutdown();
         }
     }
 }

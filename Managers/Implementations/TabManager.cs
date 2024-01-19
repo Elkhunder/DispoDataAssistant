@@ -4,9 +4,7 @@ using DispoDataAssistant.Data.Models;
 using DispoDataAssistant.Managers.Interfaces;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Implementations;
-using DispoDataAssistant.UIComponents;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -36,7 +34,7 @@ namespace DispoDataAssistant.Managers.Implementations
 
         public ResultObject HandleCreateNewTab(CreateNewTabMessage msg)
         {
-            var newTabName = _messenger.Send<RequestNewTabNameMessage>();
+            RequestNewTabNameMessage newTabName = _messenger.Send<RequestNewTabNameMessage>();
 
             if (newTabName != null)
             {
@@ -52,9 +50,9 @@ namespace DispoDataAssistant.Managers.Implementations
 
         public async Task<ResultObject> HandleRenameTab(RenameTabMessage msg)
         {
-            var selectedTab = msg.Value;
-            var response = _messenger.Send<RequestNewTabNameMessage>();
-            var newTabName = response.Response;
+            AssetTabItem? selectedTab = msg.Value;
+            RequestNewTabNameMessage response = _messenger.Send<RequestNewTabNameMessage>();
+            string newTabName = response.Response;
 
             if (string.IsNullOrEmpty(newTabName))
             {
@@ -71,7 +69,7 @@ namespace DispoDataAssistant.Managers.Implementations
                 _logger.LogError("Selected tab header was null");
                 return new ResultObject(false, "Select tab header was null");
             }
-            var result = await DbService.RenameTable(selectedTab.Header, newTabName);
+            DbResult? result = await DbService.RenameTable(selectedTab.Header, newTabName);
 
             if (result is not null && result.WasUpdated is true)
             {
@@ -95,35 +93,35 @@ namespace DispoDataAssistant.Managers.Implementations
 
         public void HandleRemoveTab(RemoveTabMessage msg)
         {
-            var tab = msg.Value;
+            AssetTabItem tab = msg.Value;
         }
 
         public void HandleClearTab(ClearTabMessage msg)
         {
-            var tab = msg.Value;
+            AssetTabItem tab = msg.Value;
         }
 
         public void HandlerCombineTabs(CombineTabsMessage msg)
         {
-            var firstTab = msg.Value;
-            var secondTab = _messenger.Send<RequestSecondTabMessage>();
-            var newTabName = _messenger.Send<RequestFileNameMessage>();
+            AssetTabItem firstTab = msg.Value;
+            RequestSecondTabMessage secondTab = _messenger.Send<RequestSecondTabMessage>();
+            RequestFileNameMessage newTabName = _messenger.Send<RequestFileNameMessage>();
         }
 
         public void HandleSaveTabs(SaveTabsMessage msg)
         {
-            var tabs = _messenger.Send<RequestTabCollectionMessage>();
+            RequestTabCollectionMessage tabs = _messenger.Send<RequestTabCollectionMessage>();
         }
 
         public void HandleDownloadTabToFile(DownloadTabToFileMessage msg)
         {
-            var filePath = _messenger.Send<RequestFilePathMessage>();
-            var fileName = _messenger.Send<RequestFileNameMessage>();
+            RequestFilePathMessage filePath = _messenger.Send<RequestFilePathMessage>();
+            RequestFileNameMessage fileName = _messenger.Send<RequestFileNameMessage>();
         }
 
         public void HandleUploadFileToTab(UploadFileToTabMessage msg)
         {
-            var filePath = _messenger.Send<RequestFilePathMessage>();
+            RequestFilePathMessage filePath = _messenger.Send<RequestFilePathMessage>();
         }
     }
 }

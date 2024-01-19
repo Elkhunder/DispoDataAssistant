@@ -1,16 +1,13 @@
 ﻿using DispoDataAssistant.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DispoDataAssistant.Helpers
 {
     public static class ServiceNowAssetDataGenerator
     {
-        private static Random random = new Random();
-        private static string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private static readonly Random random = new();
+        private static readonly string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         public static List<ServiceNowAsset> GenerateData(int recordCount)
         {
@@ -37,7 +34,7 @@ namespace DispoDataAssistant.Helpers
 
         private static string GenerateRandomSerialNumber()
         {
-            var chars = new char[7];
+            char[] chars = new char[7];
 
             // Place 3 letters
             for (int i = 0; i < 3; ++i)

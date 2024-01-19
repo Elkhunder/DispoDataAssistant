@@ -4,14 +4,14 @@ using DispoDataAssistant.Managers.Implementations;
 using DispoDataAssistant.Managers.Interfaces;
 using DispoDataAssistant.Services.Implementations;
 using DispoDataAssistant.Services.Interfaces;
+using DispoDataAssistant.UIComponents;
 using DispoDataAssistant.UIComponents.DataInput;
 using DispoDataAssistant.UIComponents.Main;
 using DispoDataAssistant.UIComponents.Settings;
-using DispoDataAssistant.UIComponents;
 using DispoDataAssistant.UIComponents.ViewPane;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DispoDataAssistant.Extensions
+namespace DispoDataAssistant.Extensions.Service
 {
     public static class ServicesExtensions
     {

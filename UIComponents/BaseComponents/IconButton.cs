@@ -10,7 +10,7 @@ public class IconButton : Button
 
     public Brush IconColor
     {
-        get {  return (Brush)GetValue(IconColorProperty); }
+        get { return (Brush)GetValue(IconColorProperty); }
         set { SetValue(IconColorProperty, value); }
     }
 
@@ -18,7 +18,7 @@ public class IconButton : Button
 
     public string IconName
     {
-        get { return (string)GetValue(IconNameProperty);  }
-        set { SetValue(IconNameProperty, value);  }
+        get { return (string)GetValue(IconNameProperty); }
+        set { SetValue(IconNameProperty, value); }
     }
 }

@@ -6,9 +6,13 @@ namespace DispoDataAssistant.Managers.Implementations
 {
     public class SettingsManager : ISettingsService
     {
+        public SettingsManager()
+        {
+        }
+
         public Dictionary<string, object> GetAllUserSettings()
         {
-            var userSettings = new Dictionary<string, object>
+            Dictionary<string, object> userSettings = new()
             {
                 { "CurrentTheme", GetTheme() },
                 { "DeviceType", GetDeviceType() },
@@ -73,6 +77,11 @@ namespace DispoDataAssistant.Managers.Implementations
         {
             UserSettings.Default.Theme = theme;
             UserSettings.Default.Save();
+        }
+
+        public void SaveSettings()
+        {
+
         }
     }
 }

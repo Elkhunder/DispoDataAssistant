@@ -40,7 +40,7 @@ namespace DispoDataAssistant.Services.Implementations
                 dbConnection.Open();
             }
 
-            return await dbConnection.QueryAsync<ServiceNowAsset>($"SELECT * FROM @tableName", new {tableName});
+            return await dbConnection.QueryAsync<ServiceNowAsset>($"SELECT * FROM @tableName", new { tableName });
         }
 
         public static ServiceNowAsset? GetServiceNowAssetByProperty(string propertyName, string propertyValue)
@@ -85,11 +85,11 @@ namespace DispoDataAssistant.Services.Implementations
                 ServiceNowAsset? existingAsset = GetServiceNowAssetById(serviceNowAsset.SysId);
                 if (existingAsset is not null)
                 {
-                    var changedProperties = CompareExistingAssetToNewAsset(existingAsset, serviceNowAsset);
+                    Dictionary<string, string>? changedProperties = CompareExistingAssetToNewAsset(existingAsset, serviceNowAsset);
 
                     if (changedProperties is not null)
                     {
-                        var updateString = GenerateUpdateString(changedProperties);
+                        string updateString = GenerateUpdateString(changedProperties);
 
                         using (SQLiteConnection dbConnection = new(LoadConnectionString()))
                         {
@@ -137,11 +137,11 @@ namespace DispoDataAssistant.Services.Implementations
 
             if (upsert && serviceNowAsset is not null && existingAsset is not null)
             {
-                var changedProperties = CompareExistingAssetToNewAsset(existingAsset, serviceNowAsset);
+                Dictionary<string, string>? changedProperties = CompareExistingAssetToNewAsset(existingAsset, serviceNowAsset);
 
                 if (changedProperties is not null)
                 {
-                    var updateString = GenerateUpdateString(changedProperties);
+                    string updateString = GenerateUpdateString(changedProperties);
 
                     using (SQLiteConnection dbConnection = new(LoadConnectionString()))
                     {
@@ -184,7 +184,7 @@ namespace DispoDataAssistant.Services.Implementations
 
         private static string GenerateUpdateString(Dictionary<string, string> changes)
         {
-            var queryParams = changes.Select(kvp => $"{kvp.Key} = @{kvp.Key}");
+            IEnumerable<string> queryParams = changes.Select(kvp => $"{kvp.Key} = @{kvp.Key}");
             string queryString = $"UPDATE Asset SET {string.Join(", ", queryParams)}";
             return queryString;
         }
@@ -193,9 +193,9 @@ namespace DispoDataAssistant.Services.Implementations
         {
             Dictionary<string, string> changes = [];
 
-            var properties = typeof(ServiceNowAsset).GetProperties();
+            System.Reflection.PropertyInfo[] properties = typeof(ServiceNowAsset).GetProperties();
 
-            foreach (var prop in properties)
+            foreach (System.Reflection.PropertyInfo prop in properties)
             {
                 string currentValue = (string)prop.GetValue(existingAsset)!;
                 string newValue = (string)prop.GetValue(newAsset)!;
@@ -230,7 +230,7 @@ namespace DispoDataAssistant.Services.Implementations
 
             try
             {
-                var result = await command.ExecuteNonQueryAsync();
+                int result = await command.ExecuteNonQueryAsync();
 
                 if (result == 0)
                 {
@@ -261,7 +261,7 @@ namespace DispoDataAssistant.Services.Implementations
 
             string sqlCommand = $"DROP TABLE {tableName}";
             SQLiteCommand command = new(sqlCommand, dbConnection);
-            var result = await command.ExecuteNonQueryAsync();
+            int result = await command.ExecuteNonQueryAsync();
             Console.WriteLine(result);
         }
 
@@ -275,15 +275,15 @@ namespace DispoDataAssistant.Services.Implementations
 
             if (tableName is null)
             {
-                var date = DateTime.Now;
-                var year = date.Year;
-                var month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
+                DateTime date = DateTime.Now;
+                int year = date.Year;
+                string month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
 
                 tableName = $"{year}_{month} Assets";
             }
 
             //Check if table name alread exists before creating it
-            var tableNames = GetTableNames(dbConnection);
+            List<string>? tableNames = GetTableNames(dbConnection);
             if (tableNames != null && tableNames.Contains(tableName)) { return; }
 
             string sqlCommand = $"Create Table {tableName} (Id TEXT PRIMARY KEY NOT NULL UNIQUE, AssetTag TEXT NOT NULL, Manufacturer TEXT NOT NULL, Model TEXT NOT NULL, Category TEXT NOT NULL, SerialNumber TEXT NOT NULL, OperationalStatus TEXT NOT NULL, InstallStatus TEXT NOT NULL, LastUpdated TEXT NOT NULL)";
@@ -298,7 +298,7 @@ namespace DispoDataAssistant.Services.Implementations
 
         public static List<string>? GetTableNames()
         {
-            var tableNames = new List<string>();
+            List<string> tableNames = [];
             using (SQLiteConnection dbConnection = new(LoadConnectionString()))
             {
                 if (dbConnection.State is not ConnectionState.Open)
@@ -328,9 +328,9 @@ namespace DispoDataAssistant.Services.Implementations
         }
         private static List<string>? GetTableNames(IDbConnection dbConnection)
         {
-            var tableNames = new List<string>();
+            List<string> tableNames = [];
 
-            var readaer = dbConnection.ExecuteReader("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%'");
+            IDataReader readaer = dbConnection.ExecuteReader("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%'");
             while (readaer.Read())
             {
                 string? name = readaer["name"].ToString();

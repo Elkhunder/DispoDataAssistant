@@ -40,7 +40,7 @@ namespace DispoDataAssistant.Services.Implementations
 
         public TViewModel ShowDialog<TWindow, TViewModel>() where TWindow : Window
         {
-            var window = _serviceProvider.GetService<TWindow>();
+            TWindow? window = _serviceProvider.GetService<TWindow>();
 
             if (window is null)
             {

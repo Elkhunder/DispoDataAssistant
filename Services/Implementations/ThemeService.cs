@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DispoDataAssistant.Services.Interfaces;
+using System;
 using System.Linq;
 using System.Windows;
-using DispoDataAssistant.Services.Interfaces;
 
 namespace DispoDataAssistant.Services.Implementations
 {
@@ -19,14 +19,14 @@ namespace DispoDataAssistant.Services.Implementations
 
         public ResourceDictionary GetLoadedTheme()
         {
-            var mergedDictionaries = Application.Current.Resources.MergedDictionaries;
+            System.Collections.ObjectModel.Collection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
 
             return mergedDictionaries.FirstOrDefault(dictionary => dictionary.Source.OriginalString.EndsWith("Theme.xaml"));
         }
 
         public ResourceDictionary GetThemeResource(string themeName)
         {
-            var themePath = $"Resources/Themes/{themeName}Theme.xaml";
+            string themePath = $"Resources/Themes/{themeName}Theme.xaml";
 
             ResourceDictionary themeResource = new()
             {
@@ -58,7 +58,7 @@ namespace DispoDataAssistant.Services.Implementations
         }
         public void UpdateTheme(ResourceDictionary userThemeResource)
         {
-            var appMergedDictionaries = App.Current.Resources.MergedDictionaries;
+            System.Collections.ObjectModel.Collection<ResourceDictionary> appMergedDictionaries = App.Current.Resources.MergedDictionaries;
 
             appMergedDictionaries.Add(userThemeResource);
         }

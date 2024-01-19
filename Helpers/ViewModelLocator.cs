@@ -1,7 +1,7 @@
-﻿using DispoDataAssistant.UIComponents.DataInput;
+﻿using DispoDataAssistant.UIComponents;
+using DispoDataAssistant.UIComponents.DataInput;
 using DispoDataAssistant.UIComponents.Main;
 using DispoDataAssistant.UIComponents.Settings;
-using DispoDataAssistant.UIComponents;
 
 namespace DispoDataAssistant.Helpers
 {
@@ -14,9 +14,9 @@ namespace DispoDataAssistant.Helpers
         public TabControlEditViewModel TabControlEditViewModel;
 
         public ViewModelLocator(
-            MainViewModel mainViewModel, 
+            MainViewModel mainViewModel,
             SettingsViewModel settingsViewModel,
-            DataInputViewModel dataInputViewModel, 
+            DataInputViewModel dataInputViewModel,
             TabControlButtonsViewModel tabControlButtonsViewModel,
             TabControlEditViewModel tabControlEditViewModel
             )

@@ -35,7 +35,7 @@ namespace DispoDataAssistant.UIComponents.ViewPane
         private string? deviceId;
 
         private readonly TabItemFactory _tabItemFactory;
-        private ServiceNowAssetContext _context;
+        private readonly ServiceNowAssetContext _context;
 
         public ViewPaneViewModel(ILogger<ViewPaneViewModel> logger, TabItemFactory tabItemFactory, ServiceNowAssetContext context) : base(logger, null!)
         {
@@ -50,7 +50,7 @@ namespace DispoDataAssistant.UIComponents.ViewPane
 
         private void OnRequestedTabMessageReceived(object recipient, RequestTabMessage message)
         {
-            message.Reply(selectedTab);   
+            message.Reply(selectedTab);
         }
 
         private async void OnRefreshTabsMessageReceived(object recipient, RefreshTabsMessage message)
@@ -67,7 +67,7 @@ namespace DispoDataAssistant.UIComponents.ViewPane
         [RelayCommand]
         private async Task DataGridLoadedAsync(System.Windows.Controls.DataGrid dataGrid)
         {
-            
+
 
             List<AssetTabItem> items = [];
             List<string>? tableNames = DbService.GetTableNames();

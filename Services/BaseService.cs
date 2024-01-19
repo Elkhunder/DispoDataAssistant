@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DispoDataAssistant.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace DispoDataAssistant.Services

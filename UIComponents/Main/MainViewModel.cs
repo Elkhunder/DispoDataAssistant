@@ -1,11 +1,9 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
 using DispoDataAssistant.UIComponents.Settings;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Windows.Controls;
 using System.ComponentModel;
 
 namespace DispoDataAssistant.UIComponents.Main
@@ -13,7 +11,7 @@ namespace DispoDataAssistant.UIComponents.Main
     public partial class MainViewModel : BaseViewModel
     {
         private SettingsViewModel _settingsViewModel;
-        private IWindowService _windowService;
+        private readonly IWindowService _windowService;
         public SettingsViewModel SettingsViewModel
         {
             get => _settingsViewModel;
@@ -55,7 +53,6 @@ namespace DispoDataAssistant.UIComponents.Main
         [RelayCommand]
         private void ToggleSettingsMenu()
         {
-            Console.WriteLine("MainViewModel: Toggle Settings Menu Requested Event Raised");
 
             _windowService.ShowDialog<SettingsMenuView, SettingsViewModel>();
         }

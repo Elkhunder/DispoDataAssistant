@@ -14,10 +14,8 @@
         WindowStyle="SingleBorderWindow"
         WindowState="Normal"
         ResizeMode="NoResize"
+        Closing="Window_Closing"
         d:DataContext="{d:DesignInstance Type= vm:MainViewModel, IsDesignTimeCreatable=True}">
-    <Window.Resources>
-        
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -134,39 +132,43 @@
 
                 <StackPanel x:Name="AssetTagPanel">
 
-                    <Label x:Name="AssetTagLabel"
-                       HorizontalContentAlignment="Center"
-                       Style="{DynamicResource standardLabel}"
-                       Content="Asset Tag"
-                       Margin="20,0"/>
-                    
-                    <TextBox x:Name="AssetTagTextBox"
-                         Style="{DynamicResource standardTextBoxStyle}"
-                         Text="{Binding AssetTag}"
-                         VerticalContentAlignment="Center"
-                         IsTabStop="True"
-                         TabIndex="0"
-                         Height="30"
-                         Margin="20,0"
-                         MinWidth="200"/>
-                </StackPanel>
-                <Button x:Name="QueryServiceNowButton"
-                    Style="{StaticResource standardButton}"
-                    Height="30"
-                    Width="120"
-                    VerticalAlignment="Bottom"
-                    Content="Search Service Now"
+                    <Label
+                    x:Name="AssetTagLabel"
+                    HorizontalContentAlignment="Center"
+                    Style="{DynamicResource standardLabel}"
+                    Content="Asset Tag"
                     Margin="20,0"/>
+
+                    <TextBox
+                    x:Name="AssetTagTextBox"
+                    Style="{DynamicResource standardTextBoxStyle}"
+                    Text="{Binding AssetTag}"
+                    VerticalContentAlignment="Center"
+                    IsTabStop="True"
+                    TabIndex="0"
+                    Height="30"
+                    Margin="20,0"
+                    MinWidth="200"/>
+                </StackPanel>
+                <Button
+                x:Name="QueryServiceNowButton"
+                Style="{StaticResource standardButton}"
+                Height="30"
+                Width="120"
+                VerticalAlignment="Bottom"
+                Content="Search Service Now"
+                Margin="20,0"/>
             </StackPanel>
-            <bc:IconButton x:Name="SettingsButton"
-                       Width="Auto"
-                       Height="Auto"
-                       Margin="10,0,0,0"
-                       VerticalAlignment="Bottom"
-                       HorizontalAlignment="Left"
-                       Style="{DynamicResource IconButton}"
-                       Command="{Binding ToggleSettingsMenuCommand}"
-                       Template="{DynamicResource settingssvg}"/>
+            <bc:IconButton
+            x:Name="SettingsButton"
+            Width="Auto"
+            Height="Auto"
+            Margin="10,0,0,0"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Left"
+            Style="{DynamicResource IconButton}"
+            Command="{Binding ToggleSettingsMenuCommand}"
+            Template="{DynamicResource settingssvg}"/>
         </Grid>
         <TabControl x:Name="ViewPaneTabControl"
                 BorderThickness="0"

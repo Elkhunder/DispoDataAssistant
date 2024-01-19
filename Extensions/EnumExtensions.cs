@@ -8,8 +8,8 @@ namespace DispoDataAssistant.Extensions
     {
         public static string GetEnumDescription(this Enum value)
         {
-            var type = value.GetType();
-            var memberInfo = type.GetMember(value.ToString()).FirstOrDefault();
+            Type type = value.GetType();
+            System.Reflection.MemberInfo? memberInfo = type.GetMember(value.ToString()).FirstOrDefault();
 
             if (memberInfo == null)
             {

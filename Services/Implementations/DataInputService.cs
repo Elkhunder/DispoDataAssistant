@@ -6,7 +6,7 @@ namespace DispoDataAssistant.Services.Implementations
 
     public class DataInputService : IDataInputService
     {
-        readonly ISettingsService _settingsManager;
+        private readonly ISettingsService _settingsManager;
 
         private string? _deviceModel;
         private string? _deviceType;

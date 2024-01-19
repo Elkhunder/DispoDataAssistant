@@ -6,7 +6,6 @@ using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -70,7 +69,7 @@ namespace DispoDataAssistant.UIComponents
         private void OnRequestNewTabNameReceived(TabControlEditViewModel recipient, RequestNewTabNameMessage message)
         {
             NewTabNamePanelVisibility = Visibility.Visible;
-            var vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
+            TabControlEditViewModel vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
 
             if (vm.NewTabName is not null)
             {

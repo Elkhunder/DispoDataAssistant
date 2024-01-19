@@ -1,7 +1,6 @@
 ﻿using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace DispoDataAssistant.Services.Implementations
 {
@@ -18,7 +17,5 @@ namespace DispoDataAssistant.Services.Implementations
             _tabControlEditViewModel = tabControlEditViewModel;
             _logger = logger;
         }
-
-
     }
 }

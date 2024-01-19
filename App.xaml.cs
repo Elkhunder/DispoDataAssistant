@@ -1,6 +1,7 @@
 ﻿using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Models;
-using DispoDataAssistant.Extensions;
+using DispoDataAssistant.Data.Models.Settings;
+using DispoDataAssistant.Extensions.Service;
 using DispoDataAssistant.Helpers;
 using DispoDataAssistant.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,62 +26,115 @@ public partial class App : Application
     {
         ConfigureSerilog();
         AppHost = Host.CreateDefaultBuilder()
-                      .ConfigureServices((hostContext, services) => 
+                      .ConfigureServices((hostContext, services) =>
                       {
                           services.AddViews();
                           services.AddViewModels();
                           services.AddInternalServices();
-                          
+
 
                           services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
-                          services.AddDbContext<ServiceNowAssetContext>(
-                              options =>
-                              {
-                                  options.UseSqlite("Data Source=DispoAssisstant.db");
-                                  options.UseLazyLoadingProxies();
-                              });
+                          services.AddDbContext<ServiceNowAssetContext>();
+                          services.AddDbContext<SettingsContext>();
                       })
                       .Build();
-        
+
 
         //this.InitializeComponent();
 
-        
 
-        
+
+
     }
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         await AppHost!.StartAsync();
 
-        var startupForm = AppHost.Services.GetRequiredService<MainWindow>();
-        var _userSettingsService = AppHost.Services.GetRequiredService<IUserSettingsService>();
-        var _settingsService = AppHost.Services.GetRequiredService<ISettingsService>();
+        MainWindow startupForm = AppHost.Services.GetRequiredService<MainWindow>();
+        IUserSettingsService _userSettingsService = AppHost.Services.GetRequiredService<IUserSettingsService>();
+        ISettingsService _settingsService = AppHost.Services.GetRequiredService<ISettingsService>();
 
-        var userSettings = _settingsService.GetAllUserSettings();
+        System.Collections.Generic.Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
         _userSettingsService.ApplyUserSettings(userSettings);
 
-        using (var scope = AppHost.Services.CreateScope())
-        using (var dbContext = scope.ServiceProvider.GetRequiredService<ServiceNowAssetContext>())
+        using (IServiceScope scope = AppHost.Services.CreateScope())
         {
-            dbContext.Database.EnsureCreated();
-            Task.Run(async () => await PopulateDatabase(dbContext)).Wait();
+            using (ServiceNowAssetContext dbContext = scope.ServiceProvider.GetRequiredService<ServiceNowAssetContext>())
+            {
+                dbContext.Database.Migrate();
+                Task.Run(async () => await PopulateDatabase(dbContext)).Wait();
+            }
+            using (SettingsContext dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>())
+            {
+                dbContext.Database.Migrate();
+                Task.Run(async () => await InitializeSettings(dbContext)).Wait();
+
+                Task.Run(async () => await LoadSettings(dbContext)).Wait();
+            }
         }
-        
+
+
         startupForm.Show();
 
         base.OnStartup(e);
     }
 
+    protected override void OnExit(ExitEventArgs e)
+    {
+        base.OnExit(e);
+        App.Current.Shutdown();
+    }
+
+    private static async Task InitializeSettings(SettingsContext context)
+    {
+        if (await context.Settings.AnyAsync())
+        {
+            return;
+        }
+        IntegrationTypes integrationsTypes = new();
+        GeneralTypes generalSettingTypes = new();
+        Settings settings = new() { Title = "Application Settings" };
+        List<Integration> integrations = [];
+        List<General> generalSettings = [];
+
+        foreach (string setting in generalSettingTypes)
+        {
+            //await context.General.AddAsync(new GeneralSetting { Title = setting, Value = "20", SettingsModel = settingsModel });
+            generalSettings.Add(new General { Title = setting, Value = "20", Settings = settings });
+            //await context.SaveChangesAsync(true);
+        }
+
+        foreach (string integration in integrationsTypes)
+        {
+            //await context.Integrations.AddAsync(new Integration { Title = integration, IsEnabled = false, SettingsModel = settingsModel });
+            integrations.Add(new Integration { Title = integration, IsEnabled = true, Settings = settings });
+            //await context.SaveChangesAsync(true);
+        }
+        settings.General = generalSettings;
+        settings.Integrations = integrations;
+
+        context.Integrations.AddRange(integrations);
+        context.General.AddRange(generalSettings);
+        context.Settings.Add(settings);
+
+        context.SaveChanges();
+
+    }
+
+    private static async Task LoadSettings(SettingsContext context)
+    {
+        List<Settings> settings = await context.Settings.ToListAsync();
+    }
+
     private static async Task PopulateDatabase(ServiceNowAssetContext context)
     {
-        if(await context.ServiceNowAssets.AnyAsync())
+        if (await context.ServiceNowAssets.AnyAsync())
         {
             return;
         }
 
-        foreach (var a in ServiceNowAssetDataGenerator.GenerateData(50))
+        foreach (ServiceNowAsset a in ServiceNowAssetDataGenerator.GenerateData(50))
         {
             context.ServiceNowAssets.Add(new ServiceNowAsset()
             {
@@ -99,7 +154,7 @@ public partial class App : Application
 
     private static void ConfigureSerilog()
     {
-        var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DispoDataAssistant", "log.txt");
+        string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DispoDataAssistant", "log.txt");
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()

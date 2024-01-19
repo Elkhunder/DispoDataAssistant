@@ -48,7 +48,7 @@ namespace DispoDataAssistant.Services.Implementations
             // In an ASP.NET Core application, you can use IConfiguration.
             try
             {
-                var appSettings = ConfigurationManager.AppSettings;
+                System.Collections.Specialized.NameValueCollection appSettings = ConfigurationManager.AppSettings;
                 return appSettings[key] ?? "Not Found";
             }
             catch (ConfigurationErrorsException)

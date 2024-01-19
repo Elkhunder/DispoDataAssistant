@@ -1,19 +1,24 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Models;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DispoDataAssistant.UIComponents.Settings
 {
-    public class SettingsViewModel : BaseViewModel
+    public partial class SettingsViewModel : BaseViewModel
     {
+        [ObservableProperty]
+        private List<Data.Models.Settings.Settings> _settings;
         private readonly DeviceInformation _deviceInformation;
         private readonly Themes _themes;
 
@@ -36,17 +41,18 @@ namespace DispoDataAssistant.UIComponents.Settings
         public RelayCommand<SelectionChangedEventArgs> DeviceManufacturerChangedCommand { get; private set; }
         public RelayCommand<SelectionChangedEventArgs> PickupLocationChangedCommand { get; private set; }
 
-        public SettingsViewModel() : this(null!, null!, null!, null!, null!) { }
+        public SettingsViewModel() : this(null!, null!, null!, null!, null!, null!) { }
 
-        public SettingsViewModel(ISettingsService settingsService, IUserSettingsService userSettingsService, DeviceInformation deviceInformation, Themes themes, ILogger<SettingsViewModel> logger) : base(logger, null!)
+        public SettingsViewModel(ISettingsService settingsService, IUserSettingsService userSettingsService, DeviceInformation deviceInformation, Themes themes, ILogger<SettingsViewModel> logger, IServiceProvider serviceProvider) : base(logger, null!)
         {
             Console.WriteLine("SettingsViewModel: Instance Created");
+            using (IServiceScope scope = serviceProvider.CreateScope())
+            {
+                SettingsContext context = scope.ServiceProvider.GetRequiredService<SettingsContext>();
+                Settings = [.. context.Settings];
+            }
 
-            //_userSettingsManager = Ioc.Default.GetService<IUserSettingsService>() ?? throw new NullReferenceException();
-            //_settingsManager = Ioc.Default.GetService<ISettingsService>() ?? throw new NullReferenceException();
-            //_deviceInformation = Ioc.Default.GetService<DeviceInformation>() ?? throw new NullReferenceException();
-            //_themes = Ioc.Default.GetService<Themes>() ?? throw new NullReferenceException();
-            var provider = Ioc.Default;
+
             _settingsManager = settingsService;
             _userSettingsManager = userSettingsService;
             _deviceInformation = deviceInformation;
@@ -152,6 +158,19 @@ namespace DispoDataAssistant.UIComponents.Settings
             Console.WriteLine("Settings Menu Closed");
 
             ToggleSettingsMenuRequested?.Invoke(this, EventArgs.Empty);
+        }
+        [RelayCommand]
+        private void CloseSettings(Object obj)
+        {
+            if (obj is Window window)
+            {
+                window.Close();
+            }
+        }
+
+        [RelayCommand]
+        private void SaveSettings()
+        {
         }
 
         public void ThemeChanged(SelectionChangedEventArgs? e)

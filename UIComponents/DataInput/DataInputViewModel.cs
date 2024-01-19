@@ -13,13 +13,13 @@ namespace DispoDataAssistant.UIComponents.DataInput
     public partial class DataInputViewModel : BaseViewModel
     {
         [ObservableProperty]
-        TextBox? assetTagTextBox;
+        private TextBox? assetTagTextBox;
 
         [ObservableProperty]
         private bool? focusTextBox;
 
         [ObservableProperty]
-        string? assetTag;
+        private string? assetTag;
 
         [ObservableProperty]
         private string? serialNumber;
