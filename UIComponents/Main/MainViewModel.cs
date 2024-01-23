@@ -28,9 +28,9 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private ServiceNowAsset selectedAsset = new();
     [ObservableProperty]
-    private string serialNumber;
+    private string serialNumber = string.Empty;
     [ObservableProperty]
-    private string assetTag;
+    private string assetTag = string.Empty;
 
     // Db Contexts
     private AssetContext _assetContext;
