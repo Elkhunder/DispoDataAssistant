@@ -18,8 +18,7 @@ namespace DispoDataAssistant.UIComponents.Main;
 
 public partial class MainViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private SettingsViewModel settingsViewModel;
+    // Binding properties
     [ObservableProperty]
     private ObservableCollection<TabModel> tabs = [];
     [ObservableProperty]
@@ -28,8 +27,19 @@ public partial class MainViewModel : BaseViewModel
     private int selectedTabIndex;
     [ObservableProperty]
     private ServiceNowAsset selectedAsset = new();
+    [ObservableProperty]
+    private string serialNumber;
+    [ObservableProperty]
+    private string assetTag;
 
+    // Db Contexts
     private AssetContext _assetContext;
+
+    // View models
+    [ObservableProperty]
+    private SettingsViewModel settingsViewModel;
+
+    // Views
     private TabControlEditWindowView _tabControlEditWindow;
 
     public MainViewModel() : this(null!, null!, null!, null!) { }
@@ -42,7 +52,7 @@ public partial class MainViewModel : BaseViewModel
         _tabControlEditWindow = tabControlEditWindow;
     }
     
-
+    // Event Methods
     [RelayCommand]
     private void MainWindow_Loaded()
     {
@@ -53,6 +63,14 @@ public partial class MainViewModel : BaseViewModel
         }
     }
 
+    // Service Now Query Methods
+    [RelayCommand]
+    private void QueryServiceNow()
+    {
+
+    }
+
+    // Tab Action Methods
     [RelayCommand]
     private void CreateTab()
     {
@@ -133,6 +151,7 @@ public partial class MainViewModel : BaseViewModel
         MessageBox.Show("Tab saved successfully");
     }
 
+    // Settings Methods
     [RelayCommand]
     private void ToggleSettingsMenu()
     {
