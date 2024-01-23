@@ -67,7 +67,19 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private void QueryServiceNow()
     {
-
+        // Prioritize the use of serial number as it's more accurate
+        if (!string.IsNullOrEmpty(SerialNumber))
+        {
+            // Query service now asset table with serial number
+        }
+        else if (!string.IsNullOrEmpty(AssetTag))
+        {
+            // Query service now asset table with asset tag as a fallback if serial number is empty
+        }
+        else
+        {
+            // Do something if both serial number and asset tag are empty or null
+        }
     }
 
     // Tab Action Methods
