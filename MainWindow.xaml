@@ -164,6 +164,7 @@
                 Width="120"
                 VerticalAlignment="Bottom"
                 Content="Search Service Now"
+                Command="{Binding QueryServiceNowCommand}"
                 Margin="20,0"/>
             </StackPanel>
             <bc:IconButton
