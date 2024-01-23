@@ -9,9 +9,10 @@ namespace DispoDataAssistant.Helpers
         private static readonly Random random = new();
         private static readonly string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-        public static List<ServiceNowAsset> GenerateData(int recordCount)
+        public static ICollection<ServiceNowAsset> GenerateData(int recordCount, TabModel tab)
         {
-            List<ServiceNowAsset> assets = [];
+            ICollection<ServiceNowAsset> assets = [];
+
 
             for (int i = 0; i < recordCount; i++)
             {
@@ -25,7 +26,8 @@ namespace DispoDataAssistant.Helpers
                     SerialNumber = GenerateRandomSerialNumber(),
                     OperationalStatus = random.Next(0, 2) == 0 ? "Working" : "Non-working",
                     InstallStatus = random.Next(0, 2) == 0 ? "Installed" : "Not Installed",
-                    LastUpdated = DateTime.UtcNow.ToString()
+                    LastUpdated = DateTime.UtcNow.ToString(),
+                    Tab = tab
                 });
             }
 

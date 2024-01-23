@@ -1,12 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Messaging.Messages;
 using DispoDataAssistant.Data.Models;
 
-namespace DispoDataAssistant.Messages
+namespace DispoDataAssistant.Messages;
+
+public class RenameTabMessage(AssetTabItem selectedTabItem) : ValueChangedMessage<AssetTabItem>(selectedTabItem)
 {
-    public class RenameTabMessage : ValueChangedMessage<AssetTabItem>
-    {
-        public RenameTabMessage(AssetTabItem selectedTabItem) : base(selectedTabItem)
-        {
-        }
-    }
 }

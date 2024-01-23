@@ -7,4 +7,5 @@ public class Integration
     public string? Description { get; set; }
     public bool IsEnabled { get; set; }
     public virtual Settings? Settings { get; set; }
+    public int SettingsId { get; set; }
 }

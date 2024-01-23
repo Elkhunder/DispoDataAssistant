@@ -3,15 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DispoDataAssistant.Data.Contexts;
 
-public class SettingsContext : DbContext
+public class SettingsContext(DbContextOptions<SettingsContext> options) : DbContext(options)
 {
     public DbSet<Settings> Settings => Set<Settings>();
     public DbSet<Integration> Integrations => Set<Integration>();
     public DbSet<General> General => Set<General>();
-
-    public SettingsContext(DbContextOptions<SettingsContext> options) : base(options)
-    {
-    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -24,12 +20,22 @@ public class SettingsContext : DbContext
     {
         modelBuilder.Entity<Settings>()
             .HasMany(s => s.Integrations)
-            .WithOne(i => i.Settings);
-        //.HasForeignKey(i => i.SettingsId);
+            .WithOne(i => i.Settings)
+            .HasForeignKey(i => i.SettingsId);
         modelBuilder.Entity<Settings>()
             .HasMany(s => s.General)
-            .WithOne(g => g.Settings);
-        //.HasForeignKey(g => g.SettingsId);
+            .WithOne(g => g.Settings)
+            .HasForeignKey(g => g.SettingsId);
+
+        modelBuilder.Entity<Integration>()
+            .HasOne<Settings>(e => e.Settings)
+            .WithMany(e => e.Integrations)
+            .HasForeignKey(e => e.SettingsId);
+
+        modelBuilder.Entity<General>()
+            .HasOne<Settings>(e => e.Settings)
+            .WithMany(e => e.General)
+            .HasForeignKey(e => e.SettingsId);
 
         base.OnModelCreating(modelBuilder);
     }

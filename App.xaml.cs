@@ -11,6 +11,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -34,7 +35,7 @@ public partial class App : Application
 
 
                           services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
-                          services.AddDbContext<ServiceNowAssetContext>();
+                          services.AddDbContext<AssetContext>();
                           services.AddDbContext<SettingsContext>();
                       })
                       .Build();
@@ -51,19 +52,12 @@ public partial class App : Application
     {
         await AppHost!.StartAsync();
 
-        MainWindow startupForm = AppHost.Services.GetRequiredService<MainWindow>();
-        IUserSettingsService _userSettingsService = AppHost.Services.GetRequiredService<IUserSettingsService>();
-        ISettingsService _settingsService = AppHost.Services.GetRequiredService<ISettingsService>();
-
-        System.Collections.Generic.Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
-        _userSettingsService.ApplyUserSettings(userSettings);
-
         using (IServiceScope scope = AppHost.Services.CreateScope())
         {
-            using (ServiceNowAssetContext dbContext = scope.ServiceProvider.GetRequiredService<ServiceNowAssetContext>())
+            using (AssetContext context = scope.ServiceProvider.GetRequiredService<AssetContext>())
             {
-                dbContext.Database.Migrate();
-                Task.Run(async () => await PopulateDatabase(dbContext)).Wait();
+                    context.Database.Migrate();
+                    Task.Run(async () => await PopulateDatabase(context)).Wait();
             }
             using (SettingsContext dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>())
             {
@@ -74,6 +68,12 @@ public partial class App : Application
             }
         }
 
+        MainWindow startupForm = AppHost.Services.GetRequiredService<MainWindow>();
+        IUserSettingsService _userSettingsService = AppHost.Services.GetRequiredService<IUserSettingsService>();
+        ISettingsService _settingsService = AppHost.Services.GetRequiredService<ISettingsService>();
+
+        System.Collections.Generic.Dictionary<string, object> userSettings = _settingsService.GetAllUserSettings();
+        _userSettingsService.ApplyUserSettings(userSettings);
 
         startupForm.Show();
 
@@ -127,14 +127,49 @@ public partial class App : Application
         List<Settings> settings = await context.Settings.ToListAsync();
     }
 
-    private static async Task PopulateDatabase(ServiceNowAssetContext context)
+    private static async Task PopulateDatabase(AssetContext context)
     {
         if (await context.ServiceNowAssets.AnyAsync())
         {
             return;
+            //var assets = context.ServiceNowAssets.ToListAsync<ServiceNowAsset>();
+            //var tabs = tabContext.Tabs.ToListAsync<TabModel>();
+            
+            //context.RemoveRange(assets);
+            //tabContext.RemoveRange(tabs);
+
+            //await context.SaveChangesAsync();
+            //await tabContext.SaveChangesAsync();
+        }
+        var newTab1 = new TabModel() { Name = "December" };
+        var newTab2 = new TabModel() { Name = "January" };
+
+        context.Tabs.AddRange([newTab1, newTab2]);
+        context.SaveChanges();
+
+        var tab1 = context.Tabs.Single(e => e.Name == "December");
+        var tab2 = context.Tabs.Single(e => e.Name == "January");
+
+
+        foreach (ServiceNowAsset a in ServiceNowAssetDataGenerator.GenerateData(50, tab1))
+        {
+            
+            context.ServiceNowAssets.Add(new ServiceNowAsset()
+            {
+                SysId = a.SysId,
+                AssetTag = a.AssetTag,
+                SerialNumber = a.SerialNumber,
+                Model = a.Model,
+                Manufacturer = a.Manufacturer,
+                Category = a.Category,
+                InstallStatus = a.InstallStatus,
+                LastUpdated = a.LastUpdated,
+                OperationalStatus = a.OperationalStatus,
+                Tab = a.Tab,
+            });
         }
 
-        foreach (ServiceNowAsset a in ServiceNowAssetDataGenerator.GenerateData(50))
+        foreach (ServiceNowAsset a in ServiceNowAssetDataGenerator.GenerateData(50, tab2))
         {
             context.ServiceNowAssets.Add(new ServiceNowAsset()
             {
@@ -147,6 +182,7 @@ public partial class App : Application
                 InstallStatus = a.InstallStatus,
                 LastUpdated = a.LastUpdated,
                 OperationalStatus = a.OperationalStatus,
+                Tab = a.Tab,
             });
         }
         context.SaveChanges();

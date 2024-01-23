@@ -6,6 +6,7 @@ using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Implementations;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,14 @@ namespace DispoDataAssistant.UIComponents
     //Create new view for tab control buttons and move some of the tab functionality from the viewpane view model to here.  Specifically stuff that has to do with manipulating tabs.
     public partial class TabControlButtonsViewModel : BaseViewModel
     {
-        private readonly ServiceNowAssetContext _context;
+        private readonly AssetContext _context;
 
-        public TabControlButtonsViewModel() : base(null!, null!) { }
-        public TabControlButtonsViewModel(ILogger<TabControlButtonsViewModel> logger, IWindowService windowService, ServiceNowAssetContext context) : base(logger, windowService)
+        public TabControlButtonsViewModel() : base(null!, null!)
+        {
+            DbContextOptions<AssetContext> contextOptions = new();
+            _context = new AssetContext(contextOptions);
+        }
+        public TabControlButtonsViewModel(ILogger<TabControlButtonsViewModel> logger, IWindowService windowService, AssetContext context) : base(logger, windowService)
         {
             _context = context;
         }

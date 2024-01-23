@@ -2,16 +2,19 @@
 using DispoDataAssistant.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DispoDataAssistant.Migrations.ServiceNowAsset
+namespace DispoDataAssistant.Migrations.Asset
 {
-    [DbContext(typeof(ServiceNowAssetContext))]
-    partial class ServiceNowAssetContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AssetContext))]
+    [Migration("20240123171006_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,12 +68,42 @@ namespace DispoDataAssistant.Migrations.ServiceNowAsset
                     b.Property<int>("TabId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("TabName")
+                    b.HasKey("Id");
+
+                    b.HasIndex("TabId");
+
+                    b.ToTable("ServiceNowAssets");
+                });
+
+            modelBuilder.Entity("DispoDataAssistant.Data.Models.TabModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceNowAssets");
+                    b.ToTable("Tabs");
+                });
+
+            modelBuilder.Entity("DispoDataAssistant.Data.Models.ServiceNowAsset", b =>
+                {
+                    b.HasOne("DispoDataAssistant.Data.Models.TabModel", "Tab")
+                        .WithMany("ServiceNowAssets")
+                        .HasForeignKey("TabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tab");
+                });
+
+            modelBuilder.Entity("DispoDataAssistant.Data.Models.TabModel", b =>
+                {
+                    b.Navigation("ServiceNowAssets");
                 });
 #pragma warning restore 612, 618
         }

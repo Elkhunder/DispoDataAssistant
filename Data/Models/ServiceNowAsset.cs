@@ -13,9 +13,9 @@ namespace DispoDataAssistant.Data.Models
         [JsonPropertyName("sys_id")]
         public string? SysId { get; set; }
 
-        public int TabId { get; set; }
+        public virtual TabModel Tab { get; set; }
 
-        public string? TabName { get; set; }
+        public int TabId { get; set; }
 
         [JsonPropertyName("asset_tag")]
         public string? AssetTag { get; set; }

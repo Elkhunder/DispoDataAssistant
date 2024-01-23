@@ -49,7 +49,7 @@ namespace DispoDataAssistant.UIComponents.Settings
             using (IServiceScope scope = serviceProvider.CreateScope())
             {
                 SettingsContext context = scope.ServiceProvider.GetRequiredService<SettingsContext>();
-                Settings = [.. context.Settings];
+                //Settings = [.. context.Settings];
             }
 
 

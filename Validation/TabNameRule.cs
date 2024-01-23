@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using DispoDataAssistant.UIComponents;
+using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,9 @@ namespace DispoDataAssistant.Validation
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            TabControlEditViewModel tabControlEditViewModel = Ioc.Default.GetRequiredService<TabControlEditViewModel>();
+            var Services = App.AppHost!.Services;
+
+            TabControlEditViewModel tabControlEditViewModel = Services.GetRequiredService<TabControlEditViewModel>();
             if (value is null)
             {
                 if (tabControlEditViewModel.NewTabNamePanelVisibility == Visibility.Visible)

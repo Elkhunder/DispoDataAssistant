@@ -35,9 +35,9 @@ namespace DispoDataAssistant.UIComponents.ViewPane
         private string? deviceId;
 
         private readonly TabItemFactory _tabItemFactory;
-        private readonly ServiceNowAssetContext _context;
+        private readonly AssetContext _context;
 
-        public ViewPaneViewModel(ILogger<ViewPaneViewModel> logger, TabItemFactory tabItemFactory, ServiceNowAssetContext context) : base(logger, null!)
+        public ViewPaneViewModel(ILogger<ViewPaneViewModel> logger, TabItemFactory tabItemFactory, AssetContext context) : base(logger, null!)
         {
             _tabItemFactory = tabItemFactory;
             _context = context;

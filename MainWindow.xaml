@@ -16,10 +16,16 @@
         ResizeMode="NoResize"
         Closing="Window_Closing"
         d:DataContext="{d:DesignInstance Type= vm:MainViewModel, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding MainWindow_LoadedCommand}" />
+        </i:EventTrigger>
+
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid x:Name="ControlGrid"
@@ -49,7 +55,7 @@
                            Style="{DynamicResource IconButton}"
                            Margin="20,0,20,0"
                            VerticalAlignment="Center"
-                           Command="{Binding CreateNewTabCommand}"
+                           Command="{Binding CreateTabCommand}"
                            CommandParameter="{Binding ElementName=ViewPaneTabControl}"
                            Template="{DynamicResource create_foldersvg}"
                            IconColor="Black"/>
@@ -60,7 +66,7 @@
                            VerticalAlignment="Center"
                            Height="Auto"
                            Width="Auto"
-                           Command="{Binding RemoveTabCommand}"
+                           Command="{Binding DeleteTabCommand}"
                            Template="{DynamicResource deletesvg}"
                            IconColor="Black"/>
 
@@ -80,7 +86,7 @@
                            VerticalAlignment="Center"
                            Height="Auto"
                            Width="Auto"
-                           Command="{Binding DownloadFileCommand}"
+                           Command="{Binding DownloadAssetsCommand}"
                            Template="{DynamicResource file_downloadsvg}"
                            IconColor="Black"/>
 
@@ -91,6 +97,7 @@
                            Height="Auto"
                            Width="Auto"
                            VerticalAlignment="Center"
+                           Command="{Binding UploadAssetsCommand}"    
                            Template="{DynamicResource file_uploadsvg}"/>
                 <bc:IconButton x:Name="SaveButton"
                            Style="{DynamicResource IconButton}"
@@ -99,7 +106,7 @@
                            Height="Auto"
                            Width="Auto"
                            VerticalAlignment="Center"
-                           Command="{Binding SaveChangesCommand}"
+                           Command="{Binding SaveAssetsCommand}"
                            Template="{DynamicResource save_changessvg}"/>
             </StackPanel>
             <StackPanel x:Name="ServiceNowQueryPanel"
@@ -171,33 +178,53 @@
             Template="{DynamicResource settingssvg}"/>
         </Grid>
         <TabControl x:Name="ViewPaneTabControl"
-                BorderThickness="0"
-        Grid.Row="2"
-        ItemsSource="{Binding AssetsCollection, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-        SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-        SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    Margin="40"
+                    Height="600"
+                    Grid.Row="1"
+                    ItemsSource="{Binding Tabs, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Header}"/>
+                    <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <DataGrid x:Name="ViewPaneDataGrid" BorderThickness="0" ItemsSource="{Binding AssetsCollection}" AutoGenerateColumns="False">
+                    <DataGrid x:Name="ViewPaneDataGrid"
+                              BorderThickness="0"
+                              CanUserAddRows="True"
+                              CanUserDeleteRows="True"
+                              CanUserReorderColumns="True"
+                              CanUserSortColumns="True"
+                              CanUserResizeRows="True"
+                              CanUserResizeColumns="True"
+                              ItemsSource="{Binding ServiceNowAssets}"
+                              AutoGenerateColumns="False"
+                              EnableColumnVirtualization="True"
+                              SelectedItem="{Binding Path=DataContext.SelectedAsset, ElementName=ViewPaneTabControl, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
-                            <DataGridTextColumn Header="Asset Tag" Binding="{Binding AssetTag}" />
-                            <DataGridTextColumn Header="Manufacturer" Binding="{Binding Manufacturer}" />
-                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" />
-                            <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
-                            <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" />
-                            <DataGridTextColumn Header="Operational Status" Binding="{Binding OperationalStatus}" />
-                            <DataGridTextColumn Header="Install Status" Binding="{Binding InstallStatus}" />
-                            <DataGridTextColumn Header="Last Updated" Binding="{Binding LastUpdated}" />
+                            <DataGridTextColumn Header="Asset Tag"
+                                                Binding="{Binding AssetTag}" />
+                            <DataGridTextColumn Header="Manufacturer"
+                                                Binding="{Binding Manufacturer}" />
+                            <DataGridTextColumn Header="Model"
+                                                Binding="{Binding Model}" />
+                            <DataGridTextColumn Header="Category"
+                                                Binding="{Binding Category}" />
+                            <DataGridTextColumn Header="Serial Number"
+                                                Binding="{Binding SerialNumber}" />
+                            <DataGridTextColumn Header="Operational Status"
+                                                Binding="{Binding OperationalStatus}" />
+                            <DataGridTextColumn Header="Install Status"
+                                                Binding="{Binding InstallStatus}" />
+                            <DataGridTextColumn Header="Last Updated"
+                                                Binding="{Binding LastUpdated}" />
                         </DataGrid.Columns>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChange">
-                                <i:InvokeCommandAction CommandParameter="{Binding ElementName=ViewPaneDataGrid, Path=SelectedItems}" Command="{Binding SyncSelectedAssetsCommand}"/>
+                                <i:InvokeCommandAction CommandParameter="{Binding ElementName=ViewPaneDataGrid, Path=SelectedItems}"
+                                                       Command="{Binding SyncSelectedAssetsCommand}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </DataGrid>
@@ -205,9 +232,6 @@
             </TabControl.ContentTemplate>
 
         </TabControl>
-        <DataGrid BorderThickness="0" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True" EnableRowVirtualization="True" ItemsSource="{Binding AssetsCollection}" Grid.Row="2">
-
-        </DataGrid>
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="Loaded">
                 <i:InvokeCommandAction Command="{Binding DataGridLoadedCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>

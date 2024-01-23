@@ -8,4 +8,5 @@ public class General
     public string? Value { get; set; }
     public bool Type { get; set; }
     public virtual Settings? Settings { get; set; }
+    public int SettingsId { get; set; }
 }
