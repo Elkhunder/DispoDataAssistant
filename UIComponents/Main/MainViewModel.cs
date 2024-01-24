@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Models;
+using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.UIComponents.BaseViewModels;
 using DispoDataAssistant.UIComponents.Settings;
@@ -32,24 +33,22 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private string assetTag = string.Empty;
 
-    // Db Contexts
+    // DI Injections
     private AssetContext _assetContext;
-
-    // View models
     [ObservableProperty]
     private SettingsViewModel settingsViewModel;
-
-    // Views
     private TabControlEditWindowView _tabControlEditWindow;
+    private IServiceNowApiClient _serviceNowApiClient;
 
-    public MainViewModel() : this(null!, null!, null!, null!) { }
+    public MainViewModel() : this(null!, null!, null!, null!, null!) { }
 
-    public MainViewModel(SettingsViewModel settingsViewModel, ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow) : base(logger, null!)
+    public MainViewModel(SettingsViewModel settingsViewModel, ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient) : base(logger, null!)
     {
         Console.WriteLine("MainViewModel: Instance Created");
         SettingsViewModel = settingsViewModel;
         _assetContext = assetContext;
         _tabControlEditWindow = tabControlEditWindow;
+        _serviceNowApiClient = serviceNowApiClient;
     }
     
     // Event Methods
@@ -65,16 +64,56 @@ public partial class MainViewModel : BaseViewModel
 
     // Service Now Query Methods
     [RelayCommand]
-    private void QueryServiceNow()
+    private async Task QueryServiceNow()
     {
         // Prioritize the use of serial number as it's more accurate
         if (!string.IsNullOrEmpty(SerialNumber))
         {
             // Query service now asset table with serial number
+            var asset = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(SerialNumber);
+
+            if (asset is null)
+            {
+                MessageBox.Show("Asset was not found, please enter information manually");
+                return;
+            }
+            else if (SelectedTab.ServiceNowAssets is null)
+            {
+                MessageBox.Show("Asset collection is null, unable to add asset to collection");
+            }
+            else if (asset.SerialNumber == SerialNumber)
+            {
+                SelectedTab.ServiceNowAssets?.Add(asset);
+                _assetContext.SaveChanges();
+            }
+            else
+            {
+                MessageBox.Show("The provided serial number did not match the serial number returned by service now");
+            }
         }
         else if (!string.IsNullOrEmpty(AssetTag))
         {
             // Query service now asset table with asset tag as a fallback if serial number is empty
+            var asset = await _serviceNowApiClient.GetServiceNowAssetByAssetTagAsync(AssetTag);
+
+            if (asset is null)
+            {
+                MessageBox.Show("Asset was not found, please enter information manually");
+                return;
+            }
+            else if (SelectedTab.ServiceNowAssets is null)
+            {
+                MessageBox.Show("Asset collection is null, unable to add asset to collection");
+            }
+            else if (asset.AssetTag == AssetTag)
+            {
+                SelectedTab.ServiceNowAssets?.Add(asset);
+                _assetContext.SaveChanges();
+            }
+            else
+            {
+                MessageBox.Show("The provided asset tag didn't match the asset tag returned by service now");
+            }
         }
         else
         {
@@ -150,14 +189,6 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private void SaveAssets()
     {
-
-        //_tabContext.SaveChanges();
-        if (SelectedAsset is null)
-        {
-            MessageBox.Show("Unable to save changes, selected asset was null");
-            return;
-        }
-
         _assetContext.Tabs.Update(SelectedTab);
         _assetContext.SaveChanges();
         MessageBox.Show("Tab saved successfully");
