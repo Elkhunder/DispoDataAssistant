@@ -1,5 +1,4 @@
 ﻿using DispoDataAssistant.Services.Interfaces;
-using DispoDataAssistant.UIComponents.DataInput;
 using System.Collections.Generic;
 
 namespace DispoDataAssistant.Services.Implementations
@@ -12,33 +11,11 @@ namespace DispoDataAssistant.Services.Implementations
 
         private readonly ISettingsService _settingsService;
         private readonly IThemeService _themeService;
-        private readonly DataInputViewModel _dataInputViewModel;
 
-        public UserSettingsService(ISettingsService settingsService, IThemeService themesService, DataInputViewModel dataInputViewModel)
+        public UserSettingsService(ISettingsService settingsService, IThemeService themesService)
         {
             _settingsService = settingsService;
             _themeService = themesService;
-            _dataInputViewModel = dataInputViewModel;
-        }
-
-        public void ApplyDeviceManufacturer(string manufacturer)
-        {
-            _dataInputViewModel.DeviceManufacturer = manufacturer;
-        }
-
-        public void ApplyDeviceModel(string deviceModel)
-        {
-            _dataInputViewModel.DeviceModel = deviceModel;
-        }
-
-        public void ApplyDeviceType(string deviceType)
-        {
-            _dataInputViewModel.DeviceType = deviceType;
-        }
-
-        public void ApplyPickupLocation(string pickupLocation)
-        {
-            _dataInputViewModel.PickupLocation = pickupLocation;
         }
 
         public void ApplyTheme(string theme)
@@ -53,26 +30,6 @@ namespace DispoDataAssistant.Services.Implementations
             if (userSettings.TryGetValue("CurrentTheme", out value))
             {
                 ApplyTheme(value?.ToString() ?? "Light");
-            }
-
-            if (userSettings.TryGetValue("DeviceType", out value))
-            {
-                ApplyDeviceType(value?.ToString() ?? "CPU");
-            }
-
-            if (userSettings.TryGetValue("DeviceModel", out value))
-            {
-                ApplyDeviceModel(value?.ToString() ?? "600");
-            }
-
-            if (userSettings.TryGetValue("DeviceManufacturer", out value))
-            {
-                ApplyDeviceManufacturer(value?.ToString() ?? "HP");
-            }
-
-            if (userSettings.TryGetValue("PickupLocation", out value))
-            {
-                ApplyPickupLocation(value?.ToString() ?? "ArborLakes");
             }
         }
     }

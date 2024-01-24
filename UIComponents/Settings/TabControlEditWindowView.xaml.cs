@@ -8,12 +8,10 @@ namespace DispoDataAssistant.UIComponents
     /// </summary>
     public partial class TabControlEditWindowView : Window
     {
-        private readonly ITabManager _tabManager;
         private readonly TabControlEditViewModel _tabControlEditViewModel;
-        public TabControlEditWindowView(ITabManager tabManager, TabControlEditViewModel tabControlEditViewModel)
+        public TabControlEditWindowView(TabControlEditViewModel tabControlEditViewModel)
         {
             InitializeComponent();
-            _tabManager = tabManager;
             _tabControlEditViewModel = tabControlEditViewModel;
 
             this.DataContext = _tabControlEditViewModel;

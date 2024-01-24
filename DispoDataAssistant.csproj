@@ -64,6 +64,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Managers\Interfaces\" />
     <Folder Include="Resources\Themes\" />
   </ItemGroup>
 

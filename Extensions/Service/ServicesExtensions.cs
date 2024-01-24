@@ -7,10 +7,8 @@ using DispoDataAssistant.Services;
 using DispoDataAssistant.Services.Implementations;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents;
-using DispoDataAssistant.UIComponents.DataInput;
 using DispoDataAssistant.UIComponents.Main;
 using DispoDataAssistant.UIComponents.Settings;
-using DispoDataAssistant.UIComponents.ViewPane;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
@@ -21,12 +19,8 @@ namespace DispoDataAssistant.Extensions.Service
     {
         public static void AddViewModels(this IServiceCollection services)
         {
-            services.AddSingleton<SettingsViewModel>();
-            services.AddSingleton<DataInputViewModel>();
-            services.AddSingleton<ViewPaneViewModel>();
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<TabControlEditViewModel>();
-            services.AddSingleton<TabControlButtonsViewModel>();
         }
 
         public static void AddClients(this IServiceCollection services)
@@ -59,7 +53,6 @@ namespace DispoDataAssistant.Extensions.Service
             services.AddSingleton<IUserSettingsService, UserSettingsService>();
             services.AddSingleton<IDataInputService, DataInputService>();
             services.AddSingleton<IWindowService, WindowService>();
-            services.AddSingleton<ITabManager, TabManager>();
 
             //Factories
             services.AddSingleton<TabItemFactory>();

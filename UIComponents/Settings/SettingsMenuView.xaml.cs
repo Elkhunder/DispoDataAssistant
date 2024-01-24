@@ -8,10 +8,9 @@ namespace DispoDataAssistant.UIComponents.Settings
     /// </summary>
     public partial class SettingsMenuView : Window
     {
-        public SettingsMenuView(MainWindow window, SettingsViewModel vm)
+        public SettingsMenuView(MainWindow window)
         {
             InitializeComponent();
-            this.DataContext = vm;
             TabControl tabControl = window.VPTabControl;
         }
     }

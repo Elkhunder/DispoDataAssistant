@@ -35,17 +35,14 @@ public partial class MainViewModel : BaseViewModel
 
     // DI Injections
     private AssetContext _assetContext;
-    [ObservableProperty]
-    private SettingsViewModel settingsViewModel;
     private TabControlEditWindowView _tabControlEditWindow;
     private IServiceNowApiClient _serviceNowApiClient;
 
-    public MainViewModel() : this(null!, null!, null!, null!, null!) { }
+    public MainViewModel() : this(null!, null!, null!, null!) { }
 
-    public MainViewModel(SettingsViewModel settingsViewModel, ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient) : base(logger, null!)
+    public MainViewModel(ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient) : base(logger, null!)
     {
         Console.WriteLine("MainViewModel: Instance Created");
-        SettingsViewModel = settingsViewModel;
         _assetContext = assetContext;
         _tabControlEditWindow = tabControlEditWindow;
         _serviceNowApiClient = serviceNowApiClient;
@@ -194,11 +191,11 @@ public partial class MainViewModel : BaseViewModel
         MessageBox.Show("Tab saved successfully");
     }
 
-    // Settings Methods
-    [RelayCommand]
-    private void ToggleSettingsMenu()
-    {
+    //// Settings Methods
+    //[RelayCommand]
+    //private void ToggleSettingsMenu()
+    //{
 
-        _windowService.ShowDialog<SettingsMenuView, SettingsViewModel>();
-    }
+    //    _windowService.ShowDialog<SettingsMenuView, SettingsViewModel>();
+    //}
 }
