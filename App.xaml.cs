@@ -32,6 +32,7 @@ public partial class App : Application
                           services.AddViews();
                           services.AddViewModels();
                           services.AddInternalServices();
+                          services.AddClients();
 
 
                           services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
@@ -39,13 +40,6 @@ public partial class App : Application
                           services.AddDbContext<SettingsContext>();
                       })
                       .Build();
-
-
-        //this.InitializeComponent();
-
-
-
-
     }
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -102,14 +96,12 @@ public partial class App : Application
         {
             //await context.General.AddAsync(new GeneralSetting { Title = setting, Value = "20", SettingsModel = settingsModel });
             generalSettings.Add(new General { Title = setting, Value = "20", Settings = settings });
-            //await context.SaveChangesAsync(true);
         }
 
         foreach (string integration in integrationsTypes)
         {
             //await context.Integrations.AddAsync(new Integration { Title = integration, IsEnabled = false, SettingsModel = settingsModel });
             integrations.Add(new Integration { Title = integration, IsEnabled = true, Settings = settings });
-            //await context.SaveChangesAsync(true);
         }
         settings.General = generalSettings;
         settings.Integrations = integrations;
