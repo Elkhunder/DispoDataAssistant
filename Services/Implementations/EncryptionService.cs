@@ -22,6 +22,8 @@ namespace DispoDataAssistant.Services.Implementations
 
         public (string Username, string Password) GetDecryptedServiceNowCredentials(string usernameKey, string passwordKey)
         {
+            //Usernamekey "ServiceNowUserName needs to be added into app config
+            // Passwordkey "ServiceNowPassword needs to be added into app config
             string serviceNowUsername = GetSecretKey(usernameKey);
             string serviceNowPassword = GetSecretKey(passwordKey);
 
