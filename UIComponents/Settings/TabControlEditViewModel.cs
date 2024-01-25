@@ -9,89 +9,88 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace DispoDataAssistant.UIComponents
+namespace DispoDataAssistant.UIComponents;
+
+public partial class TabControlEditViewModel : BaseViewModel
 {
-    public partial class TabControlEditViewModel : BaseViewModel
+    [ObservableProperty]
+    private bool isInvalid;
+    [ObservableProperty]
+    private string? newTabName;
+
+    [ObservableProperty]
+    private string? currentTabName;
+
+    [ObservableProperty]
+    private string? deviceId;
+
+    [ObservableProperty]
+    private string? fileName;
+
+    [ObservableProperty]
+    private string? pickupLocation;
+
+    [ObservableProperty]
+    private string? pickupDate;
+
+    [ObservableProperty]
+    private List<string>? pickupLocationOptions;
+
+    [ObservableProperty]
+    private Visibility newTabNamePanelVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility deviceIdPanelVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility fileNamePanelVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility currentTabNamePanelVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility pickupLocationDateVisibility = Visibility.Collapsed;
+
+
+    public TabControlEditViewModel() : this(null!, null!, null!) { }
+
+    public TabControlEditViewModel(ILogger<TabControlEditViewModel> logger, IWindowService windowService, DeviceInformation deviceInformation) : base(logger, windowService)
     {
-        [ObservableProperty]
-        private bool isInvalid;
-        [ObservableProperty]
-        private string? newTabName;
+        PickupLocationOptions = deviceInformation.PickupLocations;
 
-        [ObservableProperty]
-        private string? currentTabName;
+        RegisterMessengers();
+    }
 
-        [ObservableProperty]
-        private string? deviceId;
+    private void RegisterMessengers()
+    {
+        _messenger.Register<TabControlEditViewModel, RequestNewTabNameMessage>(this, OnRequestNewTabNameReceived);
+    }
 
-        [ObservableProperty]
-        private string? fileName;
+    private void OnRequestNewTabNameReceived(TabControlEditViewModel recipient, RequestNewTabNameMessage message)
+    {
+        NewTabNamePanelVisibility = Visibility.Visible;
+        TabControlEditViewModel vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
 
-        [ObservableProperty]
-        private string? pickupLocation;
-
-        [ObservableProperty]
-        private string? pickupDate;
-
-        [ObservableProperty]
-        private List<string>? pickupLocationOptions;
-
-        [ObservableProperty]
-        private Visibility newTabNamePanelVisibility = Visibility.Collapsed;
-
-        [ObservableProperty]
-        private Visibility deviceIdPanelVisibility = Visibility.Collapsed;
-
-        [ObservableProperty]
-        private Visibility fileNamePanelVisibility = Visibility.Collapsed;
-
-        [ObservableProperty]
-        private Visibility currentTabNamePanelVisibility = Visibility.Collapsed;
-
-        [ObservableProperty]
-        private Visibility pickupLocationDateVisibility = Visibility.Collapsed;
-
-
-        public TabControlEditViewModel() : this(null!, null!, null!) { }
-
-        public TabControlEditViewModel(ILogger<TabControlEditViewModel> logger, IWindowService windowService, DeviceInformation deviceInformation) : base(logger, windowService)
+        if (vm.NewTabName is not null)
         {
-            PickupLocationOptions = deviceInformation.PickupLocations;
-
-            RegisterMessengers();
+            message.Reply(vm.NewTabName);
         }
+        NewTabName = string.Empty;
+    }
 
-        private void RegisterMessengers()
+    [RelayCommand]
+    private void AcceptButton_OnClick(Window? window)
+    {
+        if (IsInvalid)
         {
-            _messenger.Register<TabControlEditViewModel, RequestNewTabNameMessage>(this, OnRequestNewTabNameReceived);
+            MessageBox.Show("Tab Name is Invalid!");
+
         }
-
-        private void OnRequestNewTabNameReceived(TabControlEditViewModel recipient, RequestNewTabNameMessage message)
+        else
         {
-            NewTabNamePanelVisibility = Visibility.Visible;
-            TabControlEditViewModel vm = _windowService.ShowDialog<TabControlEditWindowView, TabControlEditViewModel>();
-
-            if (vm.NewTabName is not null)
+            if (window != null)
             {
-                message.Reply(vm.NewTabName);
-            }
-            NewTabName = string.Empty;
-        }
-
-        [RelayCommand]
-        private void AcceptButton_OnClick(Window? window)
-        {
-            if (IsInvalid)
-            {
-                MessageBox.Show("Tab Name is Invalid!");
-
-            }
-            else
-            {
-                if (window != null)
-                {
-                    window.Close();
-                }
+                window.Close();
             }
         }
     }

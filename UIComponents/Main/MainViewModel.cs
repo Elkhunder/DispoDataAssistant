@@ -3,14 +3,18 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Models;
+using DispoDataAssistant.Handlers;
 using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Messages;
+using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
 using DispoDataAssistant.UIComponents.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -37,15 +41,17 @@ public partial class MainViewModel : BaseViewModel
     private AssetContext _assetContext;
     private TabControlEditWindowView _tabControlEditWindow;
     private IServiceNowApiClient _serviceNowApiClient;
+    private IFileDialogService _fileDialogService;
 
-    public MainViewModel() : this(null!, null!, null!, null!) { }
+    public MainViewModel() : this(null!, null!, null!, null!, null!) { }
 
-    public MainViewModel(ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient) : base(logger, null!)
+    public MainViewModel(ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient, IFileDialogService fileDialogService) : base(logger, null!)
     {
         Console.WriteLine("MainViewModel: Instance Created");
         _assetContext = assetContext;
         _tabControlEditWindow = tabControlEditWindow;
         _serviceNowApiClient = serviceNowApiClient;
+        _fileDialogService = fileDialogService;
     }
     
     // Event Methods
@@ -172,16 +178,31 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private void UploadAssets()
     {
-
+        var file = _fileDialogService.OpenFileDialog();
     }
 
     [RelayCommand]
     private void DownloadAssets()
     {
+        var file = _fileDialogService.SaveFileDialog();
         var tab = SelectedTab;
 
-        var assets = tab.ServiceNowAssets?.ToList();
+        var assets = tab.ServiceNowAssets;
+
+        using (StreamWriter writer = new StreamWriter(new FileStream(file, FileMode.Create, FileAccess.Write)))
+        {
+            CsvHandler csvHandler = new CsvHandler();
+            string delimeter = "\t";
+            writer.Write(csvHandler.BuildCsvHeader(delimeter));
+
+            foreach (var asset in assets)
+            {
+                string line = csvHandler.ConvertAssetToCsvLine(asset, delimeter);
+                writer.WriteLine(line);
+            }
+        }
     }
+        
 
     [RelayCommand]
     private void SaveAssets()
