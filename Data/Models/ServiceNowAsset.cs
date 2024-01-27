@@ -36,4 +36,24 @@ public class ServiceNowAsset
     [JsonPropertyName("sys_updated_on")]
     public string? LastUpdated { get; set; }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is not null && obj is ServiceNowAsset other)
+        {
+            return SysId == other.SysId
+                && AssetTag == other.AssetTag
+                && SerialNumber == other.SerialNumber;
+        }
+        return false;
 }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(SysId);
+        hash.Add(AssetTag);
+        hash.Add(SerialNumber);
+        return hash.ToHashCode();
+    }
+}
+
