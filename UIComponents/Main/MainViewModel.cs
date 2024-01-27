@@ -10,14 +10,12 @@ using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
-using DispoDataAssistant.UIComponents.Settings;
+using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using RestSharp;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -27,7 +25,7 @@ using System.Windows;
 
 namespace DispoDataAssistant.UIComponents.Main;
 
-public partial class MainViewModel : BaseViewModel
+public partial class MainViewModel : BaseViewModel, IDropTarget
 {
     // Binding properties
     [ObservableProperty]
@@ -67,7 +65,30 @@ public partial class MainViewModel : BaseViewModel
         if (Task.Run(async () => await _assetContext.Tabs.AnyAsync()).Result)
         {
             _assetContext.Tabs.Load();
-            Tabs = _assetContext.Tabs.Local.ToObservableCollection();
+            var tabs = _assetContext.Tabs.Local.ToList();
+
+            bool isIndexUpdated = false;
+
+            if (tabs != null && tabs.Count > 0)
+            {
+                for (int i = 0; i < tabs.Count; i++)
+                {
+                    var tab = tabs[i];
+
+                    // If Index is null
+                    if (tab.Index == null)
+                    {
+                        tabs[i].Index = i;
+                        isIndexUpdated = true;
+                    }
+                }
+                if (isIndexUpdated)
+                {
+                    _assetContext.SaveChanges();
+                }
+
+                Tabs = new ObservableCollection<TabModel>(tabs.OrderBy(tab => tab.Index));
+            }
         }
     }
 
@@ -358,7 +379,38 @@ public partial class MainViewModel : BaseViewModel
             }
         }
     }
-        
+
+    void IDropTarget.DragOver(IDropInfo dropInfo)
+    {
+        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+        dropInfo.Effects = DragDropEffects.Move;
+    }
+
+    void IDropTarget.Drop(IDropInfo dropInfo)
+    {
+        if (dropInfo.Data is TabModel sourceItem)
+        {
+            var sourceIndex = Tabs.IndexOf(sourceItem);
+            var targetIndex = dropInfo.InsertIndex;
+
+            // Ensure targetIndex is within bounds
+            if (targetIndex >= Tabs.Count)
+            {
+                targetIndex = Tabs.Count - 1;
+            }
+
+            Tabs.Move(sourceIndex, targetIndex);
+
+            // Update the index property of each tab in the Tabs list and save to database
+            for (int i = 0; i < Tabs.Count; i++)
+            {
+                Tabs[i].Index = i;
+            }
+
+            // Assuming you have something on lines of SaveChanges() to reflect the Index change in the DB.
+            _assetContext.SaveChanges();
+        }
+    }
 
     [RelayCommand]
     private void SaveAssets()
