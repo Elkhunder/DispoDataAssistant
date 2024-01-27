@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Text.Json.Serialization;
 namespace DispoDataAssistant.Data.Models;
 
@@ -45,7 +45,7 @@ public class ServiceNowAsset
                 && SerialNumber == other.SerialNumber;
         }
         return false;
-}
+    }
 
     public override int GetHashCode()
     {
