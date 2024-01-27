@@ -11,6 +11,7 @@ using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
 using DispoDataAssistant.UIComponents.Settings;
+using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -358,7 +359,24 @@ public partial class MainViewModel : BaseViewModel
             }
         }
     }
-        
+
+    public void DragOver(IDropInfo dropInfo)
+    {
+        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+        dropInfo.Effects = DragDropEffects.Move;
+    }
+
+    public void Drop(IDropInfo dropInfo)
+    {
+        if (dropInfo.Data is TabModel sourceItem)
+        {
+            var sourceIndex = Tabs.IndexOf(sourceItem);
+            var targetIndex = dropInfo.InsertIndex < Tabs.Count ? dropInfo.InsertIndex : Tabs.Count - 1;
+
+            Tabs.Move(sourceIndex, targetIndex);
+            SelectedTabIndex = targetIndex; // optional - to select the tab after moving
+        }
+    }
 
     [RelayCommand]
     private void SaveAssets()
