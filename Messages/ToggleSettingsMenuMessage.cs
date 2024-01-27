@@ -1,8 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-
-namespace DispoDataAssistant.Messages
+﻿namespace DispoDataAssistant.Messages
 {
-    public class ToggleSettingsMenuMessage 
+    public class ToggleSettingsMenuMessage
     {
     }
 }

@@ -1,0 +1,87 @@
+﻿<Window x:Name="SettingsMenu" x:Class="DispoDataAssistant.UIComponents.Settings.SettingsMenuView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DispoDataAssistant.UIComponents.Settings"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:SettingsViewModel, IsDesignTimeCreatable=True}"
+        Title="Settings Menu" Height="450" Width="800" WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterOwner" Cursor="Hand">
+    <Grid>
+        <Grid.RowDefinitions >
+            <RowDefinition Height="30"/>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Settings" FontSize="30" Grid.Row="0" />
+        <DockPanel Grid.Row="1">
+            <!--<StackPanel Orientation="Vertical"
+                        DockPanel.Dock="Left">
+                
+
+            </StackPanel>-->
+            <TabControl TabStripPlacement="Left"
+                        DockPanel.Dock="Left"
+                        ItemsSource="{Binding Settings}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Use 'Title' property as the name of tabs -->
+                        <TextBlock Text="{Binding Path=Title}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <!-- Display object properties in tabs, adjust as necessary -->
+                        <StackPanel>
+                            <TextBlock Text="Integrations:"
+                                       FontWeight="Bold" />
+                            <ItemsControl ItemsSource="{Binding Integrations}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- Adjust as necessary -->
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Path=Title}" />
+                                            <TextBlock Text="{Binding Path=Description}" />
+                                            <TextBlock Text="{Binding Path=IsEnabled}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="General:"
+                                       FontWeight="Bold" />
+                            <ItemsControl ItemsSource="{Binding General}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- Adjust as necessary -->
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Path=Title}" />
+                                            <TextBlock Text="{Binding Path=Description}" />
+                                            <TextBlock Text="{Binding Path=Value}" />
+                                            <TextBlock Text="{Binding Path=Type}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            
+        </DockPanel>
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="2">
+            <Button x:Name="SaveSettingsButton"
+                    Content="Save"
+                    Height="30"
+                    Style="{StaticResource standardButton}"
+                    Command="{Binding SaveSettingsCommand}" />
+            <Button x:Name="CloseSettingsButton"
+                    Content="Exit"
+                    Style="{StaticResource standardButton}"
+                    Command="{Binding CloseSettingsCommand}"
+                    CommandParameter="{Binding ElementName=SettingsMenu}"
+                    Height="30" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -2,11 +2,29 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Michigan.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Icons\add.png" />
+    <None Remove="Resources\Icons\close.png" />
+    <None Remove="Resources\Icons\download.png" />
+    <None Remove="Resources\Icons\download_FILL0_wght400_GRAD0_opsz24.png" />
+    <None Remove="Resources\Icons\edit.png" />
+    <None Remove="Resources\Icons\file_save.png" />
+    <None Remove="Resources\Icons\minimize_FILL0_wght400_GRAD0_opsz24.png" />
+    <None Remove="Resources\Icons\remove.png" />
+    <None Remove="Resources\Icons\save.png" />
+    <None Remove="Resources\Icons\settings_gear.png" />
+    <None Remove="Resources\Icons\shadow_minus_FILL0_wght400_GRAD0_opsz24.png" />
+    <None Remove="Resources\Icons\toggle_off.png" />
+    <None Remove="Resources\Icons\toggle_on.png" />
+    <None Remove="Resources\Icons\upload_file.png" />
+    <None Remove="Resources\Icons\upload_FILL0_wght400_GRAD0_opsz24.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Michigan.ico" />
@@ -14,18 +32,58 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Dapper" Version="2.1.28" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
-    <PackageReference Include="Serilog" Version="3.0.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.RichTextBox.Wpf" Version="1.1.0" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Styles\" />
+    <Folder Include="Managers\Interfaces\" />
     <Folder Include="Resources\Themes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\add.png" />
+    <Resource Include="Resources\Icons\close.png" />
+    <Resource Include="Resources\Icons\download.png" />
+    <Resource Include="Resources\Icons\download_FILL0_wght400_GRAD0_opsz24.png" />
+    <Resource Include="Resources\Icons\edit.png" />
+    <Resource Include="Resources\Icons\file_save.png" />
+    <Resource Include="Resources\Icons\minimize_FILL0_wght400_GRAD0_opsz24.png" />
+    <Resource Include="Resources\Icons\remove.png" />
+    <Resource Include="Resources\Icons\save.png" />
+    <Resource Include="Resources\Icons\settings_gear.png" />
+    <Resource Include="Resources\Icons\shadow_minus_FILL0_wght400_GRAD0_opsz24.png" />
+    <Resource Include="Resources\Icons\toggle_off.png" />
+    <Resource Include="Resources\Icons\toggle_on.png" />
+    <Resource Include="Resources\Icons\upload_file.png" />
+    <Resource Include="Resources\Icons\upload_FILL0_wght400_GRAD0_opsz24.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,10 +95,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DispoAssistantOld.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\UserSettings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>UserSettings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{3259aa49-8aa1-44d3-9025-a0b520596a8c}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources\Icons\google-icons.xaml">
+      <Generator></Generator>
+    </Page>
   </ItemGroup>
 
 </Project>
