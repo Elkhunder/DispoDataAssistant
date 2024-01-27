@@ -8,7 +8,7 @@ namespace DispoDataAssistant.Data.Models
     {
         public int Id { get; set; }
         [ObservableProperty]
-        private string name;
-        public virtual ObservableCollection<ServiceNowAsset>? ServiceNowAssets { get; set; }
+        private string name = string.Empty;
+        public virtual ObservableCollection<ServiceNowAsset> ServiceNowAssets { get; set; } = new ObservableCollection<ServiceNowAsset>();
     }
 }

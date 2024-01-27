@@ -1,19 +1,14 @@
-using System.Collections.Generic;
+using System;
 using System.Text.Json.Serialization;
 namespace DispoDataAssistant.Data.Models;
 
-public class ServiceNowResponse
-{
-    [JsonPropertyName("result")]
-    public List<ServiceNowAsset> Assets { get; set; }
-}
 public class ServiceNowAsset
 {
     public int Id { get; set; }
     [JsonPropertyName("sys_id")]
     public string? SysId { get; set; }
 
-    public virtual TabModel Tab { get; set; }
+    public virtual TabModel Tab { get; set; } = new TabModel();
 
     public int TabId { get; set; }
 
@@ -41,4 +36,24 @@ public class ServiceNowAsset
     [JsonPropertyName("sys_updated_on")]
     public string? LastUpdated { get; set; }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is not null && obj is ServiceNowAsset other)
+        {
+            return SysId == other.SysId
+                && AssetTag == other.AssetTag
+                && SerialNumber == other.SerialNumber;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(SysId);
+        hash.Add(AssetTag);
+        hash.Add(SerialNumber);
+        return hash.ToHashCode();
+    }
 }
+

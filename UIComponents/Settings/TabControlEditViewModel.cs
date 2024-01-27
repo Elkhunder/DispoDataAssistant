@@ -75,7 +75,7 @@ public partial class TabControlEditViewModel : BaseViewModel
         {
             message.Reply(vm.NewTabName);
         }
-        NewTabName = string.Empty;
+        NewTabName = null;
     }
 
     [RelayCommand]
@@ -88,10 +88,7 @@ public partial class TabControlEditViewModel : BaseViewModel
         }
         else
         {
-            if (window != null)
-            {
-                window.Close();
-            }
+            window?.Close();
         }
     }
 }

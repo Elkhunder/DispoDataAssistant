@@ -36,73 +36,28 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         _client = new RestClient(_restClientOptions);
     }
 
-    public async Task<ServiceNowAsset?> GetServiceNowAssetByAssetTagAsync(string assetTag)
+    public async Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetByAssetTagAsync(string assetTag)
     {
         var request = new RestRequest("table/cmdb_ci", Method.Get);
         request.AddParameter("sysparm_query", $"asset_tag={assetTag}");
         request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
         _logger.LogInformation($"Querying alm_hardware table from asset: {assetTag}");
         // The following line sends the request and automatically deserializes the response.
-        RestResponse<ServiceNowResponse> response = await _client.ExecuteGetAsync<ServiceNowResponse>(request);
-
-        // Check if the request was successful
-        if (response.IsSuccessful && response.Data is not null)
-        {
-            _logger.LogInformation($"Query: {response.StatusCode}");
-            ServiceNowResponse serviceNowResponse = response.Data;
-
-            if (serviceNowResponse is not null && serviceNowResponse.Assets is not null && serviceNowResponse.Assets.Count > 0)
-            {
-                _logger.LogInformation($"Asset: {assetTag} found");
-                return serviceNowResponse.Assets[0];
-            }
-            else
-            {
-                _logger.LogWarning($"Asset: {assetTag} not found");
-                return null;
-            }
-        }
-        else
-        {
-            _logger.LogError($"Query: {response.ErrorMessage}");
-            return null;
-        }
+        return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
     }
 
-    public async Task<ServiceNowAsset?> GetServiceNowAssetBySerialNumberAsync(string serialNumber)
+    public async Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetBySerialNumberAsync(string serialNumber)
     {
         var request = new RestRequest("table/cmdb_ci", Method.Get);
         request.AddParameter("sysparm_query", $"serial_number={serialNumber}");
         request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
         _logger.LogInformation($"Querying alm_hardware table from asset: {serialNumber}");
         // The following line sends the request and automatically deserializes the response.
-        RestResponse<ServiceNowResponse> response = await _client.ExecuteGetAsync<ServiceNowResponse>(request);
+        return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
 
-        // Check if the request was successful
-        if (response.IsSuccessful && response.Data is not null)
-        {
-            _logger.LogInformation($"Query: {response.StatusCode}");
-            ServiceNowResponse serviceNowResponse = response.Data;
-
-            if (serviceNowResponse is not null && serviceNowResponse.Assets is not null && serviceNowResponse.Assets.Count > 0)
-            {
-                _logger.LogInformation($"Asset: {serialNumber} found");
-                return serviceNowResponse.Assets[0];
-            }
-            else
-            {
-                _logger.LogWarning($"Asset: {serialNumber} not found");
-                return null;
-            }
-        }
-        else
-        {
-            _logger.LogError($"Query: {response.ErrorMessage}");
-            return null;
-        }
     }
 
-    public async Task<ServiceNowAsset?> RetireServiceNowAssetAsync(string sys_id)
+    public async Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id)
     {
         object payload = new
         {
@@ -111,7 +66,6 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         var request = new RestRequest($"table/cmdb_ci/{sys_id}");
         request.AddJsonBody(payload);
 
-        RestResponse<ServiceNowResponse> response = await _client.ExecutePutAsync<ServiceNowResponse>(request);
-        return response?.Data?.Assets?[0];
+        return await _client.ExecutePutAsync<ServiceNowApiResponse>(request);
     }
 }

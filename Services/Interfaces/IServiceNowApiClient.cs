@@ -1,11 +1,12 @@
 ﻿using DispoDataAssistant.Data.Models;
+using RestSharp;
 using System.Threading.Tasks;
 
 namespace DispoDataAssistant.Interfaces;
 
 public interface IServiceNowApiClient
 {
-    Task<ServiceNowAsset?> GetServiceNowAssetByAssetTagAsync(string assetTag);
-    Task<ServiceNowAsset?> GetServiceNowAssetBySerialNumberAsync(string serialNumber);
-    Task<ServiceNowAsset?> RetireServiceNowAssetAsync(string sys_id);
+    Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetByAssetTagAsync(string assetTag);
+    Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetBySerialNumberAsync(string serialNumber);
+    Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id);
 }
