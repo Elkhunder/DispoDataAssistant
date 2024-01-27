@@ -68,7 +68,30 @@ public partial class MainViewModel : BaseViewModel
         if (Task.Run(async () => await _assetContext.Tabs.AnyAsync()).Result)
         {
             _assetContext.Tabs.Load();
-            Tabs = _assetContext.Tabs.Local.ToObservableCollection();
+            var tabs = _assetContext.Tabs.Local.ToList();
+
+            bool isIndexUpdated = false;
+
+            if (tabs != null && tabs.Count > 0)
+            {
+                for (int i = 0; i < tabs.Count; i++)
+                {
+                    var tab = tabs[i];
+
+                    // If Index is null
+                    if (tab.Index == null)
+                    {
+                        tabs[i].Index = i;
+                        isIndexUpdated = true;
+                    }
+                }
+                if (isIndexUpdated)
+                {
+                    _assetContext.SaveChanges();
+                }
+
+                Tabs = new ObservableCollection<TabModel>(tabs.OrderBy(tab => tab.Index));
+            }
         }
     }
 
