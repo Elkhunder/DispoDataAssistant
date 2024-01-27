@@ -186,7 +186,9 @@
                     SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     dd:DragDrop.IsDragSource="True"
-                    dd:DragDrop.IsDropTarget="True">
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}">
+            
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
