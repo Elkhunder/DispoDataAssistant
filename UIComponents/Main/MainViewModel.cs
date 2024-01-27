@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CsvHelper;
+using CsvHelper.Configuration;
 using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Models;
 using DispoDataAssistant.Handlers;
@@ -12,8 +14,12 @@ using DispoDataAssistant.UIComponents.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+using RestSharp;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,53 +75,91 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private async Task QueryServiceNow()
     {
+        if (SelectedTab.ServiceNowAssets is null)
+        {
+            SelectedTab.ServiceNowAssets = [];
+        }
+
         // Prioritize the use of serial number as it's more accurate
         if (!string.IsNullOrEmpty(SerialNumber))
         {
             // Query service now asset table with serial number
-            var asset = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(SerialNumber);
+            var apiResponse = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(SerialNumber);
 
-            if (asset is null)
+            if(apiResponse.IsSuccessful is false || apiResponse.Data is null)
             {
-                MessageBox.Show("Asset was not found, please enter information manually");
+                MessageBox.Show("Query was not successful");
+                _logger.LogError($"Query was not successful, {apiResponse.ErrorMessage}");
                 return;
             }
-            else if (SelectedTab.ServiceNowAssets is null)
+            
+            if (apiResponse.Data.Assets.Count == 0)
             {
-                MessageBox.Show("Asset collection is null, unable to add asset to collection");
+                _logger.LogError($"No assets were found with serial number: {SerialNumber}");
+                return;
             }
-            else if (asset.SerialNumber == SerialNumber)
+            var assets = apiResponse.Data.Assets;
+            var hasDuplicates = assets.Count != assets.Distinct().Count();
+            if (hasDuplicates)
             {
-                SelectedTab.ServiceNowAssets?.Add(asset);
-                _assetContext.SaveChanges();
+                assets = assets.GroupBy(asset => asset)
+               .Select(group => group.First())
+               .ToList();
             }
-            else
+
+            foreach ( var asset in assets)
             {
-                MessageBox.Show("The provided serial number did not match the serial number returned by service now");
+                if (asset.SerialNumber == SerialNumber)
+                {
+                    SelectedTab.ServiceNowAssets?.Add(asset);
+                    _assetContext.SaveChanges();
+                }
+                else
+                {
+                    MessageBox.Show("The provided serial number did not match the serial number returned by service now");
+                }
             }
         }
         else if (!string.IsNullOrEmpty(AssetTag))
         {
             // Query service now asset table with asset tag as a fallback if serial number is empty
-            var asset = await _serviceNowApiClient.GetServiceNowAssetByAssetTagAsync(AssetTag);
-
-            if (asset is null)
+            var apiResponse = await _serviceNowApiClient.GetServiceNowAssetByAssetTagAsync(AssetTag);
+            if (apiResponse.IsSuccessful is false || apiResponse.Data is null)
             {
-                MessageBox.Show("Asset was not found, please enter information manually");
+                MessageBox.Show("Query was not successful");
+                _logger.LogError($"Query was not successful, {apiResponse.ErrorMessage}");
                 return;
             }
-            else if (SelectedTab.ServiceNowAssets is null)
+            if (apiResponse.Data.Assets.Count == 0)
             {
-                MessageBox.Show("Asset collection is null, unable to add asset to collection");
+                MessageBox.Show("No assets found, please enter information manually");
+                return;
             }
-            else if (asset.AssetTag == AssetTag)
+            var assets = apiResponse.Data.Assets;
+            var hasDuplicates = assets.Count != assets.Distinct().Count();
+            if (hasDuplicates)
             {
-                SelectedTab.ServiceNowAssets?.Add(asset);
-                _assetContext.SaveChanges();
+                assets = assets.GroupBy(asset => asset)
+               .Select(group => group.First())
+               .ToList();
             }
-            else
+
+            foreach ( var asset in assets)
             {
-                MessageBox.Show("The provided asset tag didn't match the asset tag returned by service now");
+                if (asset is null)
+                {
+                    _logger.LogError($"{asset} was not found in Service Now");
+                    return;
+                }
+                else if (asset.AssetTag == AssetTag)
+                {
+                    SelectedTab.ServiceNowAssets?.Add(asset);
+                    _assetContext.SaveChanges();
+                }
+                else
+                {
+                    MessageBox.Show("The provided asset tag didn't match the asset tag returned by service now");
+                }
             }
         }
         else
@@ -170,6 +214,7 @@ public partial class MainViewModel : BaseViewModel
                 MessageBox.Show("New tab name was the same as the current tab name");
                 return;
             }
+            SelectedTab.Name = newTabName;
             _assetContext.Tabs.Update(SelectedTab);
         }
         _assetContext.SaveChanges();
@@ -282,7 +327,7 @@ public partial class MainViewModel : BaseViewModel
                     }
                 }
                 else
-    {
+                {
                     record.Tab = tab;
                     record.TabId = tab.Id;
                     tab.ServiceNowAssets?.Add(record);
