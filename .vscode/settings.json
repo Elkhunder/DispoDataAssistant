@@ -1,6 +1,4 @@
 {
   "nuxt.isNuxtApp": false,
-  "editor.defaultFormatter": "ms-dotnettools.csharp",
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true
+  "editor.defaultFormatter": "ms-dotnettools.csharp"
 }

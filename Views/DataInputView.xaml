@@ -1,0 +1,131 @@
+﻿<UserControl x:Class="DispoDataAssistant.Views.DataInputView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DispoDataAssistant.Views" xmlns:viewmodels="clr-namespace:DispoDataAssistant.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:DataInputViewModel}"
+             xmlns:behaviors="clr-namespace:DispoDataAssistant.Behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400">
+    <Grid Background="{DynamicResource baseTheme.Background}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0"
+                    VerticalAlignment="Center">
+            <Label x:Name="AssetTagLabel"
+                   Style="{DynamicResource standardLabel}"
+                   Content="Asset Tag"/>
+            <TextBox x:Name="AssetTagTextBox"
+                     Style="{DynamicResource standardTextBoxStyle}"
+                     Text="{Binding AssetTag}"
+                     behaviors:FocusBehavior.Focus="{Binding FocusTextBox}"
+                     VerticalContentAlignment="Center"
+                     IsTabStop="True"
+                     TabIndex="0"
+                     Height="30"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1"
+                    VerticalAlignment="Center">
+            <Label x:Name="SerialNumberLabel"
+                   Style="{DynamicResource standardLabel}"
+                   Content="Serial Number"/>
+            <TextBox x:Name="SerialNumberTextBox"
+                     Style="{DynamicResource standardTextBoxStyle}"
+                     Text="{Binding SerialNumber}"
+                     VerticalContentAlignment="Center"
+                     IsTabStop="True"
+                     TabIndex="1"
+                     Height="30"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2"
+                    VerticalAlignment="Center">
+            <Label x:Name="DeviceTypeLabel"
+                   Style="{DynamicResource standardLabel}"
+                   Content="Device Type"/>
+            <ComboBox x:Name="DeviceTypeComboBox"
+                      SelectedItem="{Binding DeviceType}"
+                      Text="{Binding DeviceType}"
+                      ItemsSource="{Binding DeviceTypeOptions}"
+                      Style="{DynamicResource standardComboBox}"
+                      VerticalContentAlignment="Center"
+                      IsTabStop="False"
+                      Height="30"
+                      IsEditable="True"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3"
+                    VerticalAlignment="Center">
+            <Label 
+                    Content="Device Manufacturer" 
+                    Style="{StaticResource standardLabel}"/>
+            <ComboBox
+                    x:Name="deviceManufacturerComboBox"
+                    SelectedItem="{Binding DeviceManufacturer}"
+                    Text="{Binding DeviceManufacturer}"
+                    ItemsSource="{Binding DeviceManufacturerOptions}"
+                    Style="{StaticResource standardComboBox}"
+                    VerticalContentAlignment="Center"
+                    IsTabStop="False"
+                    IsEditable="True"
+                    Height="30"/>
+        </StackPanel>
+        <StackPanel Grid.Row="4"
+                    VerticalAlignment="Center">
+            <Label 
+                    Content="Device Model" 
+                    Style="{StaticResource standardLabel}"/>
+            <ComboBox
+                    x:Name="deviceModelComboBox"
+                    SelectedItem="{Binding DeviceModel}"
+                    Text="{Binding DeviceModel}"
+                    ItemsSource="{Binding DeviceModelOptions}"
+                    IsEditable="True"
+                    Style="{StaticResource standardComboBox}"
+                    VerticalContentAlignment="Center"
+                    IsTabStop="False"
+                    Height="25"/>
+        </StackPanel>
+        <StackPanel Grid.Row="5"
+                    VerticalAlignment="Center">
+            <Label
+                    Content="Pickup Location &amp; Date"
+                    Grid.Column="0" Grid.Row="0"
+                    Style="{StaticResource standardLabel}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Style="{StaticResource standardComboBox}"
+                          x:Name="pickupLocationComboBox"
+                          SelectedItem="{Binding PickupLocation}"
+                          Text="{Binding PickupLocation}"
+                          ItemsSource="{Binding PickupLocationOptions}"
+                          VerticalContentAlignment="Center"
+                          IsEditable="True"
+                          Grid.Column="0"
+                          Margin="0,0,2,0"
+                          IsTabStop="False"
+                          Height="30"
+                          Background="Transparent"/>
+                <DatePicker Style="{DynamicResource pickupDateDatePicker}"
+                            x:Name="pickupDateDatePicker"
+                            SelectedDate="{Binding PickupDate}"
+                            Grid.Column="1"
+                            Margin="2,0,0,0"
+                            VerticalContentAlignment="Center"
+                            IsTabStop="False"
+                            Height="30"/>
+                            <!--SelectedDateChanged="pickupDate_SelectedDateChanged"-->
+                                
+            </Grid>
+        </StackPanel>
+        
+    </Grid>
+</UserControl>

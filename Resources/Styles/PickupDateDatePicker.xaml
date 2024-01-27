@@ -7,13 +7,12 @@
         <Setter Property="IsTodayHighlighted" Value="True"/>
         <Setter Property="SelectedDateFormat" Value="Short"/>
         <Setter Property="Background" Value="{DynamicResource baseTheme.Secondary}"/>
-        <Setter Property="Padding" Value="5,0,0,0"/>
+        <Setter Property="Padding" Value="0,2,0,0"/>
         <Setter Property="BorderBrush" Value="{DynamicResource baseTheme.Secondary}">
          
         </Setter>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DatePicker}">
@@ -80,7 +79,7 @@
                                                 <VisualState x:Name="Disabled"/>
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <Grid Background="#11FFFFFF" FlowDirection="LeftToRight" HorizontalAlignment="Center" Height="18" Margin="-8,0,0,0" VerticalAlignment="Center" Width="19">
+                                        <Grid Background="#11FFFFFF" FlowDirection="LeftToRight" HorizontalAlignment="Center" Height="18" Margin="0" VerticalAlignment="Center" Width="19">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="20*"/>
                                                 <ColumnDefinition Width="20*"/>
@@ -131,7 +130,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="PART_Button" Grid.Column="1" Foreground="{TemplateBinding Foreground}" Focusable="False" HorizontalAlignment="Left" Margin="3,0,3,0" Grid.Row="0" Template="{StaticResource DropDownButtonTemplate}" VerticalAlignment="Top" Width="20"/>
-                            <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" HorizontalContentAlignment="Center" Grid.Row="0" VerticalContentAlignment="Center" Background="{TemplateBinding Background}"/>
+                            <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" Focusable="{TemplateBinding Focusable}" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch"/>
                             <Grid x:Name="PART_DisabledVisual" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False" Opacity="0" Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
