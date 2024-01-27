@@ -393,6 +393,12 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             var sourceIndex = Tabs.IndexOf(sourceItem);
             var targetIndex = dropInfo.InsertIndex < Tabs.Count ? dropInfo.InsertIndex : Tabs.Count - 1;
 
+            // Ensure targetIndex is within bounds
+            if (targetIndex >= Tabs.Count)
+            {
+                targetIndex = Tabs.Count - 1;
+            }
+
             Tabs.Move(sourceIndex, targetIndex);
             SelectedTabIndex = targetIndex; // optional - to select the tab after moving
         }
