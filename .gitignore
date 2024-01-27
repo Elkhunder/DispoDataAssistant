@@ -365,3 +365,6 @@ ServiceNowAsset.json
 
 # Config Files
 *.config
+/DispoAssistantOld.db
+/appsettings.json
+/appsettings.development.json
