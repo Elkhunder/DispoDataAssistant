@@ -176,9 +176,120 @@ public partial class MainViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void UploadAssets()
+    private async Task UploadAssets()
     {
-        var file = _fileDialogService.OpenFileDialog();
+        var newTabNameRequest = new RequestNewTabNameMessage();
+        _messenger.Send(newTabNameRequest);
+        var tab = new TabModel();
+
+        if (newTabNameRequest.HasReceivedResponse)
+        {
+            string tabName = newTabNameRequest.Response;
+
+            if (tabName is null)
+            {
+                tab = SelectedTab;
+            }
+            else
+            {
+                tab = new TabModel() { Name = tabName, ServiceNowAssets = [] };
+                _assetContext.Tabs.Add(tab);
+            }
+        }
+        else
+        {
+            tab = SelectedTab;
+        }
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+
+        bool? result = openFileDialog.ShowDialog();
+
+        if (result == false)
+        {
+            _logger.LogInformation("Operation canceled by user");
+            return;
+        }
+        var file = openFileDialog.FileName;
+        if (string.IsNullOrEmpty(file))
+        {
+            _logger.LogError("file was null or empty");
+            return;
+        }
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HeaderValidated = null,
+            MissingFieldFound = null,
+        };
+        using (var sr = new StreamReader(file))
+        using (var csvReader = new CsvReader(sr, config))
+        {
+            var records = csvReader.GetRecords<ServiceNowAsset>();
+
+            foreach (var record in records)
+            {
+                if (record.SysId is null || string.IsNullOrEmpty(record.SysId))
+                {
+                    RestResponse<ServiceNowApiResponse>? apiResponse = null;
+                    bool requestPerformed = false;
+
+                    if (record.SerialNumber is not null && !string.IsNullOrEmpty(record.SerialNumber))
+                    {
+                        apiResponse = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(record.SerialNumber);
+                        requestPerformed = true;
+                    }
+                    else if (record.AssetTag is not null && !string.IsNullOrEmpty(record.AssetTag))
+                    {
+                        apiResponse = await _serviceNowApiClient.GetServiceNowAssetByAssetTagAsync(record.AssetTag);
+                        requestPerformed = true;
+                    }
+
+                    if ( requestPerformed && ( apiResponse is null || apiResponse.IsSuccessful is false || apiResponse.Data is null ))
+                    {
+                        MessageBox.Show("Query was not successful");
+                        string errorMessage = apiResponse?.ErrorMessage ?? "API Response or Data was null";
+                        _logger.LogError($"Query was not successful, {errorMessage}");
+                        return;
+                    }
+                    else if (apiResponse!.Data!.Assets.Count == 0)
+                    {
+                        MessageBox.Show("No assets found, please enter information manually");
+                        return;
+                    }
+                    var assets = apiResponse.Data.Assets;
+                    var hasDuplicates = assets.Count != assets.Distinct().Count();
+                    if (hasDuplicates)
+                    {
+                        assets = assets.GroupBy(asset => asset)
+                       .Select(group => group.First())
+                       .ToList();
+                    }
+
+                    foreach (var asset in assets)
+                    {
+                        if (asset is null)
+                        {
+                            _logger.LogError($"{asset} was not found in Service Now");
+                            return;
+                        }
+                        else if (asset.AssetTag == record.AssetTag || asset.SerialNumber == record.SerialNumber)
+                        {
+                            tab.ServiceNowAssets?.Add(asset);
+                        }
+                        else
+                        {
+                            MessageBox.Show("The provided asset tag didn't match the asset tag returned by service now");
+                        }
+                    }
+                }
+                else
+    {
+                    record.Tab = tab;
+                    record.TabId = tab.Id;
+                    tab.ServiceNowAssets?.Add(record);
+                }
+            }
+        }
+        _assetContext.SaveChanges();
     }
 
     [RelayCommand]
