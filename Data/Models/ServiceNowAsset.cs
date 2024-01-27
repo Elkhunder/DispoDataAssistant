@@ -8,7 +8,7 @@ public class ServiceNowAsset
     [JsonPropertyName("sys_id")]
     public string? SysId { get; set; }
 
-    public virtual TabModel Tab { get; set; }
+    public virtual TabModel Tab { get; set; } = new TabModel();
 
     public int TabId { get; set; }
 
