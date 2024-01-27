@@ -400,7 +400,15 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             }
 
             Tabs.Move(sourceIndex, targetIndex);
-            SelectedTabIndex = targetIndex; // optional - to select the tab after moving
+
+            // Update the index property of each tab in the Tabs list and save to database
+            for (int i = 0; i < Tabs.Count; i++)
+            {
+                Tabs[i].Index = i;
+            }
+
+            // Assuming you have something on lines of SaveChanges() to reflect the Index change in the DB.
+            _assetContext.SaveChanges();
         }
     }
 
