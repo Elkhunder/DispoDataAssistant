@@ -2,11 +2,6 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 namespace DispoDataAssistant.Data.Models;
 
-public class ServiceNowResponse
-{
-    [JsonPropertyName("result")]
-    public List<ServiceNowAsset> Assets { get; set; }
-}
 public class ServiceNowAsset
 {
     public int Id { get; set; }
