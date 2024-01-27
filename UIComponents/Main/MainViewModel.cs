@@ -25,7 +25,7 @@ using System.Windows;
 
 namespace DispoDataAssistant.UIComponents.Main;
 
-public partial class MainViewModel : BaseViewModel
+public partial class MainViewModel : BaseViewModel, IDropTarget
 {
     // Binding properties
     [ObservableProperty]
@@ -380,13 +380,13 @@ public partial class MainViewModel : BaseViewModel
         }
     }
 
-    public void DragOver(IDropInfo dropInfo)
+    void IDropTarget.DragOver(IDropInfo dropInfo)
     {
         dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
         dropInfo.Effects = DragDropEffects.Move;
     }
 
-    public void Drop(IDropInfo dropInfo)
+    void IDropTarget.Drop(IDropInfo dropInfo)
     {
         if (dropInfo.Data is TabModel sourceItem)
         {
