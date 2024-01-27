@@ -391,7 +391,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         if (dropInfo.Data is TabModel sourceItem)
         {
             var sourceIndex = Tabs.IndexOf(sourceItem);
-            var targetIndex = dropInfo.InsertIndex < Tabs.Count ? dropInfo.InsertIndex : Tabs.Count - 1;
+            var targetIndex = dropInfo.InsertIndex;
 
             // Ensure targetIndex is within bounds
             if (targetIndex >= Tabs.Count)
