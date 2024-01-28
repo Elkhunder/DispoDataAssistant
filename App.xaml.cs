@@ -44,6 +44,11 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        bool isDebugMode = false;
+        #if DEBUG
+        isDebugMode = true;
+        #endif
+
         await AppHost!.StartAsync();
 
         using (IServiceScope scope = AppHost.Services.CreateScope())
