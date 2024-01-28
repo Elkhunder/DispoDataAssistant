@@ -62,24 +62,23 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private void MainWindow_Loaded()
     {
-        if (Task.Run(async () => await _assetContext.Tabs.AnyAsync()).Result)
+        if (_assetContext.Tabs.Any())
         {
-            _assetContext.Tabs.Load();
-            var tabs = _assetContext.Tabs.Local.ToList();
+            _assetContext.Tabs.OrderBy(tab => tab.Index).Load();
+            var tabs = _assetContext.Tabs.Local;
 
             bool isIndexUpdated = false;
 
             if (tabs != null && tabs.Count > 0)
             {
-                for (int i = 0; i < tabs.Count; i++)
+                int index = 0;
+                foreach (var tab in tabs)
                 {
-                    var tab = tabs[i];
-
-                    // If Index is null
-                    if (tab.Index == null)
+                    if (tab.Index is null)
                     {
-                        tabs[i].Index = i;
                         isIndexUpdated = true;
+                        tab.Index = index;
+                        index++;
                     }
                 }
                 if (isIndexUpdated)
@@ -87,7 +86,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                     _assetContext.SaveChanges();
                 }
 
-                Tabs = new ObservableCollection<TabModel>(tabs.OrderBy(tab => tab.Index));
+                Tabs = _assetContext.Tabs.Local.ToObservableCollection();
             }
         }
     }
@@ -198,8 +197,8 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         if (newTabNameRequest.HasReceivedResponse)
         {
             string name = newTabNameRequest.Response;
-
-            var tab = new TabModel() { Name = name, ServiceNowAssets = [] };
+            int index = _assetContext.Tabs.Count() - 1;
+            var tab = new TabModel() { Index = index, Name = name, ServiceNowAssets = [] };
             _assetContext.Tabs.Add(tab);
             _assetContext.SaveChanges();
         }
