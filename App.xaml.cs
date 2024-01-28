@@ -55,7 +55,9 @@ public partial class App : Application
             using (AssetContext context = scope.ServiceProvider.GetRequiredService<AssetContext>())
             {
                     context.Database.Migrate();
-                    Task.Run(async () => await PopulateDatabase(context)).Wait();
+                if(isDebugMode)
+                {
+                    PopulateDatabase(context);
             }
             using (SettingsContext dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>())
             {
