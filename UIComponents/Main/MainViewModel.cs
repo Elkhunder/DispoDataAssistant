@@ -76,7 +76,6 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                 {
                     if (tab.Index is null)
                     {
-                        tabs[i].Index = i;
                         isIndexUpdated = true;
                         tab.Index = index;
                         index++;
@@ -198,8 +197,8 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         if (newTabNameRequest.HasReceivedResponse)
         {
             string name = newTabNameRequest.Response;
-
-            var tab = new TabModel() { Name = name, ServiceNowAssets = [] };
+            int index = _assetContext.Tabs.Count() - 1;
+            var tab = new TabModel() { Index = index, Name = name, ServiceNowAssets = [] };
             _assetContext.Tabs.Add(tab);
             _assetContext.SaveChanges();
         }
