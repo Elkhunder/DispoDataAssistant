@@ -59,6 +59,12 @@ public partial class App : Application
                 {
                     PopulateDatabase(context);
             }
+                else if (!context.Tabs.Any())
+                {
+                    context.Tabs.Add(new TabModel() { Name = "Default", ServiceNowAssets = [] });
+                    context.SaveChanges();
+                }
+            }
             using (SettingsContext dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>())
             {
                 dbContext.Database.Migrate();
