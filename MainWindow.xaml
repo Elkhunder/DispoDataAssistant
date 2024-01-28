@@ -188,7 +188,7 @@
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.DropHandler="{Binding}">
-            
+
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
@@ -226,21 +226,9 @@
                             <DataGridTextColumn Header="Last Updated"
                                                 Binding="{Binding LastUpdated}" />
                         </DataGrid.Columns>
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="SelectionChange">
-                                <i:InvokeCommandAction CommandParameter="{Binding ElementName=ViewPaneDataGrid, Path=SelectedItems}"
-                                                       Command="{Binding SyncSelectedAssetsCommand}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
                     </DataGrid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
-
         </TabControl>
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Loaded">
-                <i:InvokeCommandAction Command="{Binding DataGridLoadedCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
     </Grid>
 </Window>
