@@ -95,9 +95,27 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private async Task QueryServiceNow()
     {
-        if (SelectedTab.ServiceNowAssets is null)
+        var tab = SendNewTabRequest();
+
+        if(tab is null)
         {
-            SelectedTab.ServiceNowAssets = [];
+            tab = SelectedTab;
+        }
+
+        if (tab.ServiceNowAssets is null)
+        {
+            tab.ServiceNowAssets = [];
+        }
+
+        if(tab.ServiceNowAssets.Any(asset => asset.SerialNumber == SerialNumber))
+        {
+            MessageBox.Show($"Tab already contains asset with the provided serial number: {SerialNumber}");
+            return;
+        }
+        if(tab.ServiceNowAssets.Any(asset => asset.AssetTag == AssetTag))
+        {
+            MessageBox.Show($"Tab already contains asset with the provided asset tag: {AssetTag}");
+            return;
         }
 
         // Prioritize the use of serial number as it's more accurate
@@ -173,7 +191,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                 }
                 else if (asset.AssetTag == AssetTag)
                 {
-                    SelectedTab.ServiceNowAssets?.Add(asset);
+                    tab.ServiceNowAssets?.Add(asset);
                     _assetContext.SaveChanges();
                 }
                 else
@@ -192,6 +210,14 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private void CreateTab()
     {
+        if (SendNewTabRequest() is null)
+        {
+            MessageBox.Show("New tab was unable to be created.");
+        }
+    }
+
+    private TabModel? SendNewTabRequest()
+    {
         var newTabNameRequest = new RequestNewTabNameMessage();
         _messenger.Send(newTabNameRequest);
         if (newTabNameRequest.HasReceivedResponse)
@@ -201,7 +227,10 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             var tab = new TabModel() { Index = index, Name = name, ServiceNowAssets = [] };
             _assetContext.Tabs.Add(tab);
             _assetContext.SaveChanges();
+
+            return tab;
         }
+        return null;
     }
 
     [RelayCommand]
