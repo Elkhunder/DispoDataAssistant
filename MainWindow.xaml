@@ -6,7 +6,7 @@
         xmlns:bc="clr-namespace:DispoDataAssistant.UIComponents.BaseComponents"
         xmlns:vm="clr-namespace:DispoDataAssistant.UIComponents.Main"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        
+        xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
         mc:Ignorable="d"
         Title="Dispo Assistant"
         Height="Auto"
@@ -184,7 +184,11 @@
                     Grid.Row="1"
                     ItemsSource="{Binding Tabs, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}">
+            
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
