@@ -54,11 +54,11 @@ public partial class App : Application
         {
             using (AssetContext context = scope.ServiceProvider.GetRequiredService<AssetContext>())
             {
-                    context.Database.Migrate();
+                context.Database.Migrate();
                 if(isDebugMode)
                 {
                     PopulateDatabase(context);
-            }
+                }
                 else if (!context.Tabs.Any())
                 {
                     context.Tabs.Add(new TabModel() { Name = "Default", ServiceNowAssets = [] });
@@ -68,9 +68,8 @@ public partial class App : Application
             using (SettingsContext dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>())
             {
                 dbContext.Database.Migrate();
-                Task.Run(async () => await InitializeSettings(dbContext)).Wait();
-
-                Task.Run(async () => await LoadSettings(dbContext)).Wait();
+                InitializeSettings(dbContext);
+                LoadSettings(dbContext);
             }
         }
 
@@ -92,9 +91,9 @@ public partial class App : Application
         App.Current.Shutdown();
     }
 
-    private static async Task InitializeSettings(SettingsContext context)
+    private static void InitializeSettings(SettingsContext context)
     {
-        if (await context.Settings.AnyAsync())
+        if (context.Settings.Any())
         {
             return;
         }
@@ -126,24 +125,16 @@ public partial class App : Application
 
     }
 
-    private static async Task LoadSettings(SettingsContext context)
+    private static void LoadSettings(SettingsContext context)
     {
-        List<Settings> settings = await context.Settings.ToListAsync();
+        List<Settings> settings = [.. context.Settings];
     }
 
-    private static async Task PopulateDatabase(AssetContext context)
+    private static void PopulateDatabase(AssetContext context)
     {
-        if (await context.ServiceNowAssets.AnyAsync())
+        if (context.ServiceNowAssets.Any())
         {
             return;
-            //var assets = context.ServiceNowAssets.ToListAsync<ServiceNowAsset>();
-            //var tabs = tabContext.Tabs.ToListAsync<TabModel>();
-            
-            //context.RemoveRange(assets);
-            //tabContext.RemoveRange(tabs);
-
-            //await context.SaveChangesAsync();
-            //await tabContext.SaveChangesAsync();
         }
         var newTab1 = new TabModel() { Name = "December" };
         var newTab2 = new TabModel() { Name = "January" };
