@@ -16,12 +16,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using RestSharp;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace DispoDataAssistant.UIComponents.Main;
 
@@ -35,7 +40,9 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [ObservableProperty]
     private int selectedTabIndex;
     [ObservableProperty]
-    private ServiceNowAsset selectedAsset = new();
+    private ServiceNowAsset? selectedAsset = new();
+    [ObservableProperty]
+    private ObservableCollection<ServiceNowAsset> selectedAssets = new();
     [ObservableProperty]
     private string serialNumber = string.Empty;
     [ObservableProperty]
@@ -57,8 +64,13 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         _serviceNowApiClient = serviceNowApiClient;
         _fileDialogService = fileDialogService;
     }
-    
+
     // Event Methods
+    [RelayCommand]
+    private void MainWindow_OnClick(MouseButtonEventArgs e)
+    {
+        SelectedAsset = null;
+    }
     [RelayCommand]
     private void MainWindow_Loaded()
     {
@@ -91,7 +103,55 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         }
     }
 
+    [RelayCommand]
+    private async Task RetireAssetFromServiceNow()
+    {
+        if(SelectedAssets is not null && SelectedAssets.Count > 0)
+        {
+            _logger.LogInformation("Assets collection is not null");
+        }
+        else
+        {
+            _logger.LogError("Assets collection is null");
+        }
+    }
+
     // Service Now Query Methods
+    [RelayCommand]
+    private async Task SyncWithServiceNow()
+    {
+        foreach(var asset in SelectedTab.ServiceNowAssets)
+        {
+            if (asset.SysId is not null)
+            {
+
+            }
+            else if(asset.SerialNumber is not null)
+            {
+                var apiResponse = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(asset.SerialNumber);
+                if (apiResponse.IsSuccessful is false || apiResponse.Data is null)
+                {
+                    MessageBox.Show("Query was not successful");
+                    _logger.LogError($"Query was not successful, {apiResponse.ErrorMessage}");
+                    return;
+                }
+                if (apiResponse.Data.Assets.Count == 0)
+                {
+                    _logger.LogError($"No assets were found with serial number: {SerialNumber}");
+                    return;
+                }
+                var assets = apiResponse.Data.Assets.First();
+            }
+            else if(asset.AssetTag is not null)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+    }
     [RelayCommand]
     private async Task QueryServiceNow()
     {
