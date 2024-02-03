@@ -12,7 +12,6 @@
         Title="Dispo Assistant"
         Height="Auto"
         Width="Auto"
-        Background="Transparent"
         WindowStyle="SingleBorderWindow"
         WindowState="Normal"
         ResizeMode="NoResize"
@@ -22,12 +21,9 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding MainWindow_LoadedCommand}" />
         </i:EventTrigger>
-        <!--<i:EventTrigger EventName="MouseLeftButtonUp">
-            <i:InvokeCommandAction Command="{Binding MainWindow_OnClickCommand}" PassEventArgsToCommand="True"/>
+        <i:EventTrigger EventName="MouseDoubleClick">
+            <i:InvokeCommandAction Command="{Binding MainWindow_OnClickCommand}" PassEventArgsToCommand= "True" />
         </i:EventTrigger>
-        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
-            <i:InvokeCommandAction Command="{Binding MainWindow_OnClickCommand}" />
-        </i:EventTrigger>-->
 
     </i:Interaction.Triggers>
     <Grid>
@@ -35,18 +31,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Canvas Background="White"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Panel.ZIndex="-1">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseLeftButtonUp">
-                    <i:InvokeCommandAction Command="{Binding MainWindow_OnClickCommand}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            
-        </Canvas>
-        
+
         <StackPanel x:Name="ServiceNowQueryPanel"
                         Orientation="Horizontal"
                         FlowDirection="LeftToRight"
