@@ -91,13 +91,13 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
     }
 
-    public async Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id, object payload)
+    public async Task<RestResponse<RetireAssetApiResponse>> RetireServiceNowAssetAsync(string sys_id, object payload)
     {
         var request = new RestRequest($"table/alm_hardware/{sys_id}")
             .AddQueryParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name")
             .AddJsonBody(payload);
 
-        return await _client.ExecutePutAsync<ServiceNowApiResponse>(request);
+        return await _client.ExecutePutAsync<RetireAssetApiResponse>(request);
     }
 
     public async Task<LifecycleMembers> GetLifecycleMembersAsync()
