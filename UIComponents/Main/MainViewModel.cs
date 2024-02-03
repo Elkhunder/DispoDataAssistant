@@ -4,8 +4,10 @@ using CommunityToolkit.Mvvm.Messaging;
 using CsvHelper;
 using CsvHelper.Configuration;
 using DispoDataAssistant.Data.Contexts;
+using DispoDataAssistant.Data.Enums;
 using DispoDataAssistant.Data.Models;
 using DispoDataAssistant.Handlers;
+using DispoDataAssistant.Helpers;
 using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
@@ -69,7 +71,10 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private void MainWindow_OnClick(MouseButtonEventArgs e)
     {
-        SelectedAsset = null;
+        if (SelectedAssets.Count > 1 )
+        {
+            SelectedAsset = null;
+        }
     }
     [RelayCommand]
     private void MainWindow_Loaded()
@@ -106,13 +111,44 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private async Task RetireAssetFromServiceNow()
     {
+        var assets = new ObservableCollection<ServiceNowAsset>();
         if(SelectedAssets is not null && SelectedAssets.Count > 0)
         {
             _logger.LogInformation("Assets collection is not null");
+            assets = SelectedAssets;
+            //Check to see what selected assets are not already retired prior to sending request to service now
         }
         else
         {
-            _logger.LogError("Assets collection is null");
+            _logger.LogError("Assets collection is null, getting all assets from selected tab");
+            assets = SelectedTab.ServiceNowAssets;
+            //Find out what assets are not already retired
+            //Send request to service now to retire assets
+        }
+        var lifecycleMembers = await _serviceNowApiClient.GetLifecycleMembersAsync();
+        var installStatus = ((int) ServiceNowInstallStatus.Retired).ToString();
+        var substatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
+        var state = lifecycleMembers.Statuses?.Single(s => s.Name == "Retired").Name;
+        var lifecycleStage = lifecycleMembers.Stages?.Single(s => s.Name == "End of Life").Name;
+        var lifecycleStatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
+
+        if (installStatus is not null && substatus is not null && lifecycleStatus is not null && lifecycleStage is not null)
+        {
+            var payload = new
+            {
+                install_status = installStatus,
+                substatus,
+                life_cycle_stage = lifecycleStage,
+                life_cycle_stage_status = lifecycleStatus
+            };
+
+            foreach (var asset in assets)
+            {
+                if (asset.SysId is not null)
+                {
+                    var result = await _serviceNowApiClient.RetireServiceNowAssetAsync(asset.SysId, payload);
+                }
+            }
         }
     }
 
@@ -130,11 +166,11 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                 var assets = apiResponse.Data.Assets;
 
                 foreach (var asset in assets)
-            {
+                {
                     var existingAsset = SelectedTab.ServiceNowAssets.First(a => a.SysId  == asset.SysId);
 
                     if (ServiceNowAssetComparer.IsDifferent(existingAsset, asset))
-            {
+                    {
                         existingAsset.Manufacturer = asset.Manufacturer;
                         existingAsset.SerialNumber = asset.SerialNumber;
                         existingAsset.LastUpdated = asset.LastUpdated;
