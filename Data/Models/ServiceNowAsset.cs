@@ -8,6 +8,9 @@ public class ServiceNowAsset
     [JsonPropertyName("sys_id")]
     public string? SysId { get; set; }
 
+    [JsonPropertyName("parent")]
+    public string? Parent { get; set; }
+
     public virtual TabModel Tab { get; set; } = new TabModel();
 
     public int TabId { get; set; }
@@ -15,23 +18,29 @@ public class ServiceNowAsset
     [JsonPropertyName("asset_tag")]
     public string? AssetTag { get; set; }
 
-    [JsonPropertyName("manufacturer.name")]
+    [JsonPropertyName("model.manufacturer.name")]
     public string? Manufacturer { get; set; }
 
-    [JsonPropertyName("model_id.name")]
+    [JsonPropertyName("model.name")]
     public string? Model { get; set; }
 
-    [JsonPropertyName("subcategory")]
+    [JsonPropertyName("model_category.name")]
     public string? Category { get; set; }
 
     [JsonPropertyName("serial_number")]
     public string? SerialNumber { get; set; }
 
-    [JsonPropertyName("operational_status")]
-    public string? OperationalStatus { get; set; }
+    [JsonPropertyName("life_cycle_stage.name")]
+    public string? LifeCycleStage { get; set; }
+
+    [JsonPropertyName("life_cycle_stage_status.name")]
+    public string? LifeCycleStatus { get; set; }
 
     [JsonPropertyName("install_status")]
-    public string? InstallStatus { get; set; }
+    public string? State { get; set; }
+
+    [JsonPropertyName("substatus")]
+    public string? Substate { get; set; }
 
     [JsonPropertyName("sys_updated_on")]
     public string? LastUpdated { get; set; }
