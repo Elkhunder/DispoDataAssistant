@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.Data.Enums;
-using DispoDataAssistant.Data.Models;
+﻿using DispoDataAssistant.Data.Models;
 using DispoDataAssistant.Data.Models.ServiceNow;
 using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Services.Implementations;
@@ -42,7 +40,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
 
     public async Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetByAssetTagAsync(string assetTag)
     {
-        var request = new RestRequest("table/cmdb_ci", Method.Get);
+        var request = new RestRequest("table/alm_hardware", Method.Get);
         request.AddParameter("sysparm_query", $"asset_tag={assetTag}");
         request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
         _logger.LogInformation($"Querying alm_hardware table from asset: {assetTag}");
@@ -64,7 +62,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
 
     public async Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetBySerialNumberAsync(string serialNumber)
     {
-        var request = new RestRequest("table/cmdb_ci", Method.Get);
+        var request = new RestRequest("table/alm_hardware", Method.Get);
         request.AddParameter("sysparm_query", $"serial_number={serialNumber}");
         request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
         _logger.LogInformation($"Querying alm_hardware table from asset: {serialNumber}");
@@ -73,13 +71,29 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
 
     }
 
-    public async Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id)
+    public async Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetByIdAsync(string sys_id)
     {
-        object payload = new
-        {
-            install_status = ServiceNowInstallStatus.Retired.ToString(),
-        };
-        var request = new RestRequest($"table/cmdb_ci/{sys_id}");
+        var request = new RestRequest("table/alm_hardware", Method.Get);
+        request.AddParameter("sysparm_query", $"sys_id={sys_id}");
+        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        _logger.LogInformation($"Querying database for asset, {sys_id}");
+        return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
+    }
+
+    public async Task<RestResponse<ServiceNowApiResponse>> GetServiceNowAssetsByIdAsync(string[] sys_ids)
+    {
+        //Build query string
+        string queryString = string.Join("^OR", sys_ids.Select(id => $"sys_id={id}"));
+        var request = new RestRequest("table/alm_hardware", Method.Get);
+        request.AddParameter("sysparm_query", queryString);
+        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        _logger.LogInformation($"Querying database for assets: {queryString}");
+        return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
+    }
+
+    public async Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id, object payload)
+    {
+        var request = new RestRequest($"table/alm_hardware/{sys_id}");
         request.AddJsonBody(payload);
 
         return await _client.ExecutePutAsync<ServiceNowApiResponse>(request);
