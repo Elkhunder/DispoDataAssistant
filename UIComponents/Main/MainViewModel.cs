@@ -174,11 +174,14 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                         existingAsset.Manufacturer = asset.Manufacturer;
                         existingAsset.SerialNumber = asset.SerialNumber;
                         existingAsset.LastUpdated = asset.LastUpdated;
-                        existingAsset.InstallStatus = asset.InstallStatus;
+                        existingAsset.State = asset.State;
                         existingAsset.AssetTag = asset.AssetTag;
                         existingAsset.Category = asset.Category;
                         existingAsset.Model = asset.Model;
-                        existingAsset.OperationalStatus = asset.OperationalStatus;
+                        existingAsset.Substate = asset.Substate;
+                        existingAsset.LifeCycleStage = asset.LifeCycleStage;
+                        existingAsset.LifeCycleStatus = asset.LifeCycleStatus;
+                        existingAsset.Parent = asset.Parent;
 
                         await _assetContext.SaveChangesAsync();
                     }

@@ -16,9 +16,13 @@ namespace DispoDataAssistant.Helpers
                    existingAsset.Model != newAsset.Model ||
                    existingAsset.Category != newAsset.Category ||
                    existingAsset.SerialNumber != newAsset.SerialNumber ||
-                   existingAsset.OperationalStatus != newAsset.OperationalStatus ||
-                   existingAsset.InstallStatus != newAsset.InstallStatus ||
-                   existingAsset.LastUpdated != newAsset.LastUpdated;
+                   existingAsset.Substate != newAsset.Substate ||
+                   existingAsset.State != newAsset.State ||
+                   existingAsset.LastUpdated != newAsset.LastUpdated ||
+                   existingAsset.LifeCycleStatus != newAsset.LifeCycleStatus ||
+                   existingAsset.LifeCycleStage != newAsset.LifeCycleStage ||
+                   existingAsset.Parent != newAsset.Parent;
+
         }
     }
 }

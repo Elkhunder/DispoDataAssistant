@@ -16,6 +16,8 @@ namespace DispoDataAssistant.Helpers
 
             for (int i = 0; i < recordCount; i++)
             {
+                var state_random = random.Next(0, 2);
+                var state = state_random == 0 ? "Retired" : "In Use";
                 assets.Add(new ServiceNowAsset
                 {
                     SysId = Guid.NewGuid().ToString(),
@@ -24,8 +26,10 @@ namespace DispoDataAssistant.Helpers
                     Model = $"Ultra Notebook {i + 1}",
                     Category = "Laptop",
                     SerialNumber = GenerateRandomSerialNumber(),
-                    OperationalStatus = random.Next(0, 2) == 0 ? "Working" : "Non-working",
-                    InstallStatus = random.Next(0, 2) == 0 ? "Installed" : "Not Installed",
+                    State = state,
+                    Substate = (state == "Retired") ? "Disposed" : "In Use",
+                    LifeCycleStatus = (state == "Retired") ? "End 0f Life" : "Operational",
+                    LifeCycleStage = (state == "Retired") ? "Disposed" : "In Use",
                     LastUpdated = DateTime.UtcNow.ToString(),
                     Tab = tab
                 });
