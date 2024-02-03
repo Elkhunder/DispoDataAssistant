@@ -1,4 +1,5 @@
 ﻿using DispoDataAssistant.Data.Models;
+using DispoDataAssistant.Data.Models.ServiceNow;
 using RestSharp;
 using System.Threading.Tasks;
 
