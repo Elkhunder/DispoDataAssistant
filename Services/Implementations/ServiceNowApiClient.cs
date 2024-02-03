@@ -105,7 +105,6 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         if (lifecycleMembers is null)
         {
             var stageRequest = new RestRequest("table/life_cycle_stage", Method.Get);
-            stageRequest.AddParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name");
             var statusRequest = new RestRequest("table/life_cycle_stage_status", Method.Get);
             RestResponse<LifecycleStageApiResponse> stageResponse;
             RestResponse<LifecycleStatusesApiResponse> statusResponse;
