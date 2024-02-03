@@ -126,11 +126,11 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             //Send request to service now to retire assets
         }
         var lifecycleMembers = await _serviceNowApiClient.GetLifecycleMembersAsync();
-        var installStatus = ((int) ServiceNowInstallStatus.Retired).ToString();
-        var substatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
-        var state = lifecycleMembers.Statuses?.Single(s => s.Name == "Retired").Name;
-        var lifecycleStage = lifecycleMembers.Stages?.Single(s => s.Name == "End of Life").Name;
-        var lifecycleStatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
+        string? installStatus = ((int) ServiceNowInstallStatus.Retired).ToString();
+        string? substatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
+        string? state = lifecycleMembers.Statuses?.Single(s => s.Name == "Retired").Name;
+        string? lifecycleStage = lifecycleMembers.Stages?.Single(s => s.Name == "End of Life").Name;
+        string? lifecycleStatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
 
         if (installStatus is not null && substatus is not null && lifecycleStatus is not null && lifecycleStage is not null)
         {
