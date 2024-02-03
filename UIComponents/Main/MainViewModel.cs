@@ -132,7 +132,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         string? lifecycleStage = lifecycleMembers.Stages?.Single(s => s.Name == "End of Life").Name;
         string? lifecycleStatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
 
-        if (installStatus is not null && substatus is not null && lifecycleStatus is not null && lifecycleStage is not null)
+        if (installStatus is not null && substatus is not null && lifecycleStatus is not null && lifecycleStage is not null && state is not null)
         {
             var payload = new
             {
