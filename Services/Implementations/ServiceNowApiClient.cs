@@ -42,7 +42,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
     {
         var request = new RestRequest("table/alm_hardware", Method.Get);
         request.AddParameter("sysparm_query", $"asset_tag={assetTag}");
-        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        request.AddParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name");
         _logger.LogInformation($"Querying alm_hardware table from asset: {assetTag}");
         // The following line sends the request and automatically deserializes the response.
         return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
@@ -64,7 +64,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
     {
         var request = new RestRequest("table/alm_hardware", Method.Get);
         request.AddParameter("sysparm_query", $"serial_number={serialNumber}");
-        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        request.AddParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name");
         _logger.LogInformation($"Querying alm_hardware table from asset: {serialNumber}");
         // The following line sends the request and automatically deserializes the response.
         return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
@@ -75,7 +75,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
     {
         var request = new RestRequest("table/alm_hardware", Method.Get);
         request.AddParameter("sysparm_query", $"sys_id={sys_id}");
-        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        request.AddParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name");
         _logger.LogInformation($"Querying database for asset, {sys_id}");
         return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
     }
@@ -86,7 +86,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         string queryString = string.Join("^OR", sys_ids.Select(id => $"sys_id={id}"));
         var request = new RestRequest("table/alm_hardware", Method.Get);
         request.AddParameter("sysparm_query", queryString);
-        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        request.AddParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name");
         _logger.LogInformation($"Querying database for assets: {queryString}");
         return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
     }
@@ -104,6 +104,7 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         if (lifecycleMembers is null)
         {
             var stageRequest = new RestRequest("table/life_cycle_stage", Method.Get);
+            stageRequest.AddParameter("sysparm_fields", "sys_id,parent,asset_tag,model.name,model_category.name,sys_updated_on,substatus,install_status,life_cycle_stage.name,life_cycle_stage_status.name,serial_number,model.manufacturer.name");
             var statusRequest = new RestRequest("table/life_cycle_stage_status", Method.Get);
             RestResponse<LifecycleStageApiResponse> stageResponse;
             RestResponse<LifecycleStatusesApiResponse> statusResponse;
