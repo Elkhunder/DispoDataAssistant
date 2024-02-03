@@ -147,6 +147,17 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                 if (asset.SysId is not null)
                 {
                     var result = await _serviceNowApiClient.RetireServiceNowAssetAsync(asset.SysId, payload);
+                    var updatedAsset = result.Data?.ServiceNowAsset;
+                    if (updatedAsset is not null)
+                    {
+                        
+                        asset.State = updatedAsset.State;
+                        asset.Substate = updatedAsset.Substate;
+                        asset.LifeCycleStage = updatedAsset.LifeCycleStage;
+                        asset.LifeCycleStatus = updatedAsset.LifeCycleStatus;
+                        asset.Parent = updatedAsset.Parent;
+                        asset.LastUpdated = updatedAsset.LastUpdated;
+                    }
                 }
             }
         }
@@ -183,6 +194,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                         existingAsset.LifeCycleStatus = asset.LifeCycleStatus;
                         existingAsset.Parent = asset.Parent;
 
+                        _assetContext.Tabs.Update(SelectedTab);
                         await _assetContext.SaveChangesAsync();
                     }
                 }
