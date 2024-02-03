@@ -75,7 +75,16 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
 
     public async Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id)
     {
-        object payload = new
+        //Build query string
+        string queryString = string.Join("^OR", sys_ids.Select(id => $"sys_id={id}"));
+        var request = new RestRequest("table/alm_hardware", Method.Get);
+        request.AddParameter("sysparm_query", queryString);
+        request.AddParameter("sysparm_fields", "sys_id,asset_tag,model_id.name,manufacturer.name,serial_number,subcategory,sys_updated_on,operational_status,install_status");
+        _logger.LogInformation($"Querying database for assets: {queryString}");
+        return await _client.ExecuteGetAsync<ServiceNowApiResponse>(request);
+    }
+
+    public async Task<RestResponse<ServiceNowApiResponse>> RetireServiceNowAssetAsync(string sys_id, object payload)
         {
             install_status = ServiceNowInstallStatus.Retired.ToString(),
         };
