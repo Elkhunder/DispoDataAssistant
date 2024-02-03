@@ -144,19 +144,30 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
 
             foreach (var asset in assets)
             {
-                if (asset.SysId is not null)
+                if (asset.LifeCycleStage is not null && asset.LifeCycleStatus is not null && asset.Substate is not null && asset.State is not null
+                    && asset.LifeCycleStage.Equals(lifecycleStage, StringComparison.CurrentCultureIgnoreCase)
+                    && asset.LifeCycleStatus.Equals(lifecycleStatus, StringComparison.CurrentCultureIgnoreCase)
+                    && asset.Substate.Equals(substatus, StringComparison.CurrentCultureIgnoreCase)
+                    && asset.State.Equals(installStatus, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var result = await _serviceNowApiClient.RetireServiceNowAssetAsync(asset.SysId, payload);
-                    var updatedAsset = result.Data?.ServiceNowAsset;
-                    if (updatedAsset is not null)
+                    continue;
+                }
+                else
+                {
+                    if (asset.SysId is not null)
                     {
-                        
-                        asset.State = updatedAsset.State;
-                        asset.Substate = updatedAsset.Substate;
-                        asset.LifeCycleStage = updatedAsset.LifeCycleStage;
-                        asset.LifeCycleStatus = updatedAsset.LifeCycleStatus;
-                        asset.Parent = updatedAsset.Parent;
-                        asset.LastUpdated = updatedAsset.LastUpdated;
+                        var result = await _serviceNowApiClient.RetireServiceNowAssetAsync(asset.SysId, payload);
+                        var updatedAsset = result.Data?.ServiceNowAsset;
+                        if (updatedAsset is not null)
+                        {
+
+                            asset.State = updatedAsset.State;
+                            asset.Substate = updatedAsset.Substate;
+                            asset.LifeCycleStage = updatedAsset.LifeCycleStage;
+                            asset.LifeCycleStatus = updatedAsset.LifeCycleStatus;
+                            asset.Parent = updatedAsset.Parent;
+                            asset.LastUpdated = updatedAsset.LastUpdated;
+                        }
                     }
                 }
             }
