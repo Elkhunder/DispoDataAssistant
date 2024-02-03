@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Windows.Controls;
 using System.Windows;
+using DispoDataAssistant.Data.Models;
 
 namespace DispoDataAssistant.Extensions
 {
@@ -40,7 +41,17 @@ namespace DispoDataAssistant.Extensions
             if (dataGrid.SelectedItems != null)
             {
                 foreach (var item in dataGrid.SelectedItems)
-                    selectedItems?.Add(item);
+                {
+                    if (item is ServiceNowAsset)
+                    {
+                        selectedItems?.Add(item);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                    
             }
         }
     }

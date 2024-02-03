@@ -20,6 +20,6 @@ namespace DispoDataAssistant.Data.Models
         public bool IsSuccessful { get; set; }
 
         [JsonPropertyName("result")]
-        public List<ServiceNowAsset> Assets { get; set; } = new List<ServiceNowAsset>();
+        public List<ServiceNowAsset> Assets { get; set; } = [];
     }
 }
