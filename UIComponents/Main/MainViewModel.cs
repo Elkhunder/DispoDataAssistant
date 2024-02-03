@@ -120,35 +120,33 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private async Task SyncWithServiceNow()
     {
-        foreach(var asset in SelectedTab.ServiceNowAssets)
+        string[]? sysIds = SelectedTab.ServiceNowAssets.Select(asset => asset.SysId).ToArray()!;
+        if (sysIds is not null && sysIds.Length > 0)
         {
-            if (asset.SysId is not null)
-            {
+            var apiResponse = await _serviceNowApiClient.GetServiceNowAssetsByIdAsync(sysIds);
 
-            }
-            else if(asset.SerialNumber is not null)
+            if (apiResponse.IsSuccessful && apiResponse.Data is not null)
             {
-                var apiResponse = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(asset.SerialNumber);
-                if (apiResponse.IsSuccessful is false || apiResponse.Data is null)
-                {
-                    MessageBox.Show("Query was not successful");
-                    _logger.LogError($"Query was not successful, {apiResponse.ErrorMessage}");
-                    return;
+                var assets = apiResponse.Data.Assets;
+
+                foreach (var asset in assets)
+            {
+                    var existingAsset = SelectedTab.ServiceNowAssets.First(a => a.SysId  == asset.SysId);
+
+                    if (ServiceNowAssetComparer.IsDifferent(existingAsset, asset))
+            {
+                        existingAsset.Manufacturer = asset.Manufacturer;
+                        existingAsset.SerialNumber = asset.SerialNumber;
+                        existingAsset.LastUpdated = asset.LastUpdated;
+                        existingAsset.InstallStatus = asset.InstallStatus;
+                        existingAsset.AssetTag = asset.AssetTag;
+                        existingAsset.Category = asset.Category;
+                        existingAsset.Model = asset.Model;
+                        existingAsset.OperationalStatus = asset.OperationalStatus;
+
+                        await _assetContext.SaveChangesAsync();
+                    }
                 }
-                if (apiResponse.Data.Assets.Count == 0)
-                {
-                    _logger.LogError($"No assets were found with serial number: {SerialNumber}");
-                    return;
-                }
-                var assets = apiResponse.Data.Assets.First();
-            }
-            else if(asset.AssetTag is not null)
-            {
-
-            }
-            else
-            {
-
             }
         }
     }
