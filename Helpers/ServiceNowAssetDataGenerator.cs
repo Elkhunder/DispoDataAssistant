@@ -24,11 +24,11 @@ namespace DispoDataAssistant.Helpers
                     AssetTag = random.Next(100000, 999999).ToString(),
                     Manufacturer = random.Next(0, 2) == 0 ? "Dell" : "HP",
                     Model = $"Ultra Notebook {i + 1}",
-                    Category = "Laptop",
+                    Category = "Computer",
                     SerialNumber = GenerateRandomSerialNumber(),
                     State = state,
                     Substate = (state == "Retired") ? "Disposed" : "In Use",
-                    LifeCycleStatus = (state == "Retired") ? "End 0f Life" : "Operational",
+                    LifeCycleStatus = (state == "Retired") ? "End of Life" : "Operational",
                     LifeCycleStage = (state == "Retired") ? "Disposed" : "In Use",
                     LastUpdated = DateTime.UtcNow.ToString(),
                     Tab = tab
