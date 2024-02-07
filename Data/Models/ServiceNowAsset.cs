@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+using DispoDataAssistant.Data.Models.ServiceNow;
 using System;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
