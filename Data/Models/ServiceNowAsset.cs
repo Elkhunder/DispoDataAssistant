@@ -145,5 +145,37 @@ public partial class ServiceNowAsset : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    public bool IsRetired(RetireDevicePayload payload)
+    {
+        if (payload == null)
+        {
+            throw new ArgumentNullException(nameof(payload));
+        }
+
+        return State == payload.InstallStatus &&
+               Substate == payload.Substatus &&
+               LifeCycleStage == payload.LifecycleStage &&
+               LifeCycleStatus == payload.LifecycleStatus;
+
+    }
+
+    public bool IsComplete()
+    {
+        return !(string.IsNullOrEmpty(SysId) ||
+                 string.IsNullOrEmpty(Manufacturer) ||
+                 string.IsNullOrEmpty(Model) ||
+                 string.IsNullOrEmpty(Category) ||
+                 string.IsNullOrEmpty(SerialNumber) ||
+                 string.IsNullOrEmpty(LifeCycleStage) ||
+                 string.IsNullOrEmpty(LifeCycleStatus) ||
+                 string.IsNullOrEmpty(State) ||
+                 string.IsNullOrEmpty(LastUpdated));
+    }
+
+    public static ServiceNowAsset Empty()
+    {
+        return new ServiceNowAsset();
+    }
 }
 
