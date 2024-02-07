@@ -4,18 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DispoDataAssistant.Data.Models.ServiceNow
-{
-    public class LifecycleMembers
-    {
-        public LifecycleMembers() { }
-        public LifecycleMembers(List<LifecycleItem> stages, List<LifecycleItem> statuses)
-        {
-            Stages = stages;
-            Statuses = statuses;
-        }
-        public List<LifecycleItem>? Statuses { get; set; }
+namespace DispoDataAssistant.Data.Models.ServiceNow;
 
-        public List<LifecycleItem> Stages { get; set; }
+public class LifecycleMembers
+{
+    public LifecycleMembers() { }
+    public LifecycleMembers(List<LifecycleItem> stages, List<LifecycleItem> statuses)
+    {
+        Stages = stages;
+        Statuses = statuses;
+    }
+    public List<LifecycleItem>? Statuses { get; set; }
+
+    public List<LifecycleItem> Stages { get; set; }
+
+    public static LifecycleMembers Empty()
+    {
+        return new LifecycleMembers();
     }
 }
+
+

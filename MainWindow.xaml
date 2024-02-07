@@ -40,44 +40,25 @@
                         Height="Auto"
                         HorizontalAlignment="Center">
 
-                <StackPanel x:Name="SerialNumberPanel">
+            <StackPanel x:Name="DeviceIdPanel">
 
-                    <Label x:Name="SerialNumberLabel"
-                           HorizontalContentAlignment="Center"
-                           Style="{DynamicResource standardLabel}"
-                           Content="Serial Number"
-                           Margin="20,0" />
+                <Label x:Name="DeviceIdLabel"
+                       HorizontalContentAlignment="Center"
+                       Style="{DynamicResource standardLabel}"
+                       Content="Device Identifier"
+                       Margin="20,0" />
 
-                    <TextBox x:Name="SerialNumberTextBox"
-                             Style="{DynamicResource standardTextBoxStyle}"
-                             Text="{Binding SerialNumber}"
-                             VerticalContentAlignment="Center"
-                             IsTabStop="True"
-                             TabIndex="1"
-                             Height="30"
-                             Margin="20,0"
-                             MinWidth="200" />
-                </StackPanel>
-
-                <StackPanel x:Name="AssetTagPanel">
-
-                    <Label x:Name="AssetTagLabel"
-                           HorizontalContentAlignment="Center"
-                           Style="{DynamicResource standardLabel}"
-                           Content="Asset Tag"
-                           Margin="20,0" />
-
-                    <TextBox x:Name="AssetTagTextBox"
-                             Style="{DynamicResource standardTextBoxStyle}"
-                             Text="{Binding AssetTag}"
-                             VerticalContentAlignment="Center"
-                             IsTabStop="True"
-                             TabIndex="0"
-                             Height="30"
-                             Margin="20,0"
-                             MinWidth="200" />
-                </StackPanel>
-                <Button x:Name="QueryServiceNowButton"
+                <TextBox x:Name="DeviceIdTextBox"
+                         Style="{DynamicResource standardTextBoxStyle}"
+                         Text="{Binding DeviceId}"
+                         VerticalContentAlignment="Center"
+                         IsTabStop="True"
+                         TabIndex="1"
+                         Height="30"
+                         Margin="20,0"
+                         MinWidth="200" />
+            </StackPanel>
+            <Button x:Name="QueryServiceNowButton"
                         Style="{StaticResource standardButton}"
                         Height="30"
                         Width="120"
@@ -229,10 +210,10 @@
                                                     Binding="{Binding Category}" />
                                 <DataGridTextColumn Header="Serial Number"
                                                     Binding="{Binding SerialNumber}" />
-                                <DataGridTextColumn Header="Operational Status"
-                                                    Binding="{Binding OperationalStatus}" />
-                                <DataGridTextColumn Header="Install Status"
-                                                    Binding="{Binding InstallStatus}" />
+                                <DataGridTextColumn Header="Life Cycle Stage"
+                                                    Binding="{Binding LifeCycleStage}" />
+                                <DataGridTextColumn Header="Life Cycle Status"
+                                                    Binding="{Binding LifeCycleStatus}" />
                                 <DataGridTextColumn Header="Last Updated"
                                                     Binding="{Binding LastUpdated}" />
                             </DataGrid.Columns>

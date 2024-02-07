@@ -157,9 +157,12 @@ public partial class App : Application
                 Model = a.Model,
                 Manufacturer = a.Manufacturer,
                 Category = a.Category,
-                InstallStatus = a.InstallStatus,
+                State = a.State,
                 LastUpdated = a.LastUpdated,
-                OperationalStatus = a.OperationalStatus,
+                Substate = a.Substate,
+                LifeCycleStage = a.LifeCycleStage,
+                LifeCycleStatus = a.LifeCycleStatus,
+                Parent = a.Parent,
                 Tab = a.Tab,
             });
         }
@@ -174,9 +177,12 @@ public partial class App : Application
                 Model = a.Model,
                 Manufacturer = a.Manufacturer,
                 Category = a.Category,
-                InstallStatus = a.InstallStatus,
+                State = a.State,
                 LastUpdated = a.LastUpdated,
-                OperationalStatus = a.OperationalStatus,
+                Substate = a.Substate,
+                LifeCycleStage = a.LifeCycleStage,
+                LifeCycleStatus = a.LifeCycleStatus,
+                Parent = a.Parent,
                 Tab = a.Tab,
             });
         }

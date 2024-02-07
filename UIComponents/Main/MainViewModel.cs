@@ -6,6 +6,7 @@ using CsvHelper.Configuration;
 using DispoDataAssistant.Data.Contexts;
 using DispoDataAssistant.Data.Enums;
 using DispoDataAssistant.Data.Models;
+using DispoDataAssistant.Data.Models.ServiceNow;
 using DispoDataAssistant.Handlers;
 using DispoDataAssistant.Helpers;
 using DispoDataAssistant.Interfaces;
@@ -16,7 +17,6 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,10 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace DispoDataAssistant.UIComponents.Main;
 
@@ -48,7 +45,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [ObservableProperty]
     private string serialNumber = string.Empty;
     [ObservableProperty]
-    private string assetTag = string.Empty;
+    private string deviceId = string.Empty;
 
     // DI Injections
     private AssetContext _assetContext;
@@ -71,7 +68,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     [RelayCommand]
     private void MainWindow_OnClick(MouseButtonEventArgs e)
     {
-        if (SelectedAssets.Count > 1 )
+        if (SelectedAssets.Count > 1)
         {
             SelectedAsset = null;
         }
@@ -112,7 +109,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     private async Task RetireAssetFromServiceNow()
     {
         var assets = new ObservableCollection<ServiceNowAsset>();
-        if(SelectedAssets is not null && SelectedAssets.Count > 0)
+        if (SelectedAssets is not null && SelectedAssets.Count > 0)
         {
             _logger.LogInformation("Assets collection is not null");
             assets = SelectedAssets;
@@ -126,178 +123,148 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             //Send request to service now to retire assets
         }
         var lifecycleMembers = await _serviceNowApiClient.GetLifecycleMembersAsync();
-        var installStatus = ((int) ServiceNowInstallStatus.Retired).ToString();
-        var substatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
-        var state = lifecycleMembers.Statuses?.Single(s => s.Name == "Retired").Name;
-        var lifecycleStage = lifecycleMembers.Stages?.Single(s => s.Name == "End of Life").Name;
-        var lifecycleStatus = lifecycleMembers.Statuses?.Single(s => s.Name == "Disposed").Name;
+        string? installStatus = ((int)ServiceNowInstallStatus.Retired).ToString();
+        string? substatus = lifecycleMembers.Statuses?.SingleOrDefault(s => s.Name == "Disposed")?.Name ?? "Disposed";
+        string? state = lifecycleMembers.Statuses?.SingleOrDefault(s => s.Name == "Retired")?.Name ?? "Retired";
+        string? lifecycleStage = lifecycleMembers.Stages?.SingleOrDefault(s => s.Name == "End of Life")?.Name ?? "End of Life";
+        string? lifecycleStatus = lifecycleMembers.Statuses?.SingleOrDefault(s => s.Name == "Disposed")?.Name ?? "Disposed";
 
-        if (installStatus is not null && substatus is not null && lifecycleStatus is not null && lifecycleStage is not null)
+        var payload = new RetireDevicePayload
         {
-            var payload = new
-            {
-                install_status = installStatus,
-                substatus,
-                life_cycle_stage = lifecycleStage,
-                life_cycle_stage_status = lifecycleStatus
-            };
+            InstallStatus = installStatus,
+            Substatus = substatus,
+            LifecycleStage = lifecycleStage,
+            LifecycleStatus = lifecycleStatus
+        };
 
-            foreach (var asset in assets)
+        var tasks = assets.Select(async asset =>
+        {
+            if (asset.IsRetired(payload))
             {
-                if (asset.SysId is not null)
+                return;
+            }
+            if (!string.IsNullOrEmpty(asset.Parent))
+            {
+                payload.Parent = string.Empty;
+            }
+            if (asset.SysId is not null)
+            {
+                var updatedAsset = await _serviceNowApiClient.RetireServiceNowAssetAsync(asset.SysId, payload);
+
+                if (updatedAsset is not null)
                 {
-                    var result = await _serviceNowApiClient.RetireServiceNowAssetAsync(asset.SysId, payload);
+
+                    asset.State = updatedAsset.State;
+                    asset.Substate = updatedAsset.Substate;
+                    asset.LifeCycleStage = updatedAsset.LifeCycleStage;
+                    asset.LifeCycleStatus = updatedAsset.LifeCycleStatus;
+                    asset.Parent = updatedAsset.Parent;
+                    asset.LastUpdated = updatedAsset.LastUpdated;
                 }
             }
-        }
+        });
+
+        await Task.WhenAll(tasks);
+
+        _assetContext.Tabs.Update(SelectedTab);
+        await _assetContext.SaveChangesAsync();
     }
 
     // Service Now Query Methods
     [RelayCommand]
     private async Task SyncWithServiceNow()
     {
-        string[]? sysIds = SelectedTab.ServiceNowAssets.Select(asset => asset.SysId).ToArray()!;
-        if (sysIds is not null && sysIds.Length > 0)
+        List<string>? sysIds = SelectedTab.ServiceNowAssets.Select(asset => asset.SysId).ToList()!;
+        if (sysIds is not null && sysIds.Count > 0)
         {
-            var apiResponse = await _serviceNowApiClient.GetServiceNowAssetsByIdAsync(sysIds);
-
-            if (apiResponse.IsSuccessful && apiResponse.Data is not null)
+            //var foreachWatch = new Stopwatch();
+            //foreachWatch.Start();
+            var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(sysIds);
+            foreach (var asset in assets)
             {
-                var assets = apiResponse.Data.Assets;
+                if (string.IsNullOrEmpty(asset.SysId)) continue;
 
-                foreach (var asset in assets)
+                var existingAsset = SelectedTab.ServiceNowAssets.First(a => a.SysId == asset.SysId);
+
+                if (ServiceNowAssetComparer.IsDifferent(existingAsset, asset))
                 {
-                    var existingAsset = SelectedTab.ServiceNowAssets.First(a => a.SysId  == asset.SysId);
-
-                    if (ServiceNowAssetComparer.IsDifferent(existingAsset, asset))
-                    {
-                        existingAsset.Manufacturer = asset.Manufacturer;
-                        existingAsset.SerialNumber = asset.SerialNumber;
-                        existingAsset.LastUpdated = asset.LastUpdated;
-                        existingAsset.InstallStatus = asset.InstallStatus;
-                        existingAsset.AssetTag = asset.AssetTag;
-                        existingAsset.Category = asset.Category;
-                        existingAsset.Model = asset.Model;
-                        existingAsset.OperationalStatus = asset.OperationalStatus;
-
-                        await _assetContext.SaveChangesAsync();
-                    }
+                    existingAsset.Manufacturer = asset.Manufacturer;
+                    existingAsset.SerialNumber = asset.SerialNumber;
+                    existingAsset.LastUpdated = asset.LastUpdated;
+                    existingAsset.State = asset.State;
+                    existingAsset.AssetTag = asset.AssetTag;
+                    existingAsset.Category = asset.Category;
+                    existingAsset.Model = asset.Model;
+                    existingAsset.Substate = asset.Substate;
+                    existingAsset.LifeCycleStage = asset.LifeCycleStage;
+                    existingAsset.LifeCycleStatus = asset.LifeCycleStatus;
+                    existingAsset.Parent = asset.Parent;
                 }
             }
+            _assetContext.Tabs.Update(SelectedTab);
+            await _assetContext.SaveChangesAsync();
+            //foreachWatch.Stop();
+            //var foreachTime = foreachWatch.ElapsedMilliseconds;
+
+
+            //var foreachWatch2 = new Stopwatch();
+            //foreachWatch2.Start();
+            //var cAssets = SelectedTab.ServiceNowAssets;
+            //foreach (var existingAsset in cAssets)
+            //{
+            //    var asset = (await _serviceNowApiClient.GetServiceNowAssetsAsync(existingAsset.SysId.Split(','))).First();
+
+            //    if (ServiceNowAssetComparer.IsDifferent(existingAsset, asset))
+            //    {
+            //        existingAsset.Manufacturer = asset.Manufacturer;
+            //        existingAsset.SerialNumber = asset.SerialNumber;
+            //        existingAsset.LastUpdated = asset.LastUpdated;
+            //        existingAsset.State = asset.State;
+            //        existingAsset.AssetTag = asset.AssetTag;
+            //        existingAsset.Category = asset.Category;
+            //        existingAsset.Model = asset.Model;
+            //        existingAsset.Substate = asset.Substate;
+            //        existingAsset.LifeCycleStage = asset.LifeCycleStage;
+            //        existingAsset.LifeCycleStatus = asset.LifeCycleStatus;
+            //        existingAsset.Parent = asset.Parent;
+            //    }
+            //}
+            //_assetContext.Tabs.Update(SelectedTab);
+            //await _assetContext.SaveChangesAsync();
+            //foreachWatch2.Stop();
+            //var foreachWatch2Time = foreachWatch2.ElapsedMilliseconds;
         }
     }
     [RelayCommand]
     private async Task QueryServiceNow()
     {
-        var tab = SendNewTabRequest();
-
-        if(tab is null)
+        var tab = SendNewTabRequest() ?? SelectedTab;
+        tab.ServiceNowAssets ??= [];
+        if (string.IsNullOrEmpty(DeviceId))
         {
-            tab = SelectedTab;
-        }
-
-        if (tab.ServiceNowAssets is null)
-        {
-            tab.ServiceNowAssets = [];
-        }
-
-        if(tab.ServiceNowAssets.Any(asset => asset.SerialNumber == SerialNumber))
-        {
-            MessageBox.Show($"Tab already contains asset with the provided serial number: {SerialNumber}");
+            _logger.LogError("Device Id was null");
+            MessageBox.Show("Device ID can not be empty");
             return;
         }
-        if(tab.ServiceNowAssets.Any(asset => asset.AssetTag == AssetTag))
+        if (tab.ServiceNowAssets.Any(asset => asset.SerialNumber == DeviceId))
         {
-            MessageBox.Show($"Tab already contains asset with the provided asset tag: {AssetTag}");
+            MessageBox.Show($"Tab already contains asset with the provided serial number: {DeviceId}");
             return;
         }
-
-        // Prioritize the use of serial number as it's more accurate
-        if (!string.IsNullOrEmpty(SerialNumber))
+        if (tab.ServiceNowAssets.Any(asset => asset.AssetTag == DeviceId))
         {
-            // Query service now asset table with serial number
-            var apiResponse = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(SerialNumber);
-
-            if(apiResponse.IsSuccessful is false || apiResponse.Data is null)
-            {
-                MessageBox.Show("Query was not successful");
-                _logger.LogError($"Query was not successful, {apiResponse.ErrorMessage}");
-                return;
-            }
-            
-            if (apiResponse.Data.Assets.Count == 0)
-            {
-                _logger.LogError($"No assets were found with serial number: {SerialNumber}");
-                return;
-            }
-            var assets = apiResponse.Data.Assets;
-            var hasDuplicates = assets.Count != assets.Distinct().Count();
-            if (hasDuplicates)
-            {
-                assets = assets.GroupBy(asset => asset)
-               .Select(group => group.First())
-               .ToList();
-            }
-
-            foreach ( var asset in assets)
-            {
-                if (asset.SerialNumber == SerialNumber)
-                {
-                    SelectedTab.ServiceNowAssets?.Add(asset);
-                    _assetContext.SaveChanges();
-                }
-                else
-                {
-                    MessageBox.Show("The provided serial number did not match the serial number returned by service now");
-                }
-            }
+            MessageBox.Show($"Tab already contains asset with the provided asset tag: {DeviceId}");
+            return;
         }
-        else if (!string.IsNullOrEmpty(AssetTag))
+        List<string> deviceIds = [.. DeviceId.Split(',')];
+
+        var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(deviceIds);
+
+        foreach (var asset in assets)
         {
-            // Query service now asset table with asset tag as a fallback if serial number is empty
-            var apiResponse = await _serviceNowApiClient.GetServiceNowAssetByAssetTagAsync(AssetTag);
-            if (apiResponse.IsSuccessful is false || apiResponse.Data is null)
-            {
-                MessageBox.Show("Query was not successful");
-                _logger.LogError($"Query was not successful, {apiResponse.ErrorMessage}");
-                return;
-            }
-            if (apiResponse.Data.Assets.Count == 0)
-            {
-                MessageBox.Show("No assets found, please enter information manually");
-                return;
-            }
-            var assets = apiResponse.Data.Assets;
-            var hasDuplicates = assets.Count != assets.Distinct().Count();
-            if (hasDuplicates)
-            {
-                assets = assets.GroupBy(asset => asset)
-               .Select(group => group.First())
-               .ToList();
-            }
-
-            foreach ( var asset in assets)
-            {
-                if (asset is null)
-                {
-                    _logger.LogError($"{asset} was not found in Service Now");
-                    return;
-                }
-                else if (asset.AssetTag == AssetTag)
-                {
-                    tab.ServiceNowAssets?.Add(asset);
-                    _assetContext.SaveChanges();
-                }
-                else
-                {
-                    MessageBox.Show("The provided asset tag didn't match the asset tag returned by service now");
-                }
-            }
+            tab.ServiceNowAssets.Add(asset);
         }
-        else
-        {
-            // Do something if both serial number and asset tag are empty or null
-        }
+        _assetContext.SaveChanges();
     }
 
     // Tab Action Methods
@@ -343,7 +310,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
 
         var newTabNameRequest = _messenger.Send(new RequestNewTabNameMessage());
 
-        
+
         if (newTabNameRequest.HasReceivedResponse)
         {
             var newTabName = newTabNameRequest.Response;
@@ -388,7 +355,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         {
             tab = SelectedTab;
         }
-        OpenFileDialog openFileDialog = new OpenFileDialog();
+        OpenFileDialog openFileDialog = new();
 
         bool? result = openFileDialog.ShowDialog();
 
@@ -412,69 +379,48 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         using (var csvReader = new CsvReader(sr, config))
         {
             var records = csvReader.GetRecords<ServiceNowAsset>();
-
+            var Ids = new string[records.Count()];
+            var deviceIds = new List<string>();
             foreach (var record in records)
             {
-                if (record.SysId is null || string.IsNullOrEmpty(record.SysId))
-                {
-                    RestResponse<ServiceNowApiResponse>? apiResponse = null;
-                    bool requestPerformed = false;
-
-                    if (record.SerialNumber is not null && !string.IsNullOrEmpty(record.SerialNumber))
-                    {
-                        apiResponse = await _serviceNowApiClient.GetServiceNowAssetBySerialNumberAsync(record.SerialNumber);
-                        requestPerformed = true;
-                    }
-                    else if (record.AssetTag is not null && !string.IsNullOrEmpty(record.AssetTag))
-                    {
-                        apiResponse = await _serviceNowApiClient.GetServiceNowAssetByAssetTagAsync(record.AssetTag);
-                        requestPerformed = true;
-                    }
-
-                    if ( requestPerformed && ( apiResponse is null || apiResponse.IsSuccessful is false || apiResponse.Data is null ))
-                    {
-                        MessageBox.Show("Query was not successful");
-                        string errorMessage = apiResponse?.ErrorMessage ?? "API Response or Data was null";
-                        _logger.LogError($"Query was not successful, {errorMessage}");
-                        return;
-                    }
-                    else if (apiResponse!.Data!.Assets.Count == 0)
-                    {
-                        MessageBox.Show("No assets found, please enter information manually");
-                        return;
-                    }
-                    var assets = apiResponse.Data.Assets;
-                    var hasDuplicates = assets.Count != assets.Distinct().Count();
-                    if (hasDuplicates)
-                    {
-                        assets = assets.GroupBy(asset => asset)
-                       .Select(group => group.First())
-                       .ToList();
-                    }
-
-                    foreach (var asset in assets)
-                    {
-                        if (asset is null)
-                        {
-                            _logger.LogError($"{asset} was not found in Service Now");
-                            return;
-                        }
-                        else if (asset.AssetTag == record.AssetTag || asset.SerialNumber == record.SerialNumber)
-                        {
-                            tab.ServiceNowAssets?.Add(asset);
-                        }
-                        else
-                        {
-                            MessageBox.Show("The provided asset tag didn't match the asset tag returned by service now");
-                        }
-                    }
-                }
-                else
+                if (record.IsComplete())
                 {
                     record.Tab = tab;
                     record.TabId = tab.Id;
                     tab.ServiceNowAssets?.Add(record);
+                    continue;
                 }
+                if (!string.IsNullOrEmpty(record.SysId))
+                {
+                    deviceIds.Add(record.SysId);
+                    continue;
+                }
+                if (!string.IsNullOrEmpty(record.SerialNumber))
+                {
+                    deviceIds.Add(record.SerialNumber);
+                    continue;
+                }
+                if (!string.IsNullOrEmpty(record.AssetTag))
+                {
+                    deviceIds.Add(record.AssetTag);
+                    continue;
+                }
+                //else if (!string.IsNullOrEmpty(record.Name))
+                //{
+                //    deviceIds.Add(record.Name);
+                //    continue;
+                //}
+            }
+            var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(deviceIds);
+
+            foreach (var asset in assets)
+            {
+                if (asset is null)
+                {
+                    _logger.LogError($"Asset was not found in Service Now");
+                    continue;
+                }
+                tab.ServiceNowAssets?.Add(asset);
             }
         }
         _assetContext.SaveChanges();
@@ -488,9 +434,9 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
 
         var assets = tab.ServiceNowAssets;
 
-        using (StreamWriter writer = new StreamWriter(new FileStream(file, FileMode.Create, FileAccess.Write)))
+        using (StreamWriter writer = new(new FileStream(file, FileMode.Create, FileAccess.Write)))
         {
-            CsvHandler csvHandler = new CsvHandler();
+            CsvHandler csvHandler = new();
             string delimeter = "\t";
             writer.Write(csvHandler.BuildCsvHeader(delimeter));
 
