@@ -31,7 +31,75 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <materialDesign:DialogHost Identifier="TabNameDialog"
+                                   CloseOnClickAway="true"
+                                   OverlayBackground="{DynamicResource PrimaryHueDarkBrush}"
+                                   DialogTheme="Inherit"
+                                   Style="{StaticResource MaterialDesignEmbeddedDialogHost}"
+                                   DialogMargin="8"
+                                   Grid.Row="1"
+                                   Grid.RowSpan="2"
+                                   Panel.ZIndex="10">
+            <materialDesign:DialogHost.DialogContentTemplate>
+                <DataTemplate DataType="{x:Type local:NewTabViewModel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                       Margin="0,20,0,10"
+                                       Text="{Binding Title, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                       HorizontalAlignment="Center" />
+                            <ToggleButton x:Name="TabNameVisibilitySelector"
+                                          Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                          ToolTip="Default ToggleButton Style"
+                                          IsChecked="{Binding IsTabNameToggled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          Visibility="{Binding ToggleVisibility, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          Margin="0,8" />
+                            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Margin="40,10"
+                                     Width="200"
+                                     materialDesign:HintAssist.Hint="New Tab Name"
+                                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                     Visibility="{Binding ElementName=TabNameVisibilitySelector, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </StackPanel>
+                        <StackPanel Name="ButtonPanel"
+                                    Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center">
+                            <Button Name="AcceptButton"
+                                    Margin="8"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    IsDefault="true"
+                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="ACCEPT">
+                                <Button.CommandParameter>
+                                    <system:Boolean>true</system:Boolean>
+                                </Button.CommandParameter>
+                            </Button>
+                            <Button Name="CancelButton"
+                                    Margin="8"
+                                    IsCancel="true"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="CANCEL" />
 
+                        </StackPanel>
+
+                    </Grid>
+                </DataTemplate>
+            </materialDesign:DialogHost.DialogContentTemplate>
+        </materialDesign:DialogHost>
+        <Button x:Name="ThemeChangerButton"
+                Style="{StaticResource MaterialDesignToolButton}"
+                Grid.Row="0"
+                Margin="10"
+                Content="{materialDesign:PackIcon Size=25,Kind=ThemeLightDark}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Command="{Binding ChangeThemeCommand}"/>
         <StackPanel x:Name="ServiceNowQueryPanel"
                         Orientation="Horizontal"
                         FlowDirection="LeftToRight"
