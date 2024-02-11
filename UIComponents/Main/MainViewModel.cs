@@ -13,7 +13,10 @@ using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
+using DispoDataAssistant.UIComponents.Dialogs;
 using GongSolutions.Wpf.DragDrop;
+using MaterialDesignThemes.MahApps;
+using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -57,9 +60,9 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     private IServiceNowApiClient _serviceNowApiClient;
     private IFileDialogService _fileDialogService;
 
-    public MainViewModel() : this(null!, null!, null!, null!, null!) { }
+    public MainViewModel() : this(null!, null!, null!, null!, null!,null!) { }
 
-    public MainViewModel(ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient, IFileDialogService fileDialogService) : base(logger, null!)
+    public MainViewModel(ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient, IFileDialogService fileDialogService, ISnackbarMessageQueue messageQueue) : base(logger, null!,messageQueue)
     {
         Console.WriteLine("MainViewModel: Instance Created");
         _assetContext = assetContext;
@@ -70,7 +73,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
 
     // Event Methods
     [RelayCommand]
-    private void MainWindow_OnClick(MouseButtonEventArgs e)
+    private void OnMainWindow_OnClick(MouseButtonEventArgs e)
     {
         if (SelectedAssets.Count > 1)
         {
@@ -78,7 +81,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         }
     }
     [RelayCommand]
-    private void MainWindow_Loaded()
+    private void OnMainWindow_Loaded()
     {
         if (_assetContext.Tabs.Any())
         {
@@ -108,9 +111,35 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             }
         }
     }
+    [RelayCommand]
+    private void OnChangeTheme()
+    {
+        var paletteHelper = new PaletteHelper();
+        ITheme currentTheme = paletteHelper.GetTheme();
+        if (currentTheme.GetBaseTheme() is BaseTheme.Dark)
+        {
+            currentTheme.SetBaseTheme(Theme.Light);
+        }
+        else
+        {
+            currentTheme.SetBaseTheme(Theme.Dark);
+        }
+        paletteHelper.SetTheme(currentTheme);
+
+        MessageQueue.Enqueue($"Theme changed to {currentTheme.GetBaseTheme()}");
+    }
 
     [RelayCommand]
-    private async Task RetireAssetFromServiceNow()
+    private async Task OnEnterPressed(KeyEventArgs e)
+    {
+        if(e.Key is Key.Enter)
+        {
+            await OnQueryServiceNow();
+        }
+    }
+
+    [RelayCommand]
+    private async Task OnRetireAssetFromServiceNow()
     {
         var assets = new ObservableCollection<ServiceNowAsset>();
         if (SelectedAssets is not null && SelectedAssets.Count > 0)
@@ -176,13 +205,11 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
 
     // Service Now Query Methods
     [RelayCommand]
-    private async Task SyncWithServiceNow()
+    private async Task OnSyncWithServiceNow()
     {
         List<string>? sysIds = SelectedTab.ServiceNowAssets.Select(asset => asset.SysId).ToList()!;
         if (sysIds is not null && sysIds.Count > 0)
         {
-            //var foreachWatch = new Stopwatch();
-            //foreachWatch.Start();
             var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(sysIds);
             foreach (var asset in assets)
             {
@@ -206,60 +233,47 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                 }
             }
             _assetContext.Tabs.Update(SelectedTab);
-            await _assetContext.SaveChangesAsync();
-            //foreachWatch.Stop();
-            //var foreachTime = foreachWatch.ElapsedMilliseconds;
-
-
-            //var foreachWatch2 = new Stopwatch();
-            //foreachWatch2.Start();
-            //var cAssets = SelectedTab.ServiceNowAssets;
-            //foreach (var existingAsset in cAssets)
-            //{
-            //    var asset = (await _serviceNowApiClient.GetServiceNowAssetsAsync(existingAsset.SysId.Split(','))).First();
-
-            //    if (ServiceNowAssetComparer.IsDifferent(existingAsset, asset))
-            //    {
-            //        existingAsset.Manufacturer = asset.Manufacturer;
-            //        existingAsset.SerialNumber = asset.SerialNumber;
-            //        existingAsset.LastUpdated = asset.LastUpdated;
-            //        existingAsset.State = asset.State;
-            //        existingAsset.AssetTag = asset.AssetTag;
-            //        existingAsset.Category = asset.Category;
-            //        existingAsset.Model = asset.Model;
-            //        existingAsset.Substate = asset.Substate;
-            //        existingAsset.LifeCycleStage = asset.LifeCycleStage;
-            //        existingAsset.LifeCycleStatus = asset.LifeCycleStatus;
-            //        existingAsset.Parent = asset.Parent;
-            //    }
-            //}
-            //_assetContext.Tabs.Update(SelectedTab);
-            //await _assetContext.SaveChangesAsync();
-            //foreachWatch2.Stop();
-            //var foreachWatch2Time = foreachWatch2.ElapsedMilliseconds;
         }
     }
     [RelayCommand]
-    private async Task QueryServiceNow()
+    private async Task OnQueryServiceNow()
     {
-        var tab = SendNewTabRequest() ?? SelectedTab;
-        tab.ServiceNowAssets ??= [];
+        var vm = new NewTabViewModel();
+        var dialogResult = await DialogHost.Show(vm, "TabNameDialog");
+
+        if(dialogResult is bool boolResult && boolResult && vm.IsTabNameToggled)
+        {
+            var tab = new TabModel()
+            {
+                Name = vm.Name,
+                ServiceNowAssets = []
+            };
+            _assetContext.Tabs.Local.Add(tab);
+            _assetContext.SaveChanges();
+            SelectedTab = tab;
+        }
+        //Device ID not being set when hitting enter 
+        
+        //var tab = SendNewTabRequest() ?? SelectedTab;
+        //tab.ServiceNowAssets ??= [];
         if (string.IsNullOrEmpty(DeviceId))
         {
             _logger.LogError("Device Id was null");
-            MessageBox.Show("Device ID can not be empty");
+            MessageQueue.Enqueue("Device Id can't be empty");
+            //MessageBox.Show("Device ID can not be empty");
             return;
         }
-        if (tab.ServiceNowAssets.Any(asset => asset.SerialNumber == DeviceId))
+        if (SelectedTab.ServiceNowAssets.Any(asset => asset.SerialNumber == DeviceId))
         {
             MessageBox.Show($"Tab already contains asset with the provided serial number: {DeviceId}");
             return;
         }
-        if (tab.ServiceNowAssets.Any(asset => asset.AssetTag == DeviceId))
+        if (SelectedTab.ServiceNowAssets.Any(asset => asset.AssetTag == DeviceId))
         {
             MessageBox.Show($"Tab already contains asset with the provided asset tag: {DeviceId}");
             return;
         }
+
         List<string> deviceIds = [.. DeviceId.Split(',')];
 
         if (!string.IsNullOrEmpty(SearchBy) && deviceIds.Count is 1)
@@ -292,23 +306,41 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         else if (deviceIds.Count > 1)
         {
             //if there is more than one id in device ids call the get service now assets async method and search for all assets based on the infered device type ids
-        var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(deviceIds);
+            var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(deviceIds);
 
-        foreach (var asset in assets)
-        {
-            tab.ServiceNowAssets.Add(asset);
+            foreach (var asset in assets)
+            {
+                SelectedTab.ServiceNowAssets.Add(asset);
+            }
+            _assetContext.SaveChanges();
         }
-        _assetContext.SaveChanges();
     }
 
     // Tab Action Methods
     [RelayCommand]
-    private void CreateTab()
+    private async Task OnCreateTab()
     {
-        if (SendNewTabRequest() is null)
+        var vm = new NewTabViewModel();
+        vm.IsTabNameToggled = true;
+        vm.ToggleVisibility = Visibility.Collapsed;
+        vm.Title = "Enter New Tab Name";
+        var dialogResult = await DialogHost.Show(vm, "TabNameDialog");
+
+        if (dialogResult is bool boolResult && boolResult)
         {
-            MessageBox.Show("New tab was unable to be created.");
+            var tab = new TabModel()
+            {
+                Name = vm.Name,
+                ServiceNowAssets = []
+            };
+            _assetContext.Tabs.Local.Add(tab);
+            _assetContext.SaveChanges();
+            SelectedTab = tab;
         }
+        //if (SendNewTabRequest() is null)
+        //{
+        //    MessageBox.Show("New tab was unable to be created.");
+        //}
     }
 
     private TabModel? SendNewTabRequest()
@@ -329,65 +361,69 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     }
 
     [RelayCommand]
-    private void DeleteTab()
+    private void OnDeleteTab(EventArgs e)
     {
-        _assetContext.Tabs.Remove(SelectedTab);
-        _assetContext.SaveChanges();
+         _assetContext.Tabs.Remove(SelectedTab);
+         _assetContext.SaveChanges();
+        
     }
 
 
     [RelayCommand]
-    private void RenameTab()
+    private async Task OnRenameTab()
     {
         //tab name is not updating in real time
         var tab = SelectedTab;
 
-        var newTabNameRequest = _messenger.Send(new RequestNewTabNameMessage());
+        var vm = new NewTabViewModel();
+        vm.IsTabNameToggled = true;
+        vm.ToggleVisibility = Visibility.Collapsed;
+        vm.Title = "Enter New Tab Name";
+        var dialogResult = await DialogHost.Show(vm, "TabNameDialog");
 
-
-        if (newTabNameRequest.HasReceivedResponse)
+        if (dialogResult is bool boolResult && boolResult)
         {
-            var newTabName = newTabNameRequest.Response;
-            if (string.IsNullOrEmpty(newTabName))
-            {
-                MessageBox.Show("New Tab Name was empty when attempting to change tab name");
-                return;
-            }
-            else if (SelectedTab.Name == newTabName)
-            {
-                MessageBox.Show("New tab name was the same as the current tab name");
-                return;
-            }
-            SelectedTab.Name = newTabName;
-            _assetContext.Tabs.Update(SelectedTab);
+            SelectedTab.Name = vm.Name;
         }
+
+        //var newTabNameRequest = _messenger.Send(new RequestNewTabNameMessage());
+
+
+        //if (newTabNameRequest.HasReceivedResponse)
+        //{
+        //    var newTabName = newTabNameRequest.Response;
+        //    if (string.IsNullOrEmpty(newTabName))
+        //    {
+        //        MessageBox.Show("New Tab Name was empty when attempting to change tab name");
+        //        return;
+        //    }
+        //    else if (SelectedTab.Name == newTabName)
+        //    {
+        //        MessageBox.Show("New tab name was the same as the current tab name");
+        //        return;
+        //    }
+        //    SelectedTab.Name = newTabName;
+        //    _assetContext.Tabs.Update(SelectedTab);
+        //}
         _assetContext.SaveChanges();
     }
 
     [RelayCommand]
-    private async Task UploadAssets()
+    private async Task OnUploadAssets()
     {
-        var newTabNameRequest = new RequestNewTabNameMessage();
-        _messenger.Send(newTabNameRequest);
-        var tab = new TabModel();
+        var vm = new NewTabViewModel();
+        var dialogResult = await DialogHost.Show(vm, "TabNameDialog");
 
-        if (newTabNameRequest.HasReceivedResponse)
+        if (dialogResult is bool boolResult && boolResult)
         {
-            string tabName = newTabNameRequest.Response;
-
-            if (tabName is null)
+            var tab = new TabModel()
             {
-                tab = SelectedTab;
-            }
-            else
-            {
-                tab = new TabModel() { Name = tabName, ServiceNowAssets = [] };
-                _assetContext.Tabs.Add(tab);
-            }
-        }
-        else
-        {
-            tab = SelectedTab;
+                Name = vm.Name,
+                ServiceNowAssets = []
+            };
+            _assetContext.Tabs.Local.Add(tab);
+            _assetContext.SaveChanges();
+            SelectedTab = tab;
         }
         OpenFileDialog openFileDialog = new();
 
@@ -396,12 +432,14 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         if (result == false)
         {
             _logger.LogInformation("Operation canceled by user");
+            MessageQueue.Enqueue("Operation Cancelled");
             return;
         }
         var file = openFileDialog.FileName;
         if (string.IsNullOrEmpty(file))
         {
-            _logger.LogError("file was null or empty");
+            _logger.LogError("User did not provide a file to the dialog box");
+            MessageQueue.Enqueue("File Not Provided");
             return;
         }
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -419,9 +457,9 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             {
                 if (record.IsComplete())
                 {
-                    record.Tab = tab;
-                    record.TabId = tab.Id;
-                    tab.ServiceNowAssets?.Add(record);
+                    record.Tab = SelectedTab;
+                    record.TabId = SelectedTab.Id;
+                    SelectedTab.ServiceNowAssets?.Add(record);
                     continue;
                 }
                 if (!string.IsNullOrEmpty(record.SysId))
@@ -454,14 +492,14 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
                     _logger.LogError($"Asset was not found in Service Now");
                     continue;
                 }
-                tab.ServiceNowAssets?.Add(asset);
+                SelectedTab.ServiceNowAssets?.Add(asset);
             }
         }
         _assetContext.SaveChanges();
     }
 
     [RelayCommand]
-    private void DownloadAssets()
+    private void OnDownloadAssets()
     {
         var file = _fileDialogService.SaveFileDialog();
         var tab = SelectedTab;
@@ -515,7 +553,7 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     }
 
     [RelayCommand]
-    private void SaveAssets()
+    private void OnSaveAssets()
     {
         _assetContext.Tabs.Update(SelectedTab);
         _assetContext.SaveChanges();

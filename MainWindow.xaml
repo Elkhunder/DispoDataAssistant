@@ -1,35 +1,47 @@
-﻿<Window x:Class="DispoDataAssistant.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:bc="clr-namespace:DispoDataAssistant.UIComponents.BaseComponents"
-        xmlns:vm="clr-namespace:DispoDataAssistant.UIComponents.Main"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:e="clr-namespace:DispoDataAssistant.Extensions"
-        xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
-        mc:Ignorable="d"
-        Title="Dispo Assistant"
-        Height="Auto"
-        Width="Auto"
-        WindowStyle="SingleBorderWindow"
-        WindowState="Normal"
-        ResizeMode="NoResize"
-        Closing="Window_Closing"
-        d:DataContext="{d:DesignInstance Type= vm:MainViewModel, IsDesignTimeCreatable=True}">
+﻿<mah:MetroWindow x:Class="DispoDataAssistant.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:local="clr-namespace:DispoDataAssistant.UIComponents.Dialogs"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:bc="clr-namespace:DispoDataAssistant.UIComponents.BaseComponents"
+                 xmlns:vm="clr-namespace:DispoDataAssistant.UIComponents.Main"
+                 xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                 xmlns:e="clr-namespace:DispoDataAssistant.Extensions"
+                 xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+                 xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 xmlns:system="clr-namespace:System;assembly=mscorlib"
+                 mc:Ignorable="d"
+                 Title="Dispo Assistant"
+                 Height="Auto"
+                 FontFamily="{materialDesign:MaterialDesignFont}"
+                 TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                 TextElement.FontWeight="Medium"
+                 TextElement.FontSize="14"
+                 Background="{DynamicResource MaterialDesignPaper}"
+                 Width="Auto"
+                 WindowStyle="SingleBorderWindow"
+                 WindowState="Maximized"
+                 Closing="Window_Closing"
+                 d:DataContext="{d:DesignInstance Type= vm:MainViewModel, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding MainWindow_LoadedCommand}" />
         </i:EventTrigger>
         <i:EventTrigger EventName="MouseDoubleClick">
-            <i:InvokeCommandAction Command="{Binding MainWindow_OnClickCommand}" PassEventArgsToCommand= "True" />
+            <i:InvokeCommandAction Command="{Binding MainWindow_OnClickCommand}"
+                                   PassEventArgsToCommand="True" />
         </i:EventTrigger>
 
     </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="195" />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <materialDesign:DialogHost Identifier="TabNameDialog"
                                    CloseOnClickAway="true"
@@ -101,58 +113,77 @@
                 VerticalAlignment="Top"
                 Command="{Binding ChangeThemeCommand}"/>
         <StackPanel x:Name="ServiceNowQueryPanel"
-                        Orientation="Horizontal"
-                        FlowDirection="LeftToRight"
-                        Grid.Row="0"
-                        Margin="0,40,0,0"
-                        Height="Auto"
-                        HorizontalAlignment="Center">
+                    Orientation="Horizontal"
+                    FlowDirection="LeftToRight"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center">
             <ComboBox x:Name="SearchByComboBox"
                       Style="{StaticResource MaterialDesignOutlinedComboBox}"
                       materialDesign:HintAssist.Hint="Search By"
                       ItemsSource="{Binding DeviceIdTypes}"
                       SelectedItem="{Binding SearchBy}"
                       Margin="0,0,0,0"/>
-                <TextBox x:Name="DeviceIdTextBox"
-                         Style="{DynamicResource standardTextBoxStyle}"
-                         Text="{Binding DeviceId}"
-                         VerticalContentAlignment="Center"
-                         IsTabStop="True"
-                         TabIndex="1"
-                         Height="30"
-                         Margin="20,0"
-                         MinWidth="200" />
-            </StackPanel>
+            <TextBox x:Name="DeviceIdTextBox"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     materialDesign:HintAssist.IsFloating="True"
+                     materialDesign:HintAssist.Hint="Search ServiceNow"
+                     Text="{Binding DeviceId, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="15"
+                     IsTabStop="True"
+                     TabIndex="1"
+                     Margin="20,0"
+                     MinWidth="300"
+                     MinHeight="50">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="KeyDown">
+                        <i:InvokeCommandAction Command="{Binding EnterPressedCommand}"
+                                               PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <!--<stackpanel x:name="deviceidpanel">
+                <label x:name="deviceidlabel"
+                horizontalcontentalignment="center"
+                content="device identifier"
+                margin="20,0" />
+            </stackpanel>-->
             <Button x:Name="QueryServiceNowButton"
-                        Style="{StaticResource standardButton}"
-                        Height="30"
-                        Width="120"
-                        VerticalAlignment="Bottom"
-                        Content="Search"
-                        Command="{Binding QueryServiceNowCommand}"
-                        Margin="20,0" />
+                    Style="{StaticResource MaterialDesignToolButton }"
+                    Content="{materialDesign:PackIcon Size=20, Kind=Search}"
+                    Command="{Binding QueryServiceNowCommand}"
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
+                    materialDesign:ButtonProgressAssist.Value="-1"
+                    IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                    Margin="-70,0,0,0"
+                    IsTabStop="True"
+                    TabIndex="2"/>
 
-                <Button x:Name="SyncServiceNowButton"
-                        Style="{StaticResource standardButton}"
-                        Height="30"
-                        Width="120"
-                        VerticalAlignment="Bottom"
-                        Content="Sync"
-                        Command="{Binding SyncWithServiceNowCommand}"
-                        Margin="20,0" />
+            <Button x:Name="AdvancedFilterButton"
+                    Style="{StaticResource MaterialDesignToolButton}"
+                    Content="{materialDesign:PackIcon Kind=FilterMenu,Size=25}" />
 
-                <Button x:Name="RetireServiceNowButton"
-                        Style="{StaticResource standardButton}"
-                        Height="30"
-                        Width="120"
-                        VerticalAlignment="Bottom"
-                        Content="Retire"
-                        Command="{Binding RetireAssetFromServiceNowCommand}"
-                        Margin="20,0" />
-            </StackPanel>
-            
-            <StackPanel x:Name="ViewPanePanel"
-                    Grid.Row="1"
+            <Button x:Name="SyncServiceNowButton"
+                    Style="{StaticResource standardButton}"
+                    Height="30"
+                    Width="120"
+                    VerticalAlignment="Bottom"
+                    Content="Sync"
+                    Command="{Binding SyncWithServiceNowCommand}"
+                    Margin="20,0" />
+
+            <Button x:Name="RetireServiceNowButton"
+                    Style="{StaticResource standardButton}"
+                    Height="30"
+                    Width="120"
+                    VerticalAlignment="Bottom"
+                    Content="Retire"
+                    Command="{Binding RetireAssetFromServiceNowCommand}"
+                    Margin="20,0" />
+        </StackPanel>
+
+        <StackPanel x:Name="ViewPanePanel"
+                    Grid.Row="2"
                     Margin="0,50,0,0">
             <StackPanel x:Name="TabControlPanel"
                         Orientation="Horizontal"
@@ -161,80 +192,59 @@
                         Height="Auto"
                         Width="Auto"
                         VerticalAlignment="Bottom"
-                        Margin="0,20,40,-55">
+                        Margin="0,30,60,0">
 
-                <bc:IconButton x:Name="SettingsButton"
-                               Width="Auto"
-                               Height="Auto"
-                               Margin="10,0"
-                               VerticalAlignment="Bottom"
-                               HorizontalAlignment="Left"
-                               Style="{DynamicResource IconButton}"
-                               Command="{Binding ToggleSettingsMenuCommand}"
-                               Template="{DynamicResource settingssvg}" />
+                <Button x:Name="SettingsButton"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=Cog}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Padding="10,0"
+                        Command="{Binding ToggleSettingsMenuCommand}"/>
 
-                <bc:IconButton x:Name="AddTabButton"
-                               Width="Auto"
-                               Height="Auto"
-                               Style="{DynamicResource IconButton}"
-                               Margin="10,0"
-                               VerticalAlignment="Center"
-                               Command="{Binding CreateTabCommand}"
-                               CommandParameter="{Binding ElementName=ViewPaneTabControl}"
-                               Template="{DynamicResource create_foldersvg}"
-                               IconColor="Black" />
+                <Button x:Name="AddTabButton"
+                        Style="{DynamicResource MaterialDesignToolButton}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=TabPlus}"
+                        Padding="10,0"
+                        Command="{Binding CreateTabCommand}"/>
 
-                <bc:IconButton x:Name="RemoveTabButton"
-                               Style="{DynamicResource IconButton}"
-                               Margin="10,0"
-                               VerticalAlignment="Center"
-                               Height="Auto"
-                               Width="Auto"
-                               Command="{Binding DeleteTabCommand}"
-                               Template="{DynamicResource deletesvg}"
-                               IconColor="Black" />
+                <Button x:Name="RemoveTabButton"
+                        Style="{DynamicResource MaterialDesignToolButton}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=TabRemove}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Padding="10,0"
+                        Command="{Binding DeleteTabCommand}" />
 
-                <bc:IconButton x:Name="RenameTabButton"
-                               Style="{DynamicResource IconButton}"
-                               Margin="10,0"
-                               VerticalAlignment="Center"
-                               Height="Auto"
-                               Width="Auto"
-                               Command="{Binding RenameTabCommand}"
-                               Template="{DynamicResource editsvg}"
-                               IconColor="Black" />
+                <Button x:Name="RenameTabButton"
+                        Style="{DynamicResource MaterialDesignToolButton}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=RenameOutline}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Padding="10,0"
+                        Command="{Binding RenameTabCommand}"/>
 
-                <bc:IconButton x:Name="DownloadFileButton"
-                               Style="{DynamicResource IconButton}"
-                               Margin="10,0"
-                               VerticalAlignment="Center"
-                               Height="Auto"
-                               Width="Auto"
-                               Command="{Binding DownloadAssetsCommand}"
-                               Template="{DynamicResource file_downloadsvg}"
-                               IconColor="Black" />
+                <Button x:Name="DownloadFileButton"
+                        Style="{DynamicResource MaterialDesignToolButton}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=Download}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Padding="10,0"
+                        Command="{Binding DownloadAssetsCommand}"/>
 
-                <bc:IconButton x:Name="UploadFileButton"
-                               Style="{DynamicResource IconButton}"
-                               IconColor="Black"
-                               Margin="10,0"
-                               Height="Auto"
-                               Width="Auto"
-                               VerticalAlignment="Center"
-                               Command="{Binding UploadAssetsCommand}"
-                               Template="{DynamicResource file_uploadsvg}" />
-                <bc:IconButton x:Name="SaveButton"
-                               Style="{DynamicResource IconButton}"
-                               IconColor="Black"
-                               Margin="10,0"
-                               Height="Auto"
-                               Width="Auto"
-                               VerticalAlignment="Center"
-                               Command="{Binding SaveAssetsCommand}"
-                               Template="{DynamicResource save_changessvg}" />
+                <Button x:Name="UploadFileButton"
+                        Style="{DynamicResource MaterialDesignToolButton}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=Upload}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Padding="10,0"
+                        Command="{Binding UploadAssetsCommand}"/>
+                <Button x:Name="SaveButton"
+                        Style="{DynamicResource MaterialDesignToolButton}"
+                        Content="{materialDesign:PackIcon Size=25, Kind=ContentSave}"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Padding="10,0"
+                        Command="{Binding SaveAssetsCommand}"/>
             </StackPanel>
             <TabControl x:Name="ViewPaneTabControl"
-                        Margin="20,40,20,0"
+                        Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+                        Margin="20,0"
                         Height="600"
                         ItemsSource="{Binding Tabs, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         SelectedIndex="{Binding SelectedTabIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -242,7 +252,6 @@
                         dd:DragDrop.IsDragSource="True"
                         dd:DragDrop.IsDropTarget="True"
                         dd:DragDrop.DropHandler="{Binding}">
-
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}" />
@@ -287,6 +296,9 @@
                 </TabControl.ContentTemplate>
             </TabControl>
         </StackPanel>
-        
+        <materialDesign:Snackbar MessageQueue="{Binding MessageQueue}" 
+                                 Grid.Row="3"
+                                 VerticalAlignment="Bottom"
+                                 HorizontalAlignment="Center"/>
     </Grid>
-</Window>
+</mah:MetroWindow>
