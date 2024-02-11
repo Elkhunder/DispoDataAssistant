@@ -21,10 +21,11 @@ namespace DispoDataAssistant;
 /// </summary>
 public partial class App : Application
 {
+    private bool IsDebugMode { get; set; } = false;
     public static IHost? AppHost { get; private set; }
     public App()
     {
-        ConfigureSerilog();
+        
         AppHost = Host.CreateDefaultBuilder()
                       .ConfigureServices((hostContext, services) =>
                       {
@@ -43,19 +44,18 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
-        bool isDebugMode = false;
         #if DEBUG
-        isDebugMode = true;
+        IsDebugMode = true;
         #endif
 
         await AppHost!.StartAsync();
-
+        ConfigureSerilog(IsDebugMode);
         using (IServiceScope scope = AppHost.Services.CreateScope())
         {
             using (AssetContext context = scope.ServiceProvider.GetRequiredService<AssetContext>())
             {
                 context.Database.Migrate();
-                if(isDebugMode)
+                if(IsDebugMode)
                 {
                     PopulateDatabase(context);
                 }
@@ -189,14 +189,31 @@ public partial class App : Application
         context.SaveChanges();
     }
 
-    private static void ConfigureSerilog()
+    private static void ConfigureSerilog(bool isDebugMode)
     {
-        string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DispoDataAssistant", "log.txt");
-
-        Log.Logger = new LoggerConfiguration()
+        string logFilePath = string.Empty;
+        if (isDebugMode)
+        {
+            logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DispoAssistant", "Debug", "log.txt");
+            
+            Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .Enrich.FromLogContext()
             .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day)
             .CreateLogger();
+        }
+        else
+        {
+            logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DispoAssistant", "Release", "log.txt");
+
+            Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .Enrich.FromLogContext()
+            .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+        }
+        
+        
+        
     }
 }
