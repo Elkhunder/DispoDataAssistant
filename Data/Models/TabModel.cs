@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
 
 namespace DispoDataAssistant.Data.Models
 {
@@ -11,5 +12,15 @@ namespace DispoDataAssistant.Data.Models
         [ObservableProperty]
         private string name = string.Empty;
         public virtual ObservableCollection<ServiceNowAsset> ServiceNowAssets { get; set; } = new ObservableCollection<ServiceNowAsset>();
+
+        public static TabModel Empty()
+        {
+            return new TabModel
+            {
+                Id = 0,
+                Name = string.Empty,
+                ServiceNowAssets = new ObservableCollection<ServiceNowAsset>()
+            };
+        }
     }
 }
