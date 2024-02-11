@@ -11,4 +11,7 @@ public interface IServiceNowApiClient
     Task<ServiceNowAsset> RetireServiceNowAssetAsync(string sys_id, RetireDevicePayload payload);
     Task<LifecycleMembers> GetLifecycleMembersAsync();
     Task<IEnumerable<ServiceNowAsset>> GetServiceNowAssetsAsync(List<string> deviceIds);
+    Task<IEnumerable<ServiceNowAsset>> GetServiceNowAssetsAsync(List<string> deviceIds, string idType);
+    Task<ServiceNowAsset> GetServiceNowAssetAsync(string deviceId);
+    Task<ServiceNowAsset> GetServiceNowAssetAsync(string deviceId, string idType);
 }
