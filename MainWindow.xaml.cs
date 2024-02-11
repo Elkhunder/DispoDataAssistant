@@ -11,7 +11,7 @@ namespace DispoDataAssistant;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow : MetroWindow
 {
     private readonly IServiceProvider _services;
     private MainViewModel _vm;
