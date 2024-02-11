@@ -1,4 +1,5 @@
 ﻿using DispoDataAssistant.UIComponents.Main;
+using MahApps.Metro.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
