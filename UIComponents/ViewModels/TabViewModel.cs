@@ -10,18 +10,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using MaterialDesignThemes.Wpf;
 
 namespace DispoDataAssistant.UIComponents.ViewModels;
 
 public partial class TabViewModel : BaseViewModel
 {
-    public TabViewModel() : this(null!, null!, null!) { }
+    public TabViewModel() : this(null!, null!, null!, null!) { }
 
     private AssetContext _AssetContext;
 
     public ObservableCollection<TabModel> Data { get; set; } = [];
 
-    public TabViewModel(ILogger logger, IWindowService windowService, AssetContext AssetContext) : base(logger, windowService)
+    public TabViewModel(ILogger logger, IWindowService windowService, AssetContext AssetContext, ISnackbarMessageQueue messageQueue) : base(logger, windowService, messageQueue)
     {
         AssetContext.Tabs.Load<TabModel>();
         _AssetContext = AssetContext;

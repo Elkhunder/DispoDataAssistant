@@ -9,6 +9,7 @@ using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents;
 using DispoDataAssistant.UIComponents.Main;
 using DispoDataAssistant.UIComponents.Settings;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
@@ -54,6 +55,7 @@ public static class ServicesExtensions
         services.AddSingleton<IDataInputService, DataInputService>();
         services.AddSingleton<IWindowService, WindowService>();
         services.AddSingleton<IFileDialogService, FileDialogService>();
+        services.AddScoped<ISnackbarMessageQueue, SnackbarMessageQueue>();
 
         //Factories
         services.AddSingleton<TabItemFactory>();
