@@ -46,6 +46,10 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     private string serialNumber = string.Empty;
     [ObservableProperty]
     private string deviceId = string.Empty;
+    [ObservableProperty]
+    private string searchBy = string.Empty;
+    [ObservableProperty]
+    private List<DeviceIdType> deviceIdTypes = Enum.GetValues(typeof(DeviceIdType)).Cast<DeviceIdType>().Where(v => v != DeviceIdType.Invalid).ToList();
 
     // DI Injections
     private AssetContext _assetContext;
@@ -258,6 +262,36 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
         }
         List<string> deviceIds = [.. DeviceId.Split(',')];
 
+        if (!string.IsNullOrEmpty(SearchBy) && deviceIds.Count is 1)
+        {
+            var deviceId = deviceIds.FirstOrDefault(string.Empty);
+            var asset = await _serviceNowApiClient.GetServiceNowAssetAsync(deviceId, SearchBy);
+
+            SelectedTab.ServiceNowAssets.Add(asset);
+            _assetContext.SaveChanges();
+            //Call a getservicenowassetasync method and search for a single asset one the search by value provided.
+        }
+        else if (!string.IsNullOrEmpty(SearchBy) && deviceIds.Count > 1)
+        {
+            var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(deviceIds, SearchBy);
+            foreach (var asset in assets)
+            {
+                SelectedTab.ServiceNowAssets.Add(asset);
+            }
+            _assetContext.SaveChanges();
+        }
+        else if (deviceIds.Count is 1)
+        {
+            var deviceId = deviceIds.FirstOrDefault(string.Empty);
+
+            var asset = await _serviceNowApiClient.GetServiceNowAssetAsync(deviceId);
+            SelectedTab.ServiceNowAssets.Add(asset);
+            _assetContext.SaveChanges();
+            //Call a get service now asset async method and search for a single asset based on the infered device id type
+        }
+        else if (deviceIds.Count > 1)
+        {
+            //if there is more than one id in device ids call the get service now assets async method and search for all assets based on the infered device type ids
         var assets = await _serviceNowApiClient.GetServiceNowAssetsAsync(deviceIds);
 
         foreach (var asset in assets)

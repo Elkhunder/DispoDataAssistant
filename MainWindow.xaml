@@ -39,15 +39,12 @@
                         Margin="0,40,0,0"
                         Height="Auto"
                         HorizontalAlignment="Center">
-
-            <StackPanel x:Name="DeviceIdPanel">
-
-                <Label x:Name="DeviceIdLabel"
-                       HorizontalContentAlignment="Center"
-                       Style="{DynamicResource standardLabel}"
-                       Content="Device Identifier"
-                       Margin="20,0" />
-
+            <ComboBox x:Name="SearchByComboBox"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      materialDesign:HintAssist.Hint="Search By"
+                      ItemsSource="{Binding DeviceIdTypes}"
+                      SelectedItem="{Binding SearchBy}"
+                      Margin="0,0,0,0"/>
                 <TextBox x:Name="DeviceIdTextBox"
                          Style="{DynamicResource standardTextBoxStyle}"
                          Text="{Binding DeviceId}"
