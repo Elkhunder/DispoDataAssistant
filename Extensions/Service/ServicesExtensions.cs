@@ -7,6 +7,7 @@ using DispoDataAssistant.Services;
 using DispoDataAssistant.Services.Implementations;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents;
+using DispoDataAssistant.UIComponents.Dialogs.AdvancedQuery;
 using DispoDataAssistant.UIComponents.Main;
 using DispoDataAssistant.UIComponents.Settings;
 using MaterialDesignThemes.Wpf;
@@ -22,18 +23,21 @@ public static class ServicesExtensions
     {
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<TabControlEditViewModel>();
+        services.AddTransient<QueryViewModel>();
+        services.AddSingleton<QueryDialogViewModel>();
+        services.AddTransient<Condition>();
     }
 
     public static void AddClients(this IServiceCollection services)
     {
+        var baseUrl = ConfigurationManager.AppSettings["serviceNowBaseUrl"];
+        
         services.AddScoped<IServiceNowApiClient>((provider) =>
         {
-            var baseUrl = ConfigurationManager.AppSettings["ServiceNowBaseUrl"];
             var logger = provider.GetRequiredService<ILogger<ServiceNowApiClient>>();
-
             if (baseUrl is null)
             {
-                return new ServiceNowApiClient("https://ummeddev.service-now.com/api/now/", logger);
+                return new ServiceNowApiClient("https://dev224022.service-now.com/api/now/", logger);
             }
             else
             {
@@ -68,5 +72,6 @@ public static class ServicesExtensions
         services.AddTransient<SettingsMenuView>();
         services.AddTransient<TabControlEditWindowView>();
         services.AddTransient<SettingsView>();
+        
     }
 }

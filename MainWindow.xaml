@@ -5,6 +5,7 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:bc="clr-namespace:DispoDataAssistant.UIComponents.BaseComponents"
+                 xmlns:as="clr-namespace:DispoDataAssistant.UIComponents.Dialogs.AdvancedQuery"
                  xmlns:vm="clr-namespace:DispoDataAssistant.UIComponents.Main"
                  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                  xmlns:e="clr-namespace:DispoDataAssistant.Extensions"
@@ -25,6 +26,7 @@
                  WindowState="Maximized"
                  Closing="Window_Closing"
                  d:DataContext="{d:DesignInstance Type= vm:MainViewModel, IsDesignTimeCreatable=True}">
+    
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding MainWindow_LoadedCommand}" />
@@ -104,6 +106,120 @@
                 </DataTemplate>
             </materialDesign:DialogHost.DialogContentTemplate>
         </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost x:Name="AdvancedSearchDialog"
+                                   Identifier="AdvancedSearch"
+                                   CloseOnClickAway="true"
+                                   OverlayBackground="{DynamicResource PrimaryHueDarkBrush}"
+                                   DialogTheme="Inherit"
+                                   Style="{StaticResource MaterialDesignEmbeddedDialogHost}"
+                                   Panel.ZIndex="10"
+                                   Grid.Row="1"
+                                   Grid.RowSpan="2"
+                                   IsOpen="{Binding IsAdvancedSearchOpen}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="DialogClosed">
+                    <i:InvokeCommandAction Command="{Binding AdvancedSearchClosedCommand}" />
+                                           <!--CommandParameter="{StaticResource QueryDialogViewModel}"-->
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <materialDesign:DialogHost.DialogContent>
+                <Grid x:Name="AdvancedSearchDialogGrid"
+                      d:DataContext="{d:DesignInstance Type=as:QueryDialogViewModel}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0"
+                               Text="Advanced Search" 
+                               Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                               Height="50" 
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               Margin="0,30,0,0"/>
+                    <StackPanel Grid.Row="1"
+                                Orientation="Vertical">
+                        <ItemsControl ItemsSource="{Binding Queries}"
+                                      Grid.Row="1">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="20">
+                                        <TextBlock Text="Or"
+                                                   Visibility="{Binding IsOrLogicalOperator, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <ComboBox Grid.Column="0"
+                                                  ItemsSource="{Binding Fields}"
+                                                  SelectedItem="{Binding SelectedField}"
+                                                  Margin="20,0,0,0"
+                                                  Height="30"
+                                                  Width="150">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="SelectionChanged">
+                                                    <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Grid}}, Path=DataContext.ConditionFieldChangedCommand}" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </ComboBox>
+                                        <ComboBox Grid.Column="1"
+                                                  ItemsSource="{Binding ComparisonOperators}"
+                                                  SelectedItem="{Binding SelectedComparisonOperator}"
+                                                  Margin="20,0,0,0"
+                                                  Height="30"
+                                                  Width="85" />
+
+                                        <TextBox Grid.Column="2"
+                                                 Text="{Binding Condition.Value}"
+                                                 Width="150"
+                                                 Height="30" 
+                                                 Margin="20,0,0,0"/>
+                                        <Button Content="{materialDesign:PackIcon Kind=Add,Size=25}"
+                                                Style="{StaticResource MaterialDesignToolButton}"
+                                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.ConditionFieldChangedCommand}"
+                                                Margin="20,0,0,0" 
+                                                Visibility="{Binding Condition.AddConditionButtonVisibility}"/>
+                                        <Button Content="And"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.AddAndConditionCommand}"
+                                                Margin="20,0,5,0"
+                                                Visibility="{Binding Condition.AddConditionButtonVisibility}"/>
+                                        <Button Content="Or"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.AddOrConditionCommand}"
+                                                Margin="5,0"
+                                                Visibility="{Binding Condition.AddConditionButtonVisibility}" />
+
+                                        <Button Content="{materialDesign:PackIcon Kind=TrashCan, Size=25}"
+                                                Style="{StaticResource MaterialDesignToolButton}"
+                                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.RemoveConditionCommand}"
+                                                CommandParameter="{Binding Condition.Id}"
+                                                Margin="0,0,20,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,0,120,0">
+                            <Button Height="30"
+                                    Width="120"
+                                    Content="Search"
+                                    Margin="10,30"
+                                    IsDefault="True"
+                                    Command="{Binding QueryExecutedCommand}"/>
+                            <Button Height="30"
+                                    Width="120"
+                                    Content="Cancel"
+                                    Margin="10,30"
+                                    IsCancel="True"
+                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
         <Button x:Name="ThemeChangerButton"
                 Style="{StaticResource MaterialDesignToolButton}"
                 Grid.Row="0"
@@ -161,7 +277,12 @@
 
             <Button x:Name="AdvancedFilterButton"
                     Style="{StaticResource MaterialDesignToolButton}"
+                    Command="{Binding AdvancedSearchOpenCommand}"
                     Content="{materialDesign:PackIcon Kind=FilterMenu,Size=25}" />
+                    <!--CommandParameter="{StaticResource QueryDialogViewModel}"-->
+                    
+            
+            
 
             <Button x:Name="SyncServiceNowButton"
                     Style="{StaticResource standardButton}"

@@ -14,6 +14,7 @@ using DispoDataAssistant.Messages;
 using DispoDataAssistant.Services.Interfaces;
 using DispoDataAssistant.UIComponents.BaseViewModels;
 using DispoDataAssistant.UIComponents.Dialogs;
+using DispoDataAssistant.UIComponents.Dialogs.AdvancedQuery;
 using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.MahApps;
 using MaterialDesignThemes.Wpf;
@@ -53,22 +54,26 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
     private string searchBy = string.Empty;
     [ObservableProperty]
     private List<DeviceIdType> deviceIdTypes = Enum.GetValues(typeof(DeviceIdType)).Cast<DeviceIdType>().Where(v => v != DeviceIdType.Invalid).ToList();
+    [ObservableProperty]
+    private bool isAdvancedSearchOpen = false;
 
     // DI Injections
     private AssetContext _assetContext;
     private TabControlEditWindowView _tabControlEditWindow;
     private IServiceNowApiClient _serviceNowApiClient;
     private IFileDialogService _fileDialogService;
+    private QueryDialogViewModel _queryDialogViewModel;
 
-    public MainViewModel() : this(null!, null!, null!, null!, null!,null!) { }
+    public MainViewModel() : this(null!, null!, null!, null!, null!,null!, null!) { }
 
-    public MainViewModel(ILogger<MainViewModel> logger, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient, IFileDialogService fileDialogService, ISnackbarMessageQueue messageQueue) : base(logger, null!,messageQueue)
+    public MainViewModel(ILogger<MainViewModel> logger, QueryDialogViewModel queryDialogViewModel, AssetContext assetContext, TabControlEditWindowView tabControlEditWindow, IServiceNowApiClient serviceNowApiClient, IFileDialogService fileDialogService, ISnackbarMessageQueue messageQueue) : base(logger, null!,messageQueue)
     {
         Console.WriteLine("MainViewModel: Instance Created");
         _assetContext = assetContext;
         _tabControlEditWindow = tabControlEditWindow;
         _serviceNowApiClient = serviceNowApiClient;
         _fileDialogService = fileDialogService;
+        _queryDialogViewModel = queryDialogViewModel;
     }
 
     // Event Methods
@@ -235,6 +240,30 @@ public partial class MainViewModel : BaseViewModel, IDropTarget
             _assetContext.Tabs.Update(SelectedTab);
         }
     }
+
+    [RelayCommand]
+    private void OnAdvancedSearchOpen()
+    {
+        if (IsAdvancedSearchOpen)
+        {
+            IsAdvancedSearchOpen = false;
+        }
+        if (_queryDialogViewModel.Queries.Count is 0)
+        {
+            _queryDialogViewModel.Queries.Add(new QueryViewModel());
+        }
+
+        IsAdvancedSearchOpen = true;
+    }
+
+    [RelayCommand]
+    private void OnAdvancedSearchClosed()
+    {
+        IsAdvancedSearchOpen = false;
+        _queryDialogViewModel.Queries.Clear();
+        _queryDialogViewModel.Queries.Add(new QueryViewModel());
+    }
+
     [RelayCommand]
     private async Task OnQueryServiceNow()
     {

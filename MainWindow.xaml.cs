@@ -1,4 +1,5 @@
-﻿using DispoDataAssistant.UIComponents.Main;
+﻿using DispoDataAssistant.UIComponents.Dialogs.AdvancedQuery;
+using DispoDataAssistant.UIComponents.Main;
 using MahApps.Metro.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -20,12 +21,13 @@ public partial class MainWindow : MetroWindow
     {
         get { return ViewPaneTabControl; }
     }
-    public MainWindow(IServiceProvider serviceProvider)
+    public MainWindow(IServiceProvider serviceProvider, QueryDialogViewModel queryDialogViewModel)
     {
         InitializeComponent();
         _services = serviceProvider;
 
         _vm = _services.GetRequiredService<MainViewModel>();
+        AdvancedSearchDialogGrid.DataContext = queryDialogViewModel;
         this.DataContext = _vm;
 
         //var mainView = _services.GetRequiredService<MainView>();

@@ -3,9 +3,11 @@ using DispoDataAssistant.Data.Models;
 using DispoDataAssistant.Data.Models.ServiceNow;
 using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Services.Implementations;
+using DispoDataAssistant.UIComponents.Dialogs.AdvancedQuery;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -237,6 +239,38 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
         return builder.ToString();
     }
 
+    private string QueryStringBuilder(ObservableCollection<QueryViewModel> queries)
+    {
+        var queryStrings = new List<string>();
+        //need comparison dictionary to get mathmatical symbol from comparison operator.
+        foreach (var query in queries)
+        {
+            
+            var condition = query.Condition;
+            if (condition.LogicalOperator is LogicalOperator.Or)
+            {
+                var queryString = $"{condition.LogicalOperator}{condition.Field} {condition.ComparisonOperator} {condition.Value}";
+                queryStrings.Add(queryString);
+            }
+            else if (condition.LogicalOperator is LogicalOperator.And)
+            {
+                var queryString = $"{condition.LogicalOperator}{condition.Field} {condition.ComparisonOperator} {condition.Value}";
+                queryStrings.Add(queryString);
+            }
+            else
+            {
+                var queryString = $"{condition.Field} {condition.ComparisonOperator} {condition.Value}";
+                queryStrings.Add(queryString);
+            }
+        }
+        
+        var builder = new UriBuilder($"{_baseUrl}/table/alm_hardware");
+        var queryBuilder = HttpUtility.ParseQueryString(builder.Query);
+        queryBuilder["sysparm_query"] = string.Join(" ^ ", queryStrings);
+        builder.Query = queryBuilder.ToString();
+        return builder.ToString();
+    }
+
     private async Task<IEnumerable<ServiceNowAsset>> ProcessServiceNowAssetsAsync(HttpResponseMessage response)
     {
         try
@@ -293,6 +327,18 @@ public class ServiceNowApiClient : BaseService, IServiceNowApiClient
             _logger.LogError($"{ex.Message}");
             return ServiceNowAsset.Empty();
         }
+    }
+
+    public async Task<IEnumerable<ServiceNowAsset>> GetAssetsByQueryAsync(ObservableCollection<QueryViewModel> queries)
+    {
+        var queryString = QueryStringBuilder(queries);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, queryString);
+        var response = await _client.SendAsync(request);
+
+        return await ProcessServiceNowAssetsAsync(response);
+
+
     }
 
     public async Task<LifecycleMembers> GetLifecycleMembersAsync()
