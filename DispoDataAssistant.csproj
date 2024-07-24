@@ -77,9 +77,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UIControls\UIControls.csproj">
-      <Private></Private>
-    </ProjectReference>
+    <ProjectReference Include="..\UIControls\UIControls.csproj" />
   </ItemGroup>
 
   <ItemGroup>
