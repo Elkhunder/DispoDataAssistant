@@ -97,6 +97,10 @@
                       Fill="{DynamicResource baseTheme.Secondary}"/>
             </Viewbox>
         </Button>
+        <StackPanel Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Foreground="{DynamicResource baseTheme.Headline}" FontSize="18">DispoDataAssistant</TextBlock>
+            <TextBlock Foreground="{DynamicResource baseTheme.Headline}" Margin="7,0" Padding="0,7,0,0">V1.02</TextBlock>
+        </StackPanel>
         <Button x:Name="SetingsMenuButton"
                 Style="{DynamicResource baseWindowButton}"
                 Grid.Column="0"
