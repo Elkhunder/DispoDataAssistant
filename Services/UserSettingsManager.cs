@@ -1,10 +1,5 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.ViewModels;
-using System;
+﻿using DispoDataAssistant.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DispoDataAssistant.Services
 {

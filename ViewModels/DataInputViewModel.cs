@@ -1,7 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.Handlers;
-using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
 using System;
 using System.Collections.Generic;
@@ -95,11 +92,9 @@ namespace DispoDataAssistant.ViewModels
         }
 
         private DeviceInformation _deviceInformation;
-        private readonly IServiceNowApiClient _serviceNowApiClient;
 
-        public DataInputViewModel(IServiceNowApiClient serviceNowApiClient, DeviceInformation deviceInformation)
+        public DataInputViewModel(DeviceInformation deviceInformation)
         {
-            _serviceNowApiClient = serviceNowApiClient;
             _deviceInformation = deviceInformation;
 
             DeviceTypeOptions = _deviceInformation.DeviceTypes!;
@@ -123,38 +118,38 @@ namespace DispoDataAssistant.ViewModels
         {
             //ServiceNowAsset asset = await _serviceNowHandler.GetServiceNowAssetAsync(AssetTag);
 
-            ServiceNowAsset? asset = await _serviceNowApiClient.GetServiceNowAssetAsync(AssetTag);
+            //ServiceNowAsset? asset = await _serviceNowApiClient.GetServiceNowAssetAsync(AssetTag);
 
-            if ( asset is not null)
-            {
-                if (asset.SerialNumber is not null)
-                {
-                    SerialNumber = asset.SerialNumber;
-                }
-                if ( asset.Manufacturer is not null)
-                {
-                    if (asset.Manufacturer is "Hewlett-Packard")
-                    {
-                        DeviceManufacturer = "HP";
-                    }
-                    else
-                    {
-                        DeviceManufacturer = asset.Manufacturer;
-                    }
-                }
-                if (asset.Model is not null)
-                {
-                    DeviceModel = asset.Model;
-                }
-                if (asset.Category is not null)
-                {
-                    DeviceType = asset.Category;
-                }
-            }
-            else
-            {
-                return;
-            }
+            //if ( asset is not null)
+            //{
+            //    if (asset.SerialNumber is not null)
+            //    {
+            //        SerialNumber = asset.SerialNumber;
+            //    }
+            //    if ( asset.Manufacturer is not null)
+            //    {
+            //        if (asset.Manufacturer is "Hewlett-Packard")
+            //        {
+            //            DeviceManufacturer = "HP";
+            //        }
+            //        else
+            //        {
+            //            DeviceManufacturer = asset.Manufacturer;
+            //        }
+            //    }
+            //    if (asset.Model is not null)
+            //    {
+            //        DeviceModel = asset.Model;
+            //    }
+            //    if (asset.Category is not null)
+            //    {
+            //        DeviceType = asset.Category;
+            //    }
+            //}
+            //else
+            //{
+            //    return;
+            //}
         }
     }
 }

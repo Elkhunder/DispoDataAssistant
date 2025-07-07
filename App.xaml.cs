@@ -1,16 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using DispoDataAssistant.Handlers;
-using DispoDataAssistant.Interfaces;
 using DispoDataAssistant.Models;
 using DispoDataAssistant.Services;
 using DispoDataAssistant.ViewModels;
-using DispoDataAssistant.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Configuration;
 using System.Windows;
 
 namespace DispoDataAssistant
@@ -57,19 +53,19 @@ namespace DispoDataAssistant
             IServiceCollection services = new ServiceCollection();
 
             // Add the ServiceNowApiClient as a scoped service
-            services.AddScoped<IServiceNowApiClient>(provider =>
-            {
-                var baseUrl = ConfigurationManager.AppSettings["ServiceNowBaseUrl"]; // Read the base URL from configuration
+            //services.AddScoped<IServiceNowApiClient>(provider =>
+            //{
+            //    var baseUrl = ConfigurationManager.AppSettings["ServiceNowBaseUrl"]; // Read the base URL from configuration
 
-                if (baseUrl != null)
-                {
-                    return new ServiceNowApiClient(baseUrl);
-                }
-                else
-                {
-                    return new ServiceNowApiClient("https://ummeddev.service-now.com/api/now/");
-                }
-            });
+            //    if (baseUrl != null)
+            //    {
+            //        return new ServiceNowApiClient(baseUrl);
+            //    }
+            //    else
+            //    {
+            //        return new ServiceNowApiClient("https://ummeddev.service-now.com/api/now/");
+            //    }
+            //});
 
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
             services.AddSingleton<DeviceDetails>();

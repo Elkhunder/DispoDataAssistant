@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using DispoDataAssistant.Handlers;
 using DispoDataAssistant.Models;
